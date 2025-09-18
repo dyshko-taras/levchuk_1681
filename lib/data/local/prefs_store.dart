@@ -1,4 +1,4 @@
-﻿// path: lib/data/local/prefs_store.dart
+// path: lib/data/local/prefs_store.dart
 // Wrapper around SharedPreferences for app-wide flags.
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,4 +22,3 @@ class PrefsStore {
     await _prefs.setBool(_firstRunKey, value);
   }
 }
-

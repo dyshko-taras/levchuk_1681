@@ -1,38 +1,34 @@
 // path: lib/data/models/note.dart
 // Note - per-fixture personal note stored locally.
+import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'note.g.dart';
 
 @JsonSerializable()
-class Note {
+class Note extends EquatableModel {
   const Note({
     required this.id,
-    @JsonKey(readValue: _readFixtureId) required this.fixtureId,
+    required this.fixtureId,
     required this.text,
-    @JsonKey(readValue: _readUpdatedAt) required this.updatedAt,
+    required this.updatedAt,
   });
 
   final int id;
+
+  @JsonKey(readValue: _readFixtureId)
   final int fixtureId;
+
   final String text;
+
+  @JsonKey(readValue: _readUpdatedAt)
   final DateTime updatedAt;
 
   factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
   Map<String, dynamic> toJson() => _$NoteToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Note &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          fixtureId == other.fixtureId &&
-          text == other.text &&
-          updatedAt == other.updatedAt;
-
-  @override
-  int get hashCode => Object.hash(id, fixtureId, text, updatedAt);
+  List<Object?> get props => [id, fixtureId, text, updatedAt];
 }
 
 Object? _readFixtureId(Map<dynamic, dynamic> json, String key) {

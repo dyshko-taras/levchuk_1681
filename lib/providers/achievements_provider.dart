@@ -1,4 +1,4 @@
-﻿// path: lib/providers/achievements_provider.dart
+// path: lib/providers/achievements_provider.dart
 // Provides achievement progress for the achievements screen.
 import 'package:FlutterApp/data/models/achievement.dart';
 import 'package:FlutterApp/data/repositories/achievements_repository.dart';
@@ -48,7 +48,10 @@ class AchievementsProvider extends ChangeNotifier {
   AchievementsState get state => _state;
 
   Future<void> load() async {
-    _state = _state.copyWith(isLoading: true, error: AchievementsState._sentinel);
+    _state = _state.copyWith(
+      isLoading: true,
+      error: AchievementsState._sentinel,
+    );
     notifyListeners();
     try {
       final achievements = await _repository.refreshAchievements();
@@ -71,4 +74,3 @@ class AchievementsProvider extends ChangeNotifier {
     await load();
   }
 }
-

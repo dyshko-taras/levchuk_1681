@@ -1,4 +1,4 @@
-﻿// path: lib/data/local/database/daos/predictions_dao.dart
+// path: lib/data/local/database/daos/predictions_dao.dart
 // DAO for managing user predictions (Implementation Plan section 4).
 import 'package:FlutterApp/data/local/database/app_database.dart';
 import 'package:FlutterApp/data/local/database/schema/predictions_table.dart';
@@ -105,4 +105,3 @@ class PredictionsDao extends DatabaseAccessor<AppDatabase>
     openedDetails: data.openedDetails,
   );
 }
-

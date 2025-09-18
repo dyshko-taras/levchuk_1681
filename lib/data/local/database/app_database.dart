@@ -1,4 +1,4 @@
-﻿// path: lib/data/local/database/app_database.dart
+// path: lib/data/local/database/app_database.dart
 // Central Drift database wiring tables per Implementation Plan section 4.
 import 'package:FlutterApp/data/local/database/daos/achievements_dao.dart';
 import 'package:FlutterApp/data/local/database/daos/favorites_dao.dart';
@@ -47,4 +47,3 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 1;
 }
-

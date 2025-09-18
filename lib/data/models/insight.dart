@@ -1,21 +1,24 @@
 // path: lib/data/models/insight.dart
 // Insight - local computed metric or text insight (offline analytics).
+import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'insight.g.dart';
 
 @JsonSerializable()
-class Insight {
+class Insight extends EquatableModel {
   const Insight({
     required this.id,
     required this.title,
     required this.value, // text or formatted %
-    @JsonKey(readValue: _readComputedAt) required this.computedAt,
+    required this.computedAt,
   });
 
   final String id;
   final String title;
   final String value;
+
+  @JsonKey(readValue: _readComputedAt)
   final DateTime computedAt;
 
   factory Insight.fromJson(Map<String, dynamic> json) =>
@@ -23,17 +26,7 @@ class Insight {
   Map<String, dynamic> toJson() => _$InsightToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Insight &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          title == other.title &&
-          value == other.value &&
-          computedAt == other.computedAt;
-
-  @override
-  int get hashCode => Object.hash(id, title, value, computedAt);
+  List<Object?> get props => [id, title, value, computedAt];
 }
 
 Object? _readComputedAt(Map<dynamic, dynamic> json, String key) =>

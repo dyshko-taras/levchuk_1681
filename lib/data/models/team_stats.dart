@@ -2,33 +2,47 @@
 // TeamStats - per-team aggregates in a league/season (PRD models).
 // Fields: teamId, leagueId, season, form?, goalsForAvg?, goalsAgainstAvg?, cleanSheets?, failedToScore?
 // Source: PRD models. :contentReference[oaicite:2]{index=2}
+import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'team_stats.g.dart';
 
 @JsonSerializable()
-class TeamStats {
+class TeamStats extends EquatableModel {
   const TeamStats({
-    @JsonKey(readValue: _readTeamId) required this.teamId,
-    @JsonKey(readValue: _readLeagueId) required this.leagueId,
-    @JsonKey(readValue: _readSeason) required this.season,
-    @JsonKey(readValue: _readForm) this.form,
-    @JsonKey(readValue: _readGoalsForAvg) this.goalsForAvg,
-    @JsonKey(readValue: _readGoalsAgainstAvg) this.goalsAgainstAvg,
-    @JsonKey(readValue: _readCleanSheets) this.cleanSheets,
-    @JsonKey(readValue: _readFailedToScore) this.failedToScore,
+    required this.teamId,
+    required this.leagueId,
+    required this.season,
+    this.form,
+    this.goalsForAvg,
+    this.goalsAgainstAvg,
+    this.cleanSheets,
+    this.failedToScore,
   });
 
+  @JsonKey(readValue: _readTeamId)
   final int teamId;
+
+  @JsonKey(readValue: _readLeagueId)
   final int leagueId;
+
+  @JsonKey(readValue: _readSeason)
   final int season;
 
   /// Recent form, e.g., "WWDLD". :contentReference[oaicite:3]{index=3}
+  @JsonKey(readValue: _readForm)
   final String? form;
 
+  @JsonKey(readValue: _readGoalsForAvg)
   final double? goalsForAvg;
+
+  @JsonKey(readValue: _readGoalsAgainstAvg)
   final double? goalsAgainstAvg;
+
+  @JsonKey(readValue: _readCleanSheets)
   final int? cleanSheets;
+
+  @JsonKey(readValue: _readFailedToScore)
   final int? failedToScore;
 
   factory TeamStats.fromJson(Map<String, dynamic> json) =>
@@ -36,30 +50,16 @@ class TeamStats {
   Map<String, dynamic> toJson() => _$TeamStatsToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is TeamStats &&
-          runtimeType == other.runtimeType &&
-          teamId == other.teamId &&
-          leagueId == other.leagueId &&
-          season == other.season &&
-          form == other.form &&
-          goalsForAvg == other.goalsForAvg &&
-          goalsAgainstAvg == other.goalsAgainstAvg &&
-          cleanSheets == other.cleanSheets &&
-          failedToScore == other.failedToScore;
-
-  @override
-  int get hashCode => Object.hash(
-    teamId,
-    leagueId,
-    season,
-    form,
-    goalsForAvg,
-    goalsAgainstAvg,
-    cleanSheets,
-    failedToScore,
-  );
+  List<Object?> get props => [
+        teamId,
+        leagueId,
+        season,
+        form,
+        goalsForAvg,
+        goalsAgainstAvg,
+        cleanSheets,
+        failedToScore,
+      ];
 }
 
 Object? _readTeamId(Map<dynamic, dynamic> json, String key) =>
@@ -107,7 +107,7 @@ Object? _nestedValue(Object? node, List<String> path) {
     if (current is Map<String, dynamic>) {
       current = current[segment];
     } else if (current is Map) {
-      current = (current as Map)[segment];
+      current = current[segment];
     } else {
       return null;
     }

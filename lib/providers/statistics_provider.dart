@@ -1,4 +1,4 @@
-﻿// path: lib/providers/statistics_provider.dart
+// path: lib/providers/statistics_provider.dart
 // Aggregates user prediction statistics for the dashboard page.
 import 'dart:collection';
 import 'dart:math';
@@ -70,34 +70,35 @@ class StatisticsProvider extends ChangeNotifier {
   StatisticsProvider({
     required PredictionsRepository predictionsRepository,
     required MatchesRepository matchesRepository,
-  })  : _predictionsRepository = predictionsRepository,
-        _matchesRepository = matchesRepository,
-        _state = const StatisticsState(
-          isLoading: false,
-          error: null,
-          summary: StatisticsSummary(
-            total: 0,
-            correct: 0,
-            missed: 0,
-            accuracyPct: 0,
-            averageOdds: 0,
-            averagePerWeek: 0,
-          ),
-          outcomeDistribution: <String, int>{'home': 0, 'draw': 0, 'away': 0},
-          weekdayCounts: <String, int>{
-            'Mon': 0,
-            'Tue': 0,
-            'Wed': 0,
-            'Thu': 0,
-            'Fri': 0,
-            'Sat': 0,
-            'Sun': 0,
-          },
-          accuracyTrend: <double>[],
-        );
+  }) : _predictionsRepository = predictionsRepository,
+       _matchesRepository = matchesRepository,
+       _state = const StatisticsState(
+         isLoading: false,
+         error: null,
+         summary: StatisticsSummary(
+           total: 0,
+           correct: 0,
+           missed: 0,
+           accuracyPct: 0,
+           averageOdds: 0,
+           averagePerWeek: 0,
+         ),
+         outcomeDistribution: <String, int>{'home': 0, 'draw': 0, 'away': 0},
+         weekdayCounts: <String, int>{
+           'Mon': 0,
+           'Tue': 0,
+           'Wed': 0,
+           'Thu': 0,
+           'Fri': 0,
+           'Sat': 0,
+           'Sun': 0,
+         },
+         accuracyTrend: <double>[],
+       );
 
   final PredictionsRepository _predictionsRepository;
-  final MatchesRepository _matchesRepository; // reserved for future FT validations
+  final MatchesRepository
+  _matchesRepository; // reserved for future FT validations
 
   StatisticsState _state;
 
@@ -134,8 +135,9 @@ class StatisticsProvider extends ChangeNotifier {
         .map((p) => p.odds)
         .whereType<double>()
         .toList(growable: false);
-    final averageOdds =
-        oddsValues.isEmpty ? 0 : oddsValues.reduce((a, b) => a + b) / oddsValues.length;
+    final averageOdds = oddsValues.isEmpty
+        ? 0
+        : oddsValues.reduce((a, b) => a + b) / oddsValues.length;
     final averagePerWeek = _averagePerWeek(predictions);
     return StatisticsSummary(
       total: predictions.length,
@@ -193,8 +195,7 @@ class StatisticsProvider extends ChangeNotifier {
         buckets[bucketKey]!.correct += 1;
       }
     }
-    final sortedKeys = buckets.keys.toList()
-      ..sort();
+    final sortedKeys = buckets.keys.toList()..sort();
     final recentKeys = sortedKeys.takeLast(4).toList();
     final trend = <double>[];
     for (final key in recentKeys) {
@@ -256,4 +257,3 @@ extension<T> on List<T> {
     return sublist(length - count);
   }
 }
-

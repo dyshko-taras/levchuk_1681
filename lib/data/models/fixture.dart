@@ -1,58 +1,69 @@
 // path: lib/data/models/fixture.dart
 // Fixture - normalized match entity per PRD fields. :contentReference[oaicite:1]{index=1}
+import 'package:FlutterApp/data/models/base_equatable.dart';
+import 'package:FlutterApp/data/models/team_ref.dart';
 import 'package:json_annotation/json_annotation.dart';
-
-import 'team_ref.dart';
 
 part 'fixture.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class Fixture {
+class Fixture extends EquatableModel {
   const Fixture({
-    @JsonKey(readValue: _readFixtureId) required this.fixtureId,
-    @JsonKey(readValue: _readLeagueId) required this.leagueId,
-    @JsonKey(readValue: _readLeagueName) required this.leagueName,
-    @JsonKey(readValue: _readLeagueCountry) this.country,
-    @JsonKey(readValue: _readDateUtc) required this.dateUtc,
-    @JsonKey(readValue: _readStatus) required this.status,
-    @JsonKey(readValue: _readMinute) this.minute,
-    @JsonKey(readValue: _readHomeTeam) required this.homeTeam,
-    @JsonKey(readValue: _readAwayTeam) required this.awayTeam,
-    @JsonKey(readValue: _readGoalsHome) this.goalsHome,
-    @JsonKey(readValue: _readGoalsAway) this.goalsAway,
+    required this.fixtureId,
+    required this.leagueId,
+    required this.leagueName,
+    required this.dateUtc,
+    required this.status,
+    required this.homeTeam,
+    required this.awayTeam,
+    this.country,
+    this.minute,
+    this.goalsHome,
+    this.goalsAway,
   });
 
   /// Unique fixture identifier.
+  @JsonKey(readValue: _readFixtureId)
   final int fixtureId;
 
   /// League identifier that this fixture belongs to.
+  @JsonKey(readValue: _readLeagueId)
   final int leagueId;
 
   /// Human-readable league name (e.g., "Premier League").
+  @JsonKey(readValue: _readLeagueName)
   final String leagueName;
 
   /// Country (nullable for international/cups).
+  @JsonKey(readValue: _readLeagueCountry)
   final String? country;
 
   /// Kickoff in UTC.
+  @JsonKey(readValue: _readDateUtc)
   final DateTime dateUtc;
 
   /// Status code (NS/1H/HT/2H/FT/ET/PST). :contentReference[oaicite:2]{index=2}
+  @JsonKey(readValue: _readStatus)
   final String status;
 
   /// Current live minute (nullable if not live). :contentReference[oaicite:3]{index=3}
+  @JsonKey(readValue: _readMinute)
   final int? minute;
 
   /// Home team reference.
+  @JsonKey(readValue: _readHomeTeam)
   final TeamRef homeTeam;
 
   /// Away team reference.
+  @JsonKey(readValue: _readAwayTeam)
   final TeamRef awayTeam;
 
   /// Current/full-time home goals (nullable pre-kickoff).
+  @JsonKey(readValue: _readGoalsHome)
   final int? goalsHome;
 
   /// Current/full-time away goals (nullable pre-kickoff).
+  @JsonKey(readValue: _readGoalsAway)
   final int? goalsAway;
 
   /// JSON factory (generated).
@@ -63,36 +74,19 @@ class Fixture {
   Map<String, dynamic> toJson() => _$FixtureToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Fixture &&
-          runtimeType == other.runtimeType &&
-          fixtureId == other.fixtureId &&
-          leagueId == other.leagueId &&
-          leagueName == other.leagueName &&
-          country == other.country &&
-          dateUtc == other.dateUtc &&
-          status == other.status &&
-          minute == other.minute &&
-          homeTeam == other.homeTeam &&
-          awayTeam == other.awayTeam &&
-          goalsHome == other.goalsHome &&
-          goalsAway == other.goalsAway;
-
-  @override
-  int get hashCode => Object.hash(
-    fixtureId,
-    leagueId,
-    leagueName,
-    country,
-    dateUtc,
-    status,
-    minute,
-    homeTeam,
-    awayTeam,
-    goalsHome,
-    goalsAway,
-  );
+  List<Object?> get props => [
+        fixtureId,
+        leagueId,
+        leagueName,
+        country,
+        dateUtc,
+        status,
+        minute,
+        homeTeam,
+        awayTeam,
+        goalsHome,
+        goalsAway,
+      ];
 }
 
 Object? _readFixtureId(Map<dynamic, dynamic> json, String key) =>
@@ -119,8 +113,8 @@ Object? _readStatus(Map<dynamic, dynamic> json, String key) =>
     _readValue(json, key, const ['fixture', 'status', 'short']);
 
 Object? _readMinute(Map<dynamic, dynamic> json, String key) => _asNullableInt(
-  _readValue(json, key, const ['fixture', 'status', 'elapsed']),
-);
+      _readValue(json, key, const ['fixture', 'status', 'elapsed']),
+    );
 
 Object? _readHomeTeam(Map<dynamic, dynamic> json, String key) =>
     _readMapValue(json, key, const ['teams', 'home']);
@@ -167,7 +161,7 @@ Object? _nestedValue(Object? node, List<String> path) {
     if (current is Map<String, dynamic>) {
       current = current[segment];
     } else if (current is Map) {
-      current = (current as Map)[segment];
+      current = current[segment];
     } else {
       return null;
     }

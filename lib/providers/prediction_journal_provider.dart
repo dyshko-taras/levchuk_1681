@@ -1,4 +1,4 @@
-﻿// path: lib/providers/prediction_journal_provider.dart
+// path: lib/providers/prediction_journal_provider.dart
 // Coordinates the prediction journal calendar and daily timeline.
 import 'package:FlutterApp/data/models/fixture.dart';
 import 'package:FlutterApp/data/models/journal_entry.dart';
@@ -86,24 +86,24 @@ class PredictionJournalProvider extends ChangeNotifier {
     required PredictionsRepository predictionsRepository,
     required MatchesRepository matchesRepository,
     required JournalRepository journalRepository,
-  })  : _predictionsRepository = predictionsRepository,
-        _matchesRepository = matchesRepository,
-        _journalRepository = journalRepository,
-        _state = PredictionJournalState(
-          isLoading: false,
-          error: null,
-          selectedDate: _today(),
-          timeline: const <PredictionTimelineItem>[],
-          summary: const JournalSummary(
-            total: 0,
-            correct: 0,
-            missed: 0,
-            averageOdds: 0,
-          ),
-          events: const <String>[],
-          predictionHeatmap: const <DateTime, int>{},
-          isSaving: false,
-        );
+  }) : _predictionsRepository = predictionsRepository,
+       _matchesRepository = matchesRepository,
+       _journalRepository = journalRepository,
+       _state = PredictionJournalState(
+         isLoading: false,
+         error: null,
+         selectedDate: _today(),
+         timeline: const <PredictionTimelineItem>[],
+         summary: const JournalSummary(
+           total: 0,
+           correct: 0,
+           missed: 0,
+           averageOdds: 0,
+         ),
+         events: const <String>[],
+         predictionHeatmap: const <DateTime, int>{},
+         isSaving: false,
+       );
 
   final PredictionsRepository _predictionsRepository;
   final MatchesRepository _matchesRepository;
@@ -208,10 +208,12 @@ class PredictionJournalProvider extends ChangeNotifier {
 
   JournalSummary _buildSummary(List<Prediction> predictions) {
     final total = predictions.length;
-    final correct =
-        predictions.where((prediction) => prediction.result == 'correct').length;
-    final missed =
-        predictions.where((prediction) => prediction.result == 'missed').length;
+    final correct = predictions
+        .where((prediction) => prediction.result == 'correct')
+        .length;
+    final missed = predictions
+        .where((prediction) => prediction.result == 'missed')
+        .length;
     final oddsValues = predictions
         .map((prediction) => prediction.odds)
         .whereType<double>()
@@ -219,7 +221,7 @@ class PredictionJournalProvider extends ChangeNotifier {
     final averageOdds = oddsValues.isEmpty
         ? 0
         : oddsValues.reduce((value, element) => value + element) /
-            oddsValues.length;
+              oddsValues.length;
     return JournalSummary(
       total: total,
       correct: correct,
@@ -239,4 +241,3 @@ class PredictionJournalProvider extends ChangeNotifier {
 
   static DateTime _today() => _normalizeDate(DateTime.now());
 }
-

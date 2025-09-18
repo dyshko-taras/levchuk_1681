@@ -1,8 +1,7 @@
 // path: lib/data/local/database/schema/predictions_table.dart
 // Drift table for user predictions (Implementation Plan section 4).
+import 'package:FlutterApp/data/local/database/schema/matches_table.dart';
 import 'package:drift/drift.dart';
-
-import 'matches_table.dart';
 
 class PredictionsTable extends Table {
   IntColumn get id => integer().named('id').autoIncrement()();
@@ -18,9 +17,8 @@ class PredictionsTable extends Table {
   BoolColumn get openedDetails =>
       boolean().named('opened_details').withDefault(const Constant(false))();
 
-  @override
   List<Index> get indexes => [
-        Index('idx_predictions_fixture', 'fixture_id'),
-        Index('idx_predictions_created_at', 'created_at'),
-      ];
+    Index('idx_predictions_fixture', 'fixture_id'),
+    Index('idx_predictions_created_at', 'created_at'),
+  ];
 }

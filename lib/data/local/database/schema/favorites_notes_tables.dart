@@ -1,9 +1,7 @@
-
 // path: lib/data/local/database/schema/favorites_notes_tables.dart
 // Drift tables for favorites and notes (Implementation Plan section 4).
+import 'package:FlutterApp/data/local/database/schema/matches_table.dart';
 import 'package:drift/drift.dart';
-
-import 'matches_table.dart';
 
 class FavoritesTable extends Table {
   IntColumn get id => integer().named('id').autoIncrement()();
@@ -13,9 +11,10 @@ class FavoritesTable extends Table {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {type, refId},
-      ];
+    {type, refId},
+  ];
 }
+
 class NotesTable extends Table {
   IntColumn get id => integer().named('id').autoIncrement()();
   IntColumn get fixtureId => integer()
@@ -24,14 +23,12 @@ class NotesTable extends Table {
   TextColumn get noteText => text().named('text')();
   DateTimeColumn get updatedAt => dateTime().named('updated_at')();
 
-  @override
   List<Index> get indexes => [
-        Index('idx_notes_fixture', 'fixture_id'),
-      ];
+    Index('idx_notes_fixture', 'fixture_id'),
+  ];
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {fixtureId},
-      ];
+    {fixtureId},
+  ];
 }
-

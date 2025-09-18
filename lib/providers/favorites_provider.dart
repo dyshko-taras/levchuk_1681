@@ -1,4 +1,4 @@
-﻿// path: lib/providers/favorites_provider.dart
+// path: lib/providers/favorites_provider.dart
 // Manages user favorites grouped by leagues, teams, and matches.
 import 'package:FlutterApp/data/models/favorite.dart';
 import 'package:FlutterApp/data/models/fixture.dart';
@@ -45,19 +45,19 @@ class FavoritesProvider extends ChangeNotifier {
     required FavoritesRepository favoritesRepository,
     required MatchesRepository matchesRepository,
     required LeaguesRepository leaguesRepository,
-  })  : _favoritesRepository = favoritesRepository,
-        _matchesRepository = matchesRepository,
-        _leaguesRepository = leaguesRepository,
-        _state = const FavoritesState(
-          isLoading: false,
-          error: null,
-          activeTab: FavoriteType.league,
-          favorites: {
-            FavoriteType.league: <Favorite>[],
-            FavoriteType.team: <Favorite>[],
-            FavoriteType.match: <Favorite>[],
-          },
-        );
+  }) : _favoritesRepository = favoritesRepository,
+       _matchesRepository = matchesRepository,
+       _leaguesRepository = leaguesRepository,
+       _state = const FavoritesState(
+         isLoading: false,
+         error: null,
+         activeTab: FavoriteType.league,
+         favorites: {
+           FavoriteType.league: <Favorite>[],
+           FavoriteType.team: <Favorite>[],
+           FavoriteType.match: <Favorite>[],
+         },
+       );
 
   final FavoritesRepository _favoritesRepository;
   final MatchesRepository _matchesRepository;
@@ -67,8 +67,9 @@ class FavoritesProvider extends ChangeNotifier {
 
   FavoritesState get state => _state;
 
-  List<Favorite> get items =>
-      List<Favorite>.unmodifiable(_state.favorites[_state.activeTab] ?? const []);
+  List<Favorite> get items => List<Favorite>.unmodifiable(
+    _state.favorites[_state.activeTab] ?? const [],
+  );
 
   Future<void> load() async {
     _state = _state.copyWith(isLoading: true, error: FavoritesState._sentinel);
@@ -137,7 +138,10 @@ class FavoritesProvider extends ChangeNotifier {
     return leagues.firstWhereOrNull((league) => league.id == leagueId);
   }
 
-  Future<TeamRef?> loadTeam({required int leagueId, required int teamId}) async {
+  Future<TeamRef?> loadTeam({
+    required int leagueId,
+    required int teamId,
+  }) async {
     final teams = await _leaguesRepository.getTeamsByLeague(
       leagueId: leagueId,
       season: DateTime.now().year,
@@ -154,4 +158,3 @@ extension<T> on Iterable<T> {
     return null;
   }
 }
-

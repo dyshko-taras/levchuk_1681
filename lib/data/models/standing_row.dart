@@ -2,34 +2,48 @@
 // StandingRow - a normalized row in the standings table (PRD models).
 // Fields: team(TeamRef), rank, played, win, draw, lose, points, form?
 // Source: PRD models. :contentReference[oaicite:4]{index=4}
+import 'package:FlutterApp/data/models/base_equatable.dart';
+import 'package:FlutterApp/data/models/team_ref.dart';
 import 'package:json_annotation/json_annotation.dart';
-
-import 'team_ref.dart';
 
 part 'standing_row.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class StandingRow {
+class StandingRow extends EquatableModel {
   const StandingRow({
-    @JsonKey(readValue: _readTeam) required this.team,
-    @JsonKey(readValue: _readRank) required this.rank,
-    @JsonKey(readValue: _readPlayed) required this.played,
-    @JsonKey(readValue: _readWin) required this.win,
-    @JsonKey(readValue: _readDraw) required this.draw,
-    @JsonKey(readValue: _readLose) required this.lose,
-    @JsonKey(readValue: _readPoints) required this.points,
-    @JsonKey(readValue: _readForm) this.form,
+    required this.team,
+    required this.rank,
+    required this.played,
+    required this.win,
+    required this.draw,
+    required this.lose,
+    required this.points,
+    this.form,
   });
 
+  @JsonKey(readValue: _readTeam)
   final TeamRef team;
+
+  @JsonKey(readValue: _readRank)
   final int rank;
+
+  @JsonKey(readValue: _readPlayed)
   final int played;
+
+  @JsonKey(readValue: _readWin)
   final int win;
+
+  @JsonKey(readValue: _readDraw)
   final int draw;
+
+  @JsonKey(readValue: _readLose)
   final int lose;
+
+  @JsonKey(readValue: _readPoints)
   final int points;
 
   /// Recent form string like "WWDLD". :contentReference[oaicite:5]{index=5}
+  @JsonKey(readValue: _readForm)
   final String? form;
 
   factory StandingRow.fromJson(Map<String, dynamic> json) =>
@@ -37,22 +51,7 @@ class StandingRow {
   Map<String, dynamic> toJson() => _$StandingRowToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is StandingRow &&
-          runtimeType == other.runtimeType &&
-          team == other.team &&
-          rank == other.rank &&
-          played == other.played &&
-          win == other.win &&
-          draw == other.draw &&
-          lose == other.lose &&
-          points == other.points &&
-          form == other.form;
-
-  @override
-  int get hashCode =>
-      Object.hash(team, rank, played, win, draw, lose, points, form);
+  List<Object?> get props => [team, rank, played, win, draw, lose, points, form];
 }
 
 Object? _readTeam(Map<dynamic, dynamic> json, String key) =>
@@ -123,7 +122,7 @@ Object? _nestedValue(Object? node, List<String> path) {
     if (current is Map<String, dynamic>) {
       current = current[segment];
     } else if (current is Map) {
-      current = (current as Map)[segment];
+      current = current[segment];
     } else {
       return null;
     }

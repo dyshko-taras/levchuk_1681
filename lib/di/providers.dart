@@ -1,5 +1,5 @@
-﻿// path: lib/di/providers.dart
-// Provider graph: service + repositories (created once).
+// path: lib/di/providers.dart
+// Provider graph: injects repositories and ChangeNotifiers per implementation plan.
 import 'dart:io';
 
 import 'package:FlutterApp/data/api/football_service.dart';
@@ -14,78 +14,201 @@ import 'package:FlutterApp/data/repositories/notes_repository.dart';
 import 'package:FlutterApp/data/repositories/odds_repository.dart';
 import 'package:FlutterApp/data/repositories/predictions_repository.dart';
 import 'package:FlutterApp/data/repositories/profile_repository.dart';
+import 'package:FlutterApp/providers/achievements_provider.dart';
+import 'package:FlutterApp/providers/app_bootstrap_provider.dart';
+import 'package:FlutterApp/providers/bottom_nav_provider.dart';
+import 'package:FlutterApp/providers/favorites_provider.dart';
+import 'package:FlutterApp/providers/insights_provider.dart';
+import 'package:FlutterApp/providers/matches_provider.dart';
+import 'package:FlutterApp/providers/my_predictions_provider.dart';
+import 'package:FlutterApp/providers/prediction_journal_provider.dart';
+import 'package:FlutterApp/providers/statistics_provider.dart';
+import 'package:FlutterApp/providers/user_profile_provider.dart';
+import 'package:FlutterApp/providers/welcome_provider.dart';
 import 'package:drift/drift.dart' show LazyDatabase;
 import 'package:drift/native.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
-final Future<PrefsStore> _prefsStoreFuture = PrefsStore.create();
+Widget buildAppProviders({required Widget child}) =>
+    _AppProviders(child: child);
 
-Widget buildAppProviders({required Widget child}) {
-  return FutureBuilder<PrefsStore>(
-    future: _prefsStoreFuture,
-    builder: (context, snapshot) {
-      if (!snapshot.hasData) {
-        return const SizedBox.shrink();
-      }
-      final prefs = snapshot.data!;
-      return MultiProvider(
-        providers: [
-          Provider<PrefsStore>.value(value: prefs),
-          Provider<FootballService>(
-            create: (_) => createFootballService(),
-          ),
-          Provider<AppDatabase>(
-            create: (_) => AppDatabase(_openConnection()),
-            dispose: (_, db) => db.close(),
-          ),
-          ProxyProvider2<FootballService, AppDatabase, MatchesRepository>(
-            update: (_, api, db, __) => MatchesRepository(
-              api: api,
-              matchesDao: db.matchesDao,
+class _AppProviders extends StatefulWidget {
+  const _AppProviders({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_AppProviders> createState() => _AppProvidersState();
+}
+
+class _AppProvidersState extends State<_AppProviders> {
+  late Future<PrefsStore> _prefsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _prefsFuture = PrefsStore.create();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<PrefsStore>(
+      future: _prefsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Directionality(
+            textDirection: TextDirection.ltr,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasError) {
+          return Directionality(
+            textDirection: TextDirection.ltr,
+            child: Center(
+              child: Text('Failed to initialise preferences'),
             ),
+          );
+        }
+
+        final prefs = snapshot.requireData;
+        return MultiProvider(
+          providers: _buildProviders(prefs),
+          child: widget.child,
+        );
+      },
+    );
+  }
+
+  List<SingleChildWidget> _buildProviders(PrefsStore prefs) =>
+      <SingleChildWidget>[
+        Provider<PrefsStore>.value(value: prefs),
+        Provider<FootballService>(
+          create: (_) => createFootballService(),
+        ),
+        Provider<AppDatabase>(
+          create: (_) => AppDatabase(_openConnection()),
+          dispose: (_, db) => db.close(),
+        ),
+        ProxyProvider2<FootballService, AppDatabase, MatchesRepository>(
+          update: (_, api, db, previous) =>
+              previous ??
+              MatchesRepository(
+                api: api,
+                matchesDao: db.matchesDao,
+              ),
+        ),
+        ProxyProvider2<FootballService, AppDatabase, OddsRepository>(
+          update: (_, api, db, previous) =>
+              previous ??
+              OddsRepository(
+                api: api,
+                oddsDao: db.oddsDao,
+              ),
+        ),
+        ProxyProvider<FootballService, LeaguesRepository>(
+          update: (_, api, previous) => previous ?? LeaguesRepository(api),
+        ),
+        ProxyProvider<AppDatabase, FavoritesRepository>(
+          update: (_, db, previous) =>
+              previous ?? FavoritesRepository(db.favoritesDao),
+        ),
+        ProxyProvider<AppDatabase, NotesRepository>(
+          update: (_, db, previous) => previous ?? NotesRepository(db.notesDao),
+        ),
+        ProxyProvider<AppDatabase, PredictionsRepository>(
+          update: (_, db, previous) =>
+              previous ??
+              PredictionsRepository(
+                predictionsDao: db.predictionsDao,
+                matchesDao: db.matchesDao,
+              ),
+        ),
+        ProxyProvider<AppDatabase, ProfileRepository>(
+          update: (_, db, previous) =>
+              previous ?? ProfileRepository(db.profileDao),
+        ),
+        ProxyProvider<AppDatabase, AchievementsRepository>(
+          update: (_, db, previous) =>
+              previous ??
+              AchievementsRepository(
+                achievementsDao: db.achievementsDao,
+                predictionsDao: db.predictionsDao,
+                matchesDao: db.matchesDao,
+              ),
+        ),
+        ProxyProvider<AppDatabase, JournalRepository>(
+          update: (_, db, previous) =>
+              previous ?? JournalRepository(db.journalDao),
+        ),
+        ChangeNotifierProvider<AppBootstrapProvider>(
+          create: (_) => AppBootstrapProvider(prefs),
+        ),
+        ChangeNotifierProvider<WelcomeProvider>(
+          create: (_) => WelcomeProvider(prefs),
+        ),
+        ChangeNotifierProvider<BottomNavProvider>(
+          create: (_) => BottomNavProvider(),
+        ),
+        ChangeNotifierProvider<MatchesProvider>(
+          lazy: false,
+          create: (context) => MatchesProvider(
+            matchesRepository: context.read<MatchesRepository>(),
+            predictionsRepository: context.read<PredictionsRepository>(),
+            favoritesRepository: context.read<FavoritesRepository>(),
+            notesRepository: context.read<NotesRepository>(),
+            oddsRepository: context.read<OddsRepository>(),
+          )..load(),
+        ),
+        ChangeNotifierProvider<StatisticsProvider>(
+          create: (context) => StatisticsProvider(
+            predictionsRepository: context.read<PredictionsRepository>(),
+            matchesRepository: context.read<MatchesRepository>(),
           ),
-          ProxyProvider2<FootballService, AppDatabase, OddsRepository>(
-            update: (_, api, db, __) => OddsRepository(
-              api: api,
-              oddsDao: db.oddsDao,
-            ),
+        ),
+        ChangeNotifierProvider<FavoritesProvider>(
+          create: (context) => FavoritesProvider(
+            favoritesRepository: context.read<FavoritesRepository>(),
+            matchesRepository: context.read<MatchesRepository>(),
+            leaguesRepository: context.read<LeaguesRepository>(),
           ),
-          ProxyProvider<FootballService, LeaguesRepository>(
-            update: (_, api, __) => LeaguesRepository(api),
+        ),
+        ChangeNotifierProvider<UserProfileProvider>(
+          create: (context) => UserProfileProvider(
+            profileRepository: context.read<ProfileRepository>(),
+            predictionsRepository: context.read<PredictionsRepository>(),
+            matchesRepository: context.read<MatchesRepository>(),
+            achievementsRepository: context.read<AchievementsRepository>(),
           ),
-          ProxyProvider<AppDatabase, FavoritesRepository>(
-            update: (_, db, __) => FavoritesRepository(db.favoritesDao),
+        ),
+        ChangeNotifierProvider<MyPredictionsProvider>(
+          create: (context) => MyPredictionsProvider(
+            predictionsRepository: context.read<PredictionsRepository>(),
+            matchesRepository: context.read<MatchesRepository>(),
+            favoritesRepository: context.read<FavoritesRepository>(),
           ),
-          ProxyProvider<AppDatabase, NotesRepository>(
-            update: (_, db, __) => NotesRepository(db.notesDao),
+        ),
+        ChangeNotifierProvider<AchievementsProvider>(
+          create: (context) => AchievementsProvider(
+            context.read<AchievementsRepository>(),
           ),
-          ProxyProvider<AppDatabase, PredictionsRepository>(
-            update: (_, db, __) => PredictionsRepository(
-              predictionsDao: db.predictionsDao,
-              matchesDao: db.matchesDao,
-            ),
+        ),
+        ChangeNotifierProvider<InsightsProvider>(
+          create: (context) => InsightsProvider(
+            context.read<PredictionsRepository>(),
           ),
-          ProxyProvider<AppDatabase, ProfileRepository>(
-            update: (_, db, __) => ProfileRepository(db.profileDao),
+        ),
+        ChangeNotifierProvider<PredictionJournalProvider>(
+          create: (context) => PredictionJournalProvider(
+            predictionsRepository: context.read<PredictionsRepository>(),
+            matchesRepository: context.read<MatchesRepository>(),
+            journalRepository: context.read<JournalRepository>(),
           ),
-          ProxyProvider<AppDatabase, AchievementsRepository>(
-            update: (_, db, __) => AchievementsRepository(
-              achievementsDao: db.achievementsDao,
-              predictionsDao: db.predictionsDao,
-              matchesDao: db.matchesDao,
-            ),
-          ),
-          ProxyProvider<AppDatabase, JournalRepository>(
-            update: (_, db, __) => JournalRepository(db.journalDao),
-          ),
-        ],
-        child: child,
-      );
-    },
-  );
+        ),
+      ];
 }
 
 LazyDatabase _openConnection() {
@@ -95,4 +218,3 @@ LazyDatabase _openConnection() {
     return NativeDatabase(file);
   });
 }
-

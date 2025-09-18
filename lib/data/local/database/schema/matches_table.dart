@@ -26,9 +26,8 @@ class MatchesTable extends Table {
   @override
   Set<Column> get primaryKey => {fixtureId};
 
-  @override
   List<Index> get indexes => [
-        Index('idx_matches_status', 'status'),
-        Index('idx_matches_kickoff', 'kickoff_utc'),
-      ];
+    Index('idx_matches_status', 'status'),
+    Index('idx_matches_kickoff', 'kickoff_utc'),
+  ];
 }

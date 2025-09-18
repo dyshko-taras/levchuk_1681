@@ -1,37 +1,47 @@
-﻿// path: lib/data/models/prediction.dart
-// Prediction - local model for user's pick and grading per PRD. :contentReference[oaicite:2]{index=2}
+// path: lib/data/models/prediction.dart
+// Prediction - local model for user picks and grading per PRD. :contentReference[oaicite:2]{index=2}
+import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'prediction.g.dart';
 
 @JsonSerializable()
-class Prediction {
+class Prediction extends EquatableModel {
   const Prediction({
-    @JsonKey(readValue: _readFixtureId) required this.fixtureId,
+    required this.fixtureId,
     required this.pick, // "home" | "draw" | "away"
-    @JsonKey(readValue: _readOdds) this.odds,
-    @JsonKey(readValue: _readMadeAt) required this.madeAt,
-    @JsonKey(readValue: _readLockedAt) this.lockedAt,
-    @JsonKey(readValue: _readGradedAt) this.gradedAt,
+    required this.madeAt,
+    this.odds,
+    this.lockedAt,
+    this.gradedAt,
     this.result, // "correct" | "missed" | null (pending)
-    @JsonKey(readValue: _readOpenedDetails) this.openedDetails = false,
+    this.openedDetails = false,
   });
 
+  @JsonKey(readValue: _readFixtureId)
   final int fixtureId;
+
   final String pick;
-  final double? odds;
+
+  @JsonKey(readValue: _readMadeAt)
   final DateTime madeAt;
 
+  @JsonKey(readValue: _readOdds)
+  final double? odds;
+
   /// When edits are locked (nullable until locked). :contentReference[oaicite:3]{index=3}
+  @JsonKey(readValue: _readLockedAt)
   final DateTime? lockedAt;
 
   /// When the prediction was graded (nullable until finished).
+  @JsonKey(readValue: _readGradedAt)
   final DateTime? gradedAt;
 
   /// Result after grading ("correct" | "missed" | null). :contentReference[oaicite:4]{index=4}
   final String? result;
 
   /// Whether the user opened match details before submitting.
+  @JsonKey(readValue: _readOpenedDetails)
   final bool openedDetails;
 
   factory Prediction.fromJson(Map<String, dynamic> json) =>
@@ -39,30 +49,16 @@ class Prediction {
   Map<String, dynamic> toJson() => _$PredictionToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Prediction &&
-          runtimeType == other.runtimeType &&
-          fixtureId == other.fixtureId &&
-          pick == other.pick &&
-          odds == other.odds &&
-          madeAt == other.madeAt &&
-          lockedAt == other.lockedAt &&
-          gradedAt == other.gradedAt &&
-          result == other.result &&
-          openedDetails == other.openedDetails;
-
-  @override
-  int get hashCode => Object.hash(
-    fixtureId,
-    pick,
-    odds,
-    madeAt,
-    lockedAt,
-    gradedAt,
-    result,
-    openedDetails,
-  );
+  List<Object?> get props => [
+        fixtureId,
+        pick,
+        madeAt,
+        odds,
+        lockedAt,
+        gradedAt,
+        result,
+        openedDetails,
+      ];
 }
 
 Object? _readFixtureId(Map<dynamic, dynamic> json, String key) {
@@ -78,11 +74,11 @@ Object? _readFixtureId(Map<dynamic, dynamic> json, String key) {
   return null;
 }
 
-double? _readOdds(Map<dynamic, dynamic> json, String key) =>
-    _asNullableDouble(json[key]);
-
 Object? _readMadeAt(Map<dynamic, dynamic> json, String key) =>
     _asIsoString(json[key] ?? json['created_at']);
+
+double? _readOdds(Map<dynamic, dynamic> json, String key) =>
+    _asNullableDouble(json[key]);
 
 Object? _readLockedAt(Map<dynamic, dynamic> json, String key) =>
     _asIsoString(json[key] ?? json['locked_at']);
@@ -120,4 +116,3 @@ String? _asIsoString(Object? value) {
   if (value is String) return value;
   return value.toString();
 }
-

@@ -1,25 +1,29 @@
 // path: lib/data/models/team_ref.dart
 // TeamRef - lightweight reference to a team (id, name, optional logo URL).
 // PRD Models list + data/models/team_ref.dart :contentReference[oaicite:0]{index=0}
+import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'team_ref.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class TeamRef {
+class TeamRef extends EquatableModel {
   const TeamRef({
-    @JsonKey(readValue: _readTeamId) required this.id,
-    @JsonKey(readValue: _readTeamName) required this.name,
-    @JsonKey(readValue: _readTeamLogo) this.logo,
+    required this.id,
+    required this.name,
+    this.logo,
   });
 
   /// Team ID.
+  @JsonKey(readValue: _readTeamId)
   final int id;
 
   /// Display name.
+  @JsonKey(readValue: _readTeamName)
   final String name;
 
   /// Optional logo URL (may be null for some leagues/levels).
+  @JsonKey(readValue: _readTeamLogo)
   final String? logo;
 
   /// JSON factory (generated).
@@ -30,16 +34,7 @@ class TeamRef {
   Map<String, dynamic> toJson() => _$TeamRefToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is TeamRef &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          name == other.name &&
-          logo == other.logo;
-
-  @override
-  int get hashCode => Object.hash(id, name, logo);
+  List<Object?> get props => [id, name, logo];
 }
 
 Object? _readTeamId(Map<dynamic, dynamic> json, String key) =>
@@ -59,7 +54,7 @@ Object? _readTeamField(Map<dynamic, dynamic> json, String key) {
   if (team is Map<String, dynamic>) {
     return team[key];
   } else if (team is Map) {
-    return (team as Map)[key];
+    return team[key];
   }
   return null;
 }

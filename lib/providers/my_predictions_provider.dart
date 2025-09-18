@@ -1,4 +1,4 @@
-﻿// path: lib/providers/my_predictions_provider.dart
+// path: lib/providers/my_predictions_provider.dart
 // Lists user predictions with hydrated fixture information.
 import 'package:FlutterApp/data/models/favorite.dart';
 import 'package:FlutterApp/data/models/fixture.dart';
@@ -65,14 +65,14 @@ class MyPredictionsProvider extends ChangeNotifier {
     required PredictionsRepository predictionsRepository,
     required MatchesRepository matchesRepository,
     required FavoritesRepository favoritesRepository,
-  })  : _predictionsRepository = predictionsRepository,
-        _matchesRepository = matchesRepository,
-        _favoritesRepository = favoritesRepository,
-        _state = const MyPredictionsState(
-          isLoading: false,
-          error: null,
-          items: <MyPredictionItem>[],
-        );
+  }) : _predictionsRepository = predictionsRepository,
+       _matchesRepository = matchesRepository,
+       _favoritesRepository = favoritesRepository,
+       _state = const MyPredictionsState(
+         isLoading: false,
+         error: null,
+         items: <MyPredictionItem>[],
+       );
 
   final PredictionsRepository _predictionsRepository;
   final MatchesRepository _matchesRepository;
@@ -83,7 +83,10 @@ class MyPredictionsProvider extends ChangeNotifier {
   MyPredictionsState get state => _state;
 
   Future<void> load() async {
-    _state = _state.copyWith(isLoading: true, error: MyPredictionsState._sentinel);
+    _state = _state.copyWith(
+      isLoading: true,
+      error: MyPredictionsState._sentinel,
+    );
     notifyListeners();
     try {
       final predictions = await _predictionsRepository.getAll();
@@ -92,14 +95,18 @@ class MyPredictionsProvider extends ChangeNotifier {
       );
       final favoriteIds = favorites.map((favorite) => favorite.refId).toSet();
 
-      final items = await Future.wait(predictions.map((prediction) async {
-        final fixture = await _matchesRepository.getById(prediction.fixtureId);
-        return MyPredictionItem(
-          prediction: prediction,
-          fixture: fixture,
-          isFavorite: favoriteIds.contains(prediction.fixtureId),
-        );
-      }));
+      final items = await Future.wait(
+        predictions.map((prediction) async {
+          final fixture = await _matchesRepository.getById(
+            prediction.fixtureId,
+          );
+          return MyPredictionItem(
+            prediction: prediction,
+            fixture: fixture,
+            isFavorite: favoriteIds.contains(prediction.fixtureId),
+          );
+        }),
+      );
 
       _state = _state.copyWith(
         isLoading: false,
@@ -142,4 +149,3 @@ class MyPredictionsProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-

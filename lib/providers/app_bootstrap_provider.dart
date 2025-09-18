@@ -1,4 +1,4 @@
-﻿// path: lib/providers/app_bootstrap_provider.dart
+// path: lib/providers/app_bootstrap_provider.dart
 // Handles splash bootstrap: loads persistent flags before routing.
 import 'package:FlutterApp/data/local/prefs_store.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +16,7 @@ class AppBootstrapProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isFirstRun => _isFirstRun;
   String? get error => _error;
+  bool get isInitialized => _initialized;
 
   Future<void> ensureInitialized() async {
     if (_initialized || _isLoading) {
@@ -40,4 +41,3 @@ class AppBootstrapProvider extends ChangeNotifier {
     await ensureInitialized();
   }
 }
-

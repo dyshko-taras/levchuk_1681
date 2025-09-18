@@ -1,21 +1,24 @@
 // path: lib/data/models/achievement.dart
 // Achievement - local achievements with optional earned date. :contentReference[oaicite:5]{index=5}
+import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'achievement.g.dart';
 
 @JsonSerializable()
-class Achievement {
+class Achievement extends EquatableModel {
   const Achievement({
     required this.id, // slug/code
     required this.title,
     required this.description,
-    @JsonKey(readValue: _readEarnedAt) this.earnedAt,
+    this.earnedAt,
   });
 
   final String id;
   final String title;
   final String description;
+
+  @JsonKey(readValue: _readEarnedAt)
   final DateTime? earnedAt;
 
   factory Achievement.fromJson(Map<String, dynamic> json) =>
@@ -23,17 +26,7 @@ class Achievement {
   Map<String, dynamic> toJson() => _$AchievementToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Achievement &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          title == other.title &&
-          description == other.description &&
-          earnedAt == other.earnedAt;
-
-  @override
-  int get hashCode => Object.hash(id, title, description, earnedAt);
+  List<Object?> get props => [id, title, description, earnedAt];
 }
 
 Object? _readEarnedAt(Map<dynamic, dynamic> json, String key) =>

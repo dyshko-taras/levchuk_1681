@@ -1,8 +1,8 @@
 // path: lib/ui/widgets/common/empty_view.dart
 // Reusable empty-state widget per Implementation Plan "Cross-Cutting: Error/Empty patterns".
-import 'package:flutter/material.dart';
 import 'package:FlutterApp/constants/app_images.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
+import 'package:flutter/material.dart';
 
 class EmptyView extends StatelessWidget {
   const EmptyView({

@@ -1,8 +1,7 @@
 // path: lib/data/local/database/schema/odds_table.dart
-// Drift table storing per-fixture odds snapshots (Implementation Plan section 4).
+// Drift table storing per-fixture odds snapshots
+import 'package:FlutterApp/data/local/database/schema/matches_table.dart';
 import 'package:drift/drift.dart';
-
-import 'matches_table.dart';
 
 class OddsTable extends Table {
   IntColumn get fixtureId => integer()
@@ -17,8 +16,7 @@ class OddsTable extends Table {
   @override
   Set<Column> get primaryKey => {fixtureId};
 
-  @override
   List<Index> get indexes => [
-        Index('idx_odds_fixture', 'fixture_id'),
-      ];
+    Index('idx_odds_fixture', 'fixture_id'),
+  ];
 }

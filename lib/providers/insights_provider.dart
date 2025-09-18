@@ -1,4 +1,4 @@
-﻿// path: lib/providers/insights_provider.dart
+// path: lib/providers/insights_provider.dart
 // Derives personal insights from prediction history.
 import 'package:FlutterApp/data/models/prediction.dart';
 import 'package:FlutterApp/data/repositories/predictions_repository.dart';
@@ -161,10 +161,12 @@ class InsightsProvider extends ChangeNotifier {
     return entries
         .where((entry) => entry.value >= 50)
         .take(2)
-        .map((entry) => InsightEntry(
-              label: _pickLabel(entry.key),
-              value: '${entry.value.toStringAsFixed(1)}% accuracy',
-            ))
+        .map(
+          (entry) => InsightEntry(
+            label: _pickLabel(entry.key),
+            value: '${entry.value.toStringAsFixed(1)}% accuracy',
+          ),
+        )
         .toList();
   }
 
@@ -174,10 +176,12 @@ class InsightsProvider extends ChangeNotifier {
     return entries
         .where((entry) => entry.value < 50)
         .take(2)
-        .map((entry) => InsightEntry(
-              label: _pickLabel(entry.key),
-              value: '${entry.value.toStringAsFixed(1)}% accuracy',
-            ))
+        .map(
+          (entry) => InsightEntry(
+            label: _pickLabel(entry.key),
+            value: '${entry.value.toStringAsFixed(1)}% accuracy',
+          ),
+        )
         .toList();
   }
 
@@ -198,9 +202,13 @@ class InsightsProvider extends ChangeNotifier {
       );
     }
     if (averageOdds > 3) {
-      advice.add('Consider balancing risk: average odds ${averageOdds.toStringAsFixed(2)}.');
+      advice.add(
+        'Consider balancing risk: average odds ${averageOdds.toStringAsFixed(2)}.',
+      );
     } else if (averageOdds < 1.8) {
-      advice.add('Average odds ${averageOdds.toStringAsFixed(2)} suggest you may prefer favorites; diversify when possible.');
+      advice.add(
+        'Average odds ${averageOdds.toStringAsFixed(2)} suggest you may prefer favorites; diversify when possible.',
+      );
     }
     return advice;
   }
@@ -243,4 +251,3 @@ class _AccuracyBucket {
   int total = 0;
   int correct = 0;
 }
-

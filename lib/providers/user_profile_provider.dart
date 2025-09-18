@@ -1,4 +1,4 @@
-﻿// path: lib/providers/user_profile_provider.dart
+// path: lib/providers/user_profile_provider.dart
 // Provides data and actions for the user profile screen.
 import 'package:FlutterApp/data/models/achievement.dart';
 import 'package:FlutterApp/data/models/fixture.dart';
@@ -68,8 +68,9 @@ class UserProfileState {
     return UserProfileState(
       isLoading: isLoading ?? this.isLoading,
       error: identical(error, _sentinel) ? this.error : error as String?,
-      profile:
-          identical(profile, _sentinel) ? this.profile : profile as UserProfile?,
+      profile: identical(profile, _sentinel)
+          ? this.profile
+          : profile as UserProfile?,
       statistics: statistics ?? this.statistics,
       recentPredictions: recentPredictions ?? this.recentPredictions,
       earnedBadges: earnedBadges ?? this.earnedBadges,
@@ -86,24 +87,24 @@ class UserProfileProvider extends ChangeNotifier {
     required PredictionsRepository predictionsRepository,
     required MatchesRepository matchesRepository,
     required AchievementsRepository achievementsRepository,
-  })  : _profileRepository = profileRepository,
-        _predictionsRepository = predictionsRepository,
-        _matchesRepository = matchesRepository,
-        _achievementsRepository = achievementsRepository,
-        _state = UserProfileState(
-          isLoading: false,
-          error: null,
-          profile: null,
-          statistics: const ProfileStatistics(
-            total: 0,
-            correct: 0,
-            missed: 0,
-            accuracyPct: 0,
-          ),
-          recentPredictions: const <RecentPredictionInfo>[],
-          earnedBadges: 0,
-          isSaving: false,
-        );
+  }) : _profileRepository = profileRepository,
+       _predictionsRepository = predictionsRepository,
+       _matchesRepository = matchesRepository,
+       _achievementsRepository = achievementsRepository,
+       _state = UserProfileState(
+         isLoading: false,
+         error: null,
+         profile: null,
+         statistics: const ProfileStatistics(
+           total: 0,
+           correct: 0,
+           missed: 0,
+           accuracyPct: 0,
+         ),
+         recentPredictions: const <RecentPredictionInfo>[],
+         earnedBadges: 0,
+         isSaving: false,
+       );
 
   final ProfileRepository _profileRepository;
   final PredictionsRepository _predictionsRepository;
@@ -115,7 +116,10 @@ class UserProfileProvider extends ChangeNotifier {
   UserProfileState get state => _state;
 
   Future<void> load() async {
-    _state = _state.copyWith(isLoading: true, error: UserProfileState._sentinel);
+    _state = _state.copyWith(
+      isLoading: true,
+      error: UserProfileState._sentinel,
+    );
     notifyListeners();
     try {
       final profile = await _profileRepository.getProfile();
@@ -192,4 +196,3 @@ class UserProfileProvider extends ChangeNotifier {
     return Future.wait(futures);
   }
 }
-

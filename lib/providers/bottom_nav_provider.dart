@@ -1,4 +1,4 @@
-﻿// path: lib/providers/bottom_nav_provider.dart
+// path: lib/providers/bottom_nav_provider.dart
 // Manages bottom navigation index and history stack for shell.
 import 'package:flutter/foundation.dart';
 
@@ -40,4 +40,3 @@ class BottomNavProvider extends ChangeNotifier {
 
   List<int> get history => List<int>.unmodifiable(_history);
 }
-

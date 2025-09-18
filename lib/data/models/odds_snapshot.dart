@@ -1,45 +1,44 @@
 // path: lib/data/models/odds_snapshot.dart
 // OddsSnapshot - odds for a fixture captured at a point in time (PRD models).
 // Fields per PRD: fixtureId, home, draw, away, ts (DateTime). :contentReference[oaicite:3]{index=3}
+import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'odds_snapshot.g.dart';
 
 @JsonSerializable()
-class OddsSnapshot {
+class OddsSnapshot extends EquatableModel {
   const OddsSnapshot({
-    @JsonKey(readValue: _readFixtureId) required this.fixtureId,
-    @JsonKey(readValue: _readHomeOdd) required this.home,
-    @JsonKey(readValue: _readDrawOdd) required this.draw,
-    @JsonKey(readValue: _readAwayOdd) required this.away,
-    @JsonKey(readValue: _readTimestamp) required this.ts,
+    required this.fixtureId,
+    required this.home,
+    required this.draw,
+    required this.away,
+    required this.ts,
   });
 
+  @JsonKey(readValue: _readFixtureId)
   final int fixtureId;
+
+  @JsonKey(readValue: _readHomeOdd)
   final double home;
+
+  @JsonKey(readValue: _readDrawOdd)
   final double draw;
+
+  @JsonKey(readValue: _readAwayOdd)
   final double away;
 
   /// Timestamp when odds were captured.
+  @JsonKey(readValue: _readTimestamp)
   final DateTime ts;
 
   factory OddsSnapshot.fromJson(Map<String, dynamic> json) =>
       _$OddsSnapshotFromJson(json);
+
   Map<String, dynamic> toJson() => _$OddsSnapshotToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is OddsSnapshot &&
-          runtimeType == other.runtimeType &&
-          fixtureId == other.fixtureId &&
-          home == other.home &&
-          draw == other.draw &&
-          away == other.away &&
-          ts == other.ts;
-
-  @override
-  int get hashCode => Object.hash(fixtureId, home, draw, away, ts);
+  List<Object?> get props => [fixtureId, home, draw, away, ts];
 }
 
 Object? _readFixtureId(Map<dynamic, dynamic> json, String key) =>
@@ -144,13 +143,13 @@ Object? _nestedValue(Object? node, List<String> path) {
     if (current is Map<String, dynamic>) {
       current = current[segment];
     } else if (current is Map) {
-      current = (current as Map)[segment];
+      current = current[segment];
     } else if (current is List && current.isNotEmpty) {
       current = current.first;
       if (current is Map<String, dynamic>) {
         current = current[segment];
       } else if (current is Map) {
-        current = (current as Map)[segment];
+        current = current[segment];
       } else {
         return null;
       }

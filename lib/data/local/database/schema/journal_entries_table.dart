@@ -1,4 +1,4 @@
-﻿// path: lib/data/local/database/schema/journal_entries_table.dart
+// path: lib/data/local/database/schema/journal_entries_table.dart
 // Drift table for storing daily journal entries.
 import 'package:drift/drift.dart';
 
@@ -12,4 +12,3 @@ class JournalEntriesTable extends Table {
   @override
   Set<Column> get primaryKey => {dateYmd};
 }
-

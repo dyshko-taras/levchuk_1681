@@ -1,26 +1,37 @@
 // path: lib/data/models/user_profile.dart
 // UserProfile - persisted avatar/name/settings with cached metrics per PRD.
-import 'package:collection/collection.dart';
+import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user_profile.g.dart';
 
 @JsonSerializable()
-class UserProfile {
+class UserProfile extends EquatableModel {
   const UserProfile({
-    @JsonKey(readValue: _readId) required this.id,
-    @JsonKey(readValue: _readUsername) required this.username,
-    @JsonKey(readValue: _readAvatarId) required this.avatarId,
-    @JsonKey(readValue: _readMetricsCache) this.metricsCache,
-    @JsonKey(readValue: _readResetMarkers) this.resetMarkers,
-    @JsonKey(readValue: _readUpdatedAt) this.updatedAt,
+    required this.id,
+    required this.username,
+    required this.avatarId,
+    this.metricsCache,
+    this.resetMarkers,
+    this.updatedAt,
   });
 
+  @JsonKey(readValue: _readId)
   final int id;
+
+  @JsonKey(readValue: _readUsername)
   final String username;
+
+  @JsonKey(readValue: _readAvatarId)
   final int avatarId;
+
+  @JsonKey(readValue: _readMetricsCache)
   final Map<String, dynamic>? metricsCache;
+
+  @JsonKey(readValue: _readResetMarkers)
   final Map<String, dynamic>? resetMarkers;
+
+  @JsonKey(readValue: _readUpdatedAt)
   final DateTime? updatedAt;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
@@ -28,36 +39,14 @@ class UserProfile {
   Map<String, dynamic> toJson() => _$UserProfileToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is UserProfile &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          username == other.username &&
-          avatarId == other.avatarId &&
-          const DeepCollectionEquality().equals(
-            metricsCache,
-            other.metricsCache,
-          ) &&
-          const DeepCollectionEquality().equals(
-            resetMarkers,
-            other.resetMarkers,
-          ) &&
-          updatedAt == other.updatedAt;
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    username,
-    avatarId,
-    metricsCache == null
-        ? null
-        : const DeepCollectionEquality().hash(metricsCache),
-    resetMarkers == null
-        ? null
-        : const DeepCollectionEquality().hash(resetMarkers),
-    updatedAt,
-  );
+  List<Object?> get props => [
+        id,
+        username,
+        avatarId,
+        _mapProp(metricsCache),
+        _mapProp(resetMarkers),
+        updatedAt,
+      ];
 }
 
 Object? _readId(Map<dynamic, dynamic> json, String key) {
@@ -98,4 +87,13 @@ Map<String, dynamic>? _normalizeMap(Object? value) {
     return value.map((key, dynamic val) => MapEntry(key.toString(), val));
   }
   return null;
+}
+
+List<Object?>? _mapProp(Map<String, dynamic>? value) {
+  if (value == null) return null;
+  final entries = value.entries.toList()
+    ..sort((a, b) => a.key.compareTo(b.key));
+  return List<Object?>.unmodifiable(
+    entries.expand<Object?>((entry) => [entry.key, entry.value]).toList(),
+  );
 }

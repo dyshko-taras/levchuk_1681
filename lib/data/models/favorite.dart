@@ -1,5 +1,6 @@
 // path: lib/data/models/favorite.dart
 // Favorite - tracks user favorites (league/team/match) locally per PRD.
+import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'favorite.g.dart';
@@ -7,17 +8,23 @@ part 'favorite.g.dart';
 enum FavoriteType { league, team, match }
 
 @JsonSerializable()
-class Favorite {
+class Favorite extends EquatableModel {
   const Favorite({
     required this.id,
-    @JsonKey(readValue: _readType) required this.type,
-    @JsonKey(readValue: _readRefId) required this.refId,
-    @JsonKey(readValue: _readCreatedAt) required this.createdAt,
+    required this.type,
+    required this.refId,
+    required this.createdAt,
   });
 
   final int id;
+
+  @JsonKey(readValue: _readType)
   final FavoriteType type;
+
+  @JsonKey(readValue: _readRefId)
   final int refId;
+
+  @JsonKey(readValue: _readCreatedAt)
   final DateTime createdAt;
 
   factory Favorite.fromJson(Map<String, dynamic> json) =>
@@ -25,17 +32,7 @@ class Favorite {
   Map<String, dynamic> toJson() => _$FavoriteToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Favorite &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          type == other.type &&
-          refId == other.refId &&
-          createdAt == other.createdAt;
-
-  @override
-  int get hashCode => Object.hash(id, type, refId, createdAt);
+  List<Object?> get props => [id, type, refId, createdAt];
 }
 
 Object? _readType(Map<dynamic, dynamic> json, String key) {

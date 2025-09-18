@@ -3,7 +3,6 @@
 import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
-import 'package:FlutterApp/data/repositories/matches_repository.dart';
 import 'package:FlutterApp/providers/matches_provider.dart';
 import 'package:FlutterApp/ui/widgets/common/empty_view.dart';
 import 'package:FlutterApp/ui/widgets/common/error_view.dart';
@@ -19,16 +18,13 @@ class MatchSchedulePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<MatchesProvider>(
-      create: (_) => MatchesProvider(context.read<MatchesRepository>())..load(),
-      child: const _Body(),
-    );
+    return const _Body();
   }
 }
 
 class _Body extends StatelessWidget {
   const _Body();
- 
+
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<MatchesProvider>();

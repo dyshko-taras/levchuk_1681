@@ -1,4 +1,4 @@
-﻿// path: lib/data/local/database/daos/notes_dao.dart
+// path: lib/data/local/database/daos/notes_dao.dart
 // DAO for fixture notes per Implementation Plan section 4.
 import 'package:FlutterApp/data/local/database/app_database.dart';
 import 'package:FlutterApp/data/local/database/schema/favorites_notes_tables.dart';
@@ -41,4 +41,3 @@ class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
     );
   }
 }
-

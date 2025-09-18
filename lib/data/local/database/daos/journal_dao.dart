@@ -1,4 +1,4 @@
-﻿// path: lib/data/local/database/daos/journal_dao.dart
+// path: lib/data/local/database/daos/journal_dao.dart
 // DAO for prediction journal entries.
 import 'dart:convert';
 
@@ -68,4 +68,3 @@ class JournalDao extends DatabaseAccessor<AppDatabase> with _$JournalDaoMixin {
     return '$y-$m-$d';
   }
 }
-

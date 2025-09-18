@@ -1,21 +1,17 @@
-// path: lib/ui/pages/match_details_page.dart
-// Placeholder MatchDetailsPage until detailed implementation phase.
+// path: lib/ui/pages/insights_page.dart
+// Placeholder insights page for navigation scaffolding.
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 
-class MatchDetailsPage extends StatelessWidget {
-  const MatchDetailsPage({super.key, required this.fixtureId});
-
-  final int fixtureId;
+class InsightsPage extends StatelessWidget {
+  const InsightsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${AppStrings.matchDetailsTitle} #$fixtureId'),
-      ),
+      appBar: AppBar(title: const Text(AppStrings.insightsTitle)),
       body: Center(
         child: Padding(
           padding: Insets.allLg,

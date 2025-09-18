@@ -1,14 +1,14 @@
 // path: lib/ui/widgets/common/error_view.dart
 // Reusable error-state widget with message and optional retry.
+import 'package:FlutterApp/constants/app_icons.dart';
+import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
-import '../../../constants/app_icons.dart';
-import '../../../constants/app_spacing.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ErrorView extends StatelessWidget {
   const ErrorView({
-    super.key,
     required this.message,
+    super.key,
     this.onRetry,
     this.retryLabel = 'Retry',
   });

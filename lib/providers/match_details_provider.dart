@@ -1,4 +1,4 @@
-﻿// path: lib/providers/match_details_provider.dart
+// path: lib/providers/match_details_provider.dart
 // Manages match detail screen state: fixture, odds, prediction, notes, favorites.
 import 'package:FlutterApp/constants/app_durations.dart';
 import 'package:FlutterApp/data/models/favorite.dart';
@@ -68,8 +68,7 @@ class MatchDetailsState {
       isFavorite: isFavorite ?? this.isFavorite,
       noteText: noteText ?? this.noteText,
       activeTabId: activeTabId ?? this.activeTabId,
-      isSavingPrediction:
-          isSavingPrediction ?? this.isSavingPrediction,
+      isSavingPrediction: isSavingPrediction ?? this.isSavingPrediction,
       isSavingNote: isSavingNote ?? this.isSavingNote,
     );
   }
@@ -84,24 +83,24 @@ class MatchDetailsProvider extends ChangeNotifier {
     required PredictionsRepository predictionsRepository,
     required FavoritesRepository favoritesRepository,
     required NotesRepository notesRepository,
-  })  : _matchesRepository = matchesRepository,
-        _oddsRepository = oddsRepository,
-        _predictionsRepository = predictionsRepository,
-        _favoritesRepository = favoritesRepository,
-        _notesRepository = notesRepository,
-        _state = const MatchDetailsState(
-          isLoading: false,
-          error: null,
-          fixtureId: null,
-          fixture: null,
-          odds: null,
-          prediction: null,
-          isFavorite: false,
-          noteText: '',
-          activeTabId: 'info',
-          isSavingPrediction: false,
-          isSavingNote: false,
-        );
+  }) : _matchesRepository = matchesRepository,
+       _oddsRepository = oddsRepository,
+       _predictionsRepository = predictionsRepository,
+       _favoritesRepository = favoritesRepository,
+       _notesRepository = notesRepository,
+       _state = const MatchDetailsState(
+         isLoading: false,
+         error: null,
+         fixtureId: null,
+         fixture: null,
+         odds: null,
+         prediction: null,
+         isFavorite: false,
+         noteText: '',
+         activeTabId: 'info',
+         isSavingPrediction: false,
+         isSavingNote: false,
+       );
 
   final MatchesRepository _matchesRepository;
   final OddsRepository _oddsRepository;
@@ -124,15 +123,13 @@ class MatchDetailsProvider extends ChangeNotifier {
     final fixture = state.fixture;
     if (fixture == null) return false;
     final status = fixture.status.toUpperCase();
-    const lockedStatuses = {
-      '1H', '2H', 'HT', 'ET', 'FT', 'AET', 'PEN', 'LIVE'
-    };
+    const lockedStatuses = {'1H', '2H', 'HT', 'ET', 'FT', 'AET', 'PEN', 'LIVE'};
     if (lockedStatuses.contains(status)) {
       return false;
     }
-    final lockTime = fixture.dateUtc
-        .toUtc()
-        .subtract(AppDurations.predictionLock);
+    final lockTime = fixture.dateUtc.toUtc().subtract(
+      AppDurations.predictionLock,
+    );
     return DateTime.now().toUtc().isBefore(lockTime);
   }
 
@@ -149,7 +146,8 @@ class MatchDetailsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fixture = await _matchesRepository.getById(
+      final fixture =
+          await _matchesRepository.getById(
             fixtureId,
             forceRefresh: true,
           ) ??
@@ -329,4 +327,3 @@ class MatchDetailsProvider extends ChangeNotifier {
     return null;
   }
 }
-

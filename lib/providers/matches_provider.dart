@@ -112,7 +112,7 @@ class MatchesState {
 }
 
 class MatchesProvider extends ChangeNotifier {
-  MatchesProvider(MatchesRepository read, {
+  MatchesProvider({
     required MatchesRepository matchesRepository,
     required PredictionsRepository predictionsRepository,
     required FavoritesRepository favoritesRepository,

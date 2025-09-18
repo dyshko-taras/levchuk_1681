@@ -1,4 +1,4 @@
-﻿// path: lib/data/repositories/journal_repository.dart
+// path: lib/data/repositories/journal_repository.dart
 // Repository for prediction journal entries.
 import 'package:FlutterApp/data/local/database/daos/journal_dao.dart';
 import 'package:FlutterApp/data/models/journal_entry.dart';
@@ -37,4 +37,3 @@ class JournalRepository {
     }
   }
 }
-
