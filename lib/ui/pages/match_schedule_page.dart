@@ -28,13 +28,13 @@ class MatchSchedulePage extends StatelessWidget {
 
 class _Body extends StatelessWidget {
   const _Body();
-
+ 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<MatchesProvider>();
     final s = vm.state;
 
-    Future<void> onRefresh() => vm.load();
+    Future<void> onRefresh() => vm.refresh();
 
     // ---- AppBar title per PRD
     const appBar = SliverAppBar(

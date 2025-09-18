@@ -1,4 +1,4 @@
-// path: lib/data/repositories/favorites_repository.dart
+﻿// path: lib/data/repositories/favorites_repository.dart
 // Repository for user favorites backed by the local database.
 import 'package:FlutterApp/data/local/database/daos/favorites_dao.dart';
 import 'package:FlutterApp/data/models/favorite.dart';
@@ -39,3 +39,4 @@ class FavoritesRepository {
   Future<bool> isFavorite(FavoriteType type, int refId) =>
       _dao.isFavorite(type, refId);
 }
+

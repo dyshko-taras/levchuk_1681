@@ -1,4 +1,4 @@
-// path: lib/data/repositories/achievements_repository.dart
+﻿// path: lib/data/repositories/achievements_repository.dart
 // Repository that manages achievements. Evaluates unlock conditions using
 // local predictions and cached fixtures.
 import 'package:FlutterApp/data/local/database/daos/achievements_dao.dart';
@@ -314,3 +314,4 @@ final List<_AchievementDefinition> _definitions = [
     (ctx) => ctx.hasSharpInstincts,
   ),
 ];
+

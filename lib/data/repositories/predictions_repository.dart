@@ -1,4 +1,4 @@
-// path: lib/data/repositories/predictions_repository.dart
+﻿// path: lib/data/repositories/predictions_repository.dart
 // Repository for user predictions. Handles CRUD and grading against fixtures.
 import 'package:FlutterApp/data/local/database/daos/matches_dao.dart';
 import 'package:FlutterApp/data/local/database/daos/predictions_dao.dart';
@@ -69,3 +69,4 @@ class PredictionsRepository {
     return 'draw';
   }
 }
+

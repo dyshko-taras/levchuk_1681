@@ -1,4 +1,4 @@
-// path: lib/data/repositories/profile_repository.dart
+﻿// path: lib/data/repositories/profile_repository.dart
 // Repository for the local user profile row.
 import 'package:FlutterApp/data/local/database/daos/profile_dao.dart';
 import 'package:FlutterApp/data/models/user_profile.dart';
@@ -37,3 +37,4 @@ class ProfileRepository {
     );
   }
 }
+

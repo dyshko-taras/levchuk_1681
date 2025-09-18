@@ -1,4 +1,4 @@
-// path: lib/data/local/database/daos/notes_dao.dart
+﻿// path: lib/data/local/database/daos/notes_dao.dart
 // DAO for fixture notes per Implementation Plan section 4.
 import 'package:FlutterApp/data/local/database/app_database.dart';
 import 'package:FlutterApp/data/local/database/schema/favorites_notes_tables.dart';
@@ -9,12 +9,12 @@ part 'notes_dao.g.dart';
 
 @DriftAccessor(tables: [NotesTable])
 class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
-  NotesDao(super.db);
+  NotesDao(AppDatabase db) : super(db);
 
   Future<void> upsert(Note note) async {
     await into(notesTable).insertOnConflictUpdate(
       NotesTableCompanion(
-        id: Value(note.id),
+        id: note.id == 0 ? const Value.absent() : Value(note.id),
         fixtureId: Value(note.fixtureId),
         noteText: Value(note.text),
         updatedAt: Value(note.updatedAt),
@@ -41,3 +41,4 @@ class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
     );
   }
 }
+

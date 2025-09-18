@@ -1,4 +1,4 @@
-// path: lib/data/models/prediction.dart
+﻿// path: lib/data/models/prediction.dart
 // Prediction - local model for user's pick and grading per PRD. :contentReference[oaicite:2]{index=2}
 import 'package:json_annotation/json_annotation.dart';
 
@@ -120,3 +120,4 @@ String? _asIsoString(Object? value) {
   if (value is String) return value;
   return value.toString();
 }
+

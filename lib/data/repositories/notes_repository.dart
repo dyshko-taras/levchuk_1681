@@ -1,4 +1,4 @@
-// path: lib/data/repositories/notes_repository.dart
+﻿// path: lib/data/repositories/notes_repository.dart
 // Repository for fixture notes stored locally.
 import 'package:FlutterApp/data/local/database/daos/notes_dao.dart';
 import 'package:FlutterApp/data/models/note.dart';
@@ -14,3 +14,4 @@ class NotesRepository {
 
   Future<void> deleteNote(int fixtureId) => _dao.deleteByFixture(fixtureId);
 }
+
