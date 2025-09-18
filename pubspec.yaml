@@ -20,11 +20,14 @@ dependencies:
   flutter_datetime_picker_plus: ^2.2.0
   intl: ^0.20.2
   device_preview: ^1.3.1
+  equatable: ^2.0.7
+  json_annotation: ^4.9.0 
+  dio: any
+  retrofit: 4.7.2
 #  privacy_plugin:
 #    git:
 #      url: https://gitlab.com/casino-slots/webview-plugin.git
 #      ref: privacy_plugin_no_appsflyer
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -34,21 +37,28 @@ dev_dependencies:
   very_good_analysis: ^9.0.0
   drift_dev: ^2.28.1
   build_runner: ^2.6.0
+  json_serializable: ^6.11.1
+  retrofit_generator: ^10.0.5
 
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
 
   assets:
-  - assets/icon/
-  - assets/images/
-  - assets/images/backgrounds/
-  - assets/images/buttons/
-  - assets/fonts/
+    - assets/icons/
+    - assets/images/
+    - assets/images/backgrounds/
+    - assets/images/buttons/
+    - assets/fonts/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-VariableFont_opsz,wght.ttf
 
 flutter_launcher_icons:
   android: true
   ios: false
-  image_path: "assets/icon/icon.jpg"
+  image_path: "assets/icons/icon.jpg"
   adaptive_icon_background: "#FFFFFF00"
-  adaptive_icon_foreground: "assets/icon/icon.jpg"
+  adaptive_icon_foreground: "assets/icons/icon.jpg"
