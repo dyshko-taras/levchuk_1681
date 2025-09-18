@@ -7,9 +7,9 @@ part of 'team_ref.dart';
 // **************************************************************************
 
 TeamRef _$TeamRefFromJson(Map<String, dynamic> json) => TeamRef(
-  id: (json['id'] as num).toInt(),
-  name: json['name'] as String,
-  logo: json['logo'] as String?,
+  id: (_readTeamId(json, 'id') as num).toInt(),
+  name: _readTeamName(json, 'name') as String,
+  logo: _readTeamLogo(json, 'logo') as String?,
 );
 
 Map<String, dynamic> _$TeamRefToJson(TeamRef instance) => <String, dynamic>{

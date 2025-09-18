@@ -1,76 +1,98 @@
 // path: lib/ui/theme/app_theme.dart
-import 'package:FlutterApp/constants/constants.dart';
-import 'package:FlutterApp/ui/theme/app_colors.dart';
-import 'package:FlutterApp/ui/theme/app_fonts.dart';
+import 'package:FlutterApp/constants/app_radius.dart';
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
+import 'app_fonts.dart';
 
-/// Single Material 3 dark theme wired to DS tokens (colors & typography).
-/// Implementation Plan requires Material 3 with dark mode and component themes.
-/// :contentReference[oaicite:11]{index=11}
-final ThemeData appTheme = ThemeData(
-  useMaterial3: true,
-  brightness: Brightness.dark,
-  colorScheme: AppColors.scheme,
-  scaffoldBackgroundColor: AppColors.scaffoldBg,
-  canvasColor: AppColors.surface,
-  visualDensity: VisualDensity.adaptivePlatformDensity,
-  textTheme: AppFonts.buildTextTheme(
-    AppColors.textWhite,
-    muted: AppColors.textGray,
-  ),
-  appBarTheme: const AppBarTheme(
-    elevation: 0,
-    backgroundColor: AppColors.primaryBlack,
-    foregroundColor: AppColors.textWhite,
-    centerTitle: true,
-  ),
-  cardTheme: const CardThemeData(
-    color: AppColors.cardDark,
-    elevation: 2,
-    margin: EdgeInsets.zero,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(15)), // DS: cards 15px
-    ),
-  ),
-  dividerTheme: const DividerThemeData(
-    color: AppColors.borderGray,
-    thickness: 1,
-  ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.successGreen, // DS primary button
-      foregroundColor: AppColors.onPrimary, // black text on green
-      minimumSize: const Size.fromHeight(AppSizes.buttonHeightMd),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(6)), // DS: buttons 6px
+/// Centralized Material 3 dark theme built from tokens.
+@immutable
+final class AppTheme {
+  const AppTheme._();
+
+  static ThemeData dark() {
+    const scheme = ColorScheme.dark(
+      primary: AppColors.successGreen,
+      onPrimary: AppColors.primaryBlack,
+      secondary: AppColors.accentBlue,
+      onSecondary: AppColors.primaryBlack,
+      error: AppColors.errorRed,
+      onError: AppColors.primaryBlack,
+      surface: AppColors.primaryBlack,
+      onSurface: AppColors.textWhite,
+      outline: AppColors.borderGray,
+      surfaceContainerHighest: AppColors.cardDark,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: scheme,
+      scaffoldBackgroundColor: AppColors.primaryBlack,
+      dialogBackgroundColor: AppColors.cardDark,
+      cardTheme: const CardThemeData(
+        color: AppColors.cardDark,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.cardLg),
       ),
-    ),
-  ),
-  outlinedButtonTheme: OutlinedButtonThemeData(
-    style: OutlinedButton.styleFrom(
-      side: const BorderSide(color: AppColors.borderGray),
-      foregroundColor: AppColors.textWhite,
-      minimumSize: const Size.fromHeight(AppSizes.buttonHeightSm),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(6)),
+      dividerTheme: const DividerThemeData(color: AppColors.borderGray),
+      textTheme: AppFonts.textTheme(),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.primaryBlack,
+        foregroundColor: AppColors.textWhite,
+        elevation: 0,
+        centerTitle: false,
       ),
-    ),
-  ),
-  inputDecorationTheme: const InputDecorationTheme(
-    filled: true,
-    fillColor: AppColors.cardDark,
-    enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: AppColors.borderGray),
-      borderRadius: BorderRadius.all(Radius.circular(6)),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: AppColors.successGreen),
-      borderRadius: BorderRadius.all(Radius.circular(6)),
-    ),
-    hintStyle: TextStyle(color: AppColors.textGray),
-  ),
-  iconTheme: const IconThemeData(
-    color: AppColors.textWhite,
-    size: AppSizes.iconMd,
-  ),
-);
+      filledButtonTheme: FilledButtonThemeData(
+        style: ButtonStyle(
+          minimumSize: MaterialStateProperty.all<Size>(const Size(64, 44)),
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (states) => states.contains(MaterialState.disabled)
+                ? AppColors.borderGray
+                : AppColors.successGreen,
+          ),
+          foregroundColor: MaterialStateProperty.all<Color>(
+            AppColors.primaryBlack,
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            const RoundedRectangleBorder(borderRadius: AppRadius.btnLg),
+          ),
+        ),
+      ),
+      inputDecorationTheme: const InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.cardDark,
+        border: OutlineInputBorder(
+          borderRadius: AppRadius.cardLg,
+          borderSide: BorderSide(color: AppColors.borderGray),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: AppRadius.cardLg,
+          borderSide: BorderSide(color: AppColors.borderGray),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: AppRadius.cardLg,
+          borderSide: BorderSide(color: AppColors.successGreen, width: 1.5),
+        ),
+      ),
+      snackBarTheme: const SnackBarThemeData(
+        backgroundColor: AppColors.cardDark,
+        contentTextStyle: TextStyle(color: AppColors.textWhite),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.cardLg),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: AppColors.successGreen,
+      ),
+      listTileTheme: const ListTileThemeData(
+        iconColor: AppColors.textGray,
+        textColor: AppColors.textWhite,
+      ),
+      iconTheme: const IconThemeData(color: AppColors.textGray),
+      tabBarTheme: const TabBarThemeData(
+        labelColor: AppColors.textWhite,
+        unselectedLabelColor: AppColors.textGray,
+        indicatorColor: AppColors.successGreen,
+      ),
+    );
+  }
+}

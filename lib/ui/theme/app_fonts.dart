@@ -1,72 +1,58 @@
 // path: lib/ui/theme/app_fonts.dart
+import 'package:FlutterApp/ui/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Inter typography roles and Material TextTheme mapping.
-/// DS: Inter weights 400–900; role sizes Hero→Micro per visual_style.md.
-/// :contentReference[oaicite:9]{index=9} :contentReference[oaicite:10]{index=10}
-class AppFonts {
-  AppFonts._();
+/// Inter font family setup & role-based text styles.
+/// Sizes per Visual Style; weights per usage guidance.
+@immutable
+final class AppFonts {
+  const AppFonts._();
 
-  static const String family =
-      'Inter'; // registered in Phase 3 (fonts) per plan.
+  static const String family = 'Inter';
 
-  // Role styles (sizes from DS; weights mapped as comments)
-  static const TextStyle hero = TextStyle(
-    fontFamily: family,
-    fontSize: 27,
-    fontWeight: FontWeight.w900,
-  ); // Black 900
-  static const TextStyle title = TextStyle(
-    fontFamily: family,
-    fontSize: 18,
-    fontWeight: FontWeight.w800,
-  ); // ExtraBold 800
-  static const TextStyle heading = TextStyle(
-    fontFamily: family,
-    fontSize: 16.5,
-    fontWeight: FontWeight.w700,
-  ); // Bold 700
-  static const TextStyle subheading = TextStyle(
-    fontFamily: family,
-    fontSize: 15,
-    fontWeight: FontWeight.w600,
-  ); // SemiBold 600
-  static const TextStyle body = TextStyle(
-    fontFamily: family,
-    fontSize: 13.5,
-    fontWeight: FontWeight.w400,
-  ); // Regular 400
-  static const TextStyle caption = TextStyle(
-    fontFamily: family,
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-  ); // Medium 500
-  static const TextStyle small = TextStyle(
-    fontFamily: family,
-    fontSize: 10.5,
-    fontWeight: FontWeight.w500,
-  ); // Medium 500
-  static const TextStyle micro = TextStyle(
-    fontFamily: family,
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-  ); // Medium 500
+  // Role sizes (dp)
+  static const double hero = 27;
+  static const double title = 18;
+  static const double heading = 16.5;
+  static const double subheading = 15;
+  static const double body = 13.5;
+  static const double caption = 12;
+  static const double small = 10.5;
+  static const double micro = 9;
 
-  /// Map DS roles to Material 3 `TextTheme` slots.
-  static TextTheme buildTextTheme(Color color, {Color? muted}) {
-    final on = color;
-    final dim = muted ?? color.withOpacity(0.8);
+  // Role styles (weights mapped to typical usage)
+  static TextStyle _base(double size, FontWeight weight) => TextStyle(
+    fontFamily: family,
+    fontSize: size,
+    fontWeight: weight,
+    height: 1.25,
+    color: AppColors.textWhite,
+    leadingDistribution: TextLeadingDistribution.even,
+  );
+
+  static TextStyle heroBold() => _base(hero, FontWeight.w800);
+  static TextStyle titleBold() => _base(title, FontWeight.w700);
+  static TextStyle headingSemi() => _base(heading, FontWeight.w600);
+  static TextStyle subheadingMedium() => _base(subheading, FontWeight.w500);
+  static TextStyle bodyRegular() => _base(body, FontWeight.w400);
+  static TextStyle captionRegular() => _base(caption, FontWeight.w400);
+  static TextStyle smallMedium() => _base(small, FontWeight.w500);
+  static TextStyle microMedium() => _base(micro, FontWeight.w500);
+
+  /// Builds a Material TextTheme mapping roles → M3 slots.
+  static TextTheme textTheme() {
     return TextTheme(
-      displaySmall: hero.copyWith(color: on),
-      titleLarge: title.copyWith(color: on),
-      titleMedium: heading.copyWith(color: on),
-      titleSmall: subheading.copyWith(color: on),
-      bodyLarge: body.copyWith(color: on),
-      bodyMedium: body.copyWith(color: on),
-      bodySmall: caption.copyWith(color: dim),
-      labelLarge: subheading.copyWith(color: on),
-      labelMedium: small.copyWith(color: dim),
-      labelSmall: micro.copyWith(color: dim),
+      displayLarge: heroBold(), // prominent hero/metrics
+      headlineSmall: titleBold(),
+      titleMedium: headingSemi(),
+      titleSmall: subheadingMedium(),
+      bodyMedium: bodyRegular(),
+      bodySmall: captionRegular(),
+      labelMedium: smallMedium(),
+      labelSmall: microMedium(),
+    ).apply(
+      bodyColor: AppColors.textWhite,
+      displayColor: AppColors.textWhite,
     );
   }
 }

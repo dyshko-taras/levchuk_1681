@@ -7,12 +7,12 @@ part of 'league.dart';
 // **************************************************************************
 
 League _$LeagueFromJson(Map<String, dynamic> json) => League(
-  id: (json['id'] as num).toInt(),
-  name: json['name'] as String,
-  country: json['country'] as String?,
-  season: (json['season'] as num?)?.toInt(),
-  type: json['type'] as String?,
-  logo: json['logo'] as String?,
+  id: (_readLeagueId(json, 'id') as num).toInt(),
+  name: _readLeagueName(json, 'name') as String,
+  country: _readLeagueCountry(json, 'country') as String?,
+  season: (_readLeagueSeason(json, 'season') as num?)?.toInt(),
+  type: _readLeagueType(json, 'type') as String?,
+  logo: _readLeagueLogo(json, 'logo') as String?,
 );
 
 Map<String, dynamic> _$LeagueToJson(League instance) => <String, dynamic>{

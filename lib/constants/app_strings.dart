@@ -1,38 +1,24 @@
-class AppStrings {
-  AppStrings._();
+// path: lib/constants/app_strings.dart
+// Centralized app strings (no hardcoded UI text elsewhere).
+import 'package:flutter/foundation.dart';
 
-  // App
-  static const String appName = 'Football Predictor';
+@immutable
+final class AppStrings {
+  const AppStrings._();
 
-  // Global UI
-  static const String back = 'Back';
+  // Common
+  static const String appTitle = 'Football Predictor';
   static const String retry = 'Retry';
-  static const String cancel = 'Cancel';
-  static const String save = 'Save';
-  static const String delete = 'Delete';
+  static const String loading = 'Loading...';
 
-  // Splash / Welcome
-  static const String splashTagline = 'Football in your hands';
-  static const String welcomeTitle = 'Welcome';
-  static const String welcomeSubtitle =
-      'Track fixtures, make picks, and learn from your trends.';
-  static const String getStarted = 'Get Started';
+  // Splash
+  static const String splashEnter = 'Enter';
 
-  // Tabs
-  static const String tabMatches = 'Matches';
-  static const String tabStats = 'Statistics';
-  static const String tabFavorites = 'Favorites';
-  static const String tabProfile = 'Profile';
-
-  // Journal (from PRD acceptance copy)
-  static const String journalTitle = 'PREDICTION JOURNAL';
-  static const String dailySummary = 'Daily summary';
-  static const String metricTotal = 'Total';
-  static const String metricCorrect = 'Correct';
-  static const String metricMissed = 'Missed';
-  static const String metricAvgOdds = 'Avg odds';
-
-  // Misc headings
-  static const String matchScheduleTitle = 'MATCH SCHEDULE';
-  static const String achievementsTitle = 'ACHIEVEMENTS';
+  // Matches Today
+  static const String matchesTodayTitle = 'Matches';
+  static const String matchesEmpty = 'No matches found for today.';
+  static const String matchesLoadHint =
+      'Tap to load today’s fixtures.\n(Requires API key & codegen)';
+  static const String matchesErrorTitle = 'Couldn’t load matches';
+  static const String matchesPullToRefresh = 'Pull to refresh';
 }

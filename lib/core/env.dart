@@ -1,24 +1,24 @@
-class Env {
-  Env._();
+// path: lib/core/env.dart
+// Environment & base configuration (no I/O here)
+import 'package:flutter/foundation.dart';
 
-  /// True when running a non-release build.
-  static const bool isDebug = bool.fromEnvironment('dart.vm.product') == false;
+/// App-wide environment flags and configuration.
+/// Values here are read by Endpoints and other low-level services.
+@immutable
+final class Env {
+  const Env._();
 
-  /// Compile-time flavor gates (set via --dart-define).
-  static const String flavor = String.fromEnvironment(
-    'FLAVOR',
-    defaultValue: 'dev',
+  /// Whether this build is production.
+  static const bool isProd = bool.fromEnvironment(
+    'IS_PROD',
+    defaultValue: true,
   );
 
-  static bool get isProd => flavor.toLowerCase() == 'prod';
-  static bool get isDev => !isProd;
+  /// API base URL (from user confirmation).
+  /// PRD/Plan: Network Layer → Base & endpoints.
+  static const String apiBaseUrl = 'https://v3.football.api-sports.io';
 
-  /// Feature flags (toggled via --dart-define or code during experiments).
-  static const bool enableExperimentalCharts = bool.fromEnvironment(
-    'FF_EXPERIMENTAL_CHARTS',
-  );
-
-  static const bool enableInsightsBackgroundRecompute = bool.fromEnvironment(
-    'FF_INSIGHTS_BG_RECOMPUTE',
-  );
+  /// Default timezone for business logic.
+  /// PRD meta: Europe/Kyiv.
+  static const String tz = 'Europe/Kyiv';
 }

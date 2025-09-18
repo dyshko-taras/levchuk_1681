@@ -1,25 +1,20 @@
-class AppConfig {
-  AppConfig._();
+import 'package:flutter/foundation.dart';
 
-  /// API-Sports base URL (v3).
-  static const String apiBaseUrl = 'https://v3.football.api-sports.io';
+@immutable
+final class AppConfig {
+  const AppConfig._();
 
-  /// Default business timezone for all API requests.
-  static const String defaultTimezone = 'Europe/Kyiv';
-
-  /// API key from build-time environment (never hardcode).
-  /// Pass with: --dart-define=API_KEY=xxxxx
+  /// API-Sports key (from PRD) injected via --dart-define.
+  /// PRD headers require: x-apisports-key, accept: application/json.
   static const String apiKey = String.fromEnvironment(
     'API_KEY',
-    defaultValue: 'a9b8c2c99b6c3659a0b139caf6b23d6b',//TODO change
+    defaultValue: 'a9b8c2c99b6c3659a0b139caf6b23d6b', //TODO change
   );
 
-  /// Required default headers for API requests.
-  static Map<String, String> get defaultHeaders => <String, String>{
-    'x-apisports-key': apiKey,
+  /// Common HTTP headers for API-Sports.
+  static Map<String, String> get apiHeaders => <String, String>{
     'accept': 'application/json',
+    if (apiKey.isNotEmpty) 'x-apisports-key': apiKey,
+    'content-type': 'application/json',
   };
-
-  /// Whether API key is present (basic guard for early boot).
-  static bool get hasApiKey => apiKey.isNotEmpty;
 }

@@ -31,6 +31,9 @@ class AppSizes {
   static const double strokeThin = 1;
   static const double strokeThick = 2;
 
+  // Specialized heights
+  static const double segmentedTabHeaderHeight = 60;
+
   // Elevation steps (kept here to avoid hardcoding if using Material3 shadows elsewhere)
   static const double elevationLow = 1;
   static const double elevationMd = 3;

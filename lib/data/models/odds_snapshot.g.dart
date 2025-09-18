@@ -7,11 +7,11 @@ part of 'odds_snapshot.dart';
 // **************************************************************************
 
 OddsSnapshot _$OddsSnapshotFromJson(Map<String, dynamic> json) => OddsSnapshot(
-  fixtureId: (json['fixtureId'] as num).toInt(),
-  home: (json['home'] as num).toDouble(),
-  draw: (json['draw'] as num).toDouble(),
-  away: (json['away'] as num).toDouble(),
-  ts: DateTime.parse(json['ts'] as String),
+  fixtureId: (_readFixtureId(json, 'fixtureId') as num).toInt(),
+  home: (_readHomeOdd(json, 'home') as num).toDouble(),
+  draw: (_readDrawOdd(json, 'draw') as num).toDouble(),
+  away: (_readAwayOdd(json, 'away') as num).toDouble(),
+  ts: DateTime.parse(_readTimestamp(json, 'ts') as String),
 );
 
 Map<String, dynamic> _$OddsSnapshotToJson(OddsSnapshot instance) =>

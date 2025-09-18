@@ -13,7 +13,7 @@ class AppImages {
   static const String welcomeHero = 'assets/images/welcome_hero.webp';
 
   // Empty states / placeholders
-  static const String emptyMatches = 'assets/images/empty_matches.webp';
+  static const String emptyMatches = 'assets/images/empty_matches.jpg';
   static const String emptyFavoritesStar =
       'assets/images/empty_favorites_star.webp';
   static const String emptyPredictions = 'assets/images/empty_predictions.webp';
