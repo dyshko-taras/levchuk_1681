@@ -2,6 +2,7 @@
 import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_routes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
+import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/data/models/fixture.dart';
 import 'package:FlutterApp/data/models/prediction.dart';
 import 'package:FlutterApp/providers/matches_provider.dart';
@@ -18,42 +19,54 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 const List<FilterOption<int>> _leagueOptions = <FilterOption<int>>[
-  FilterOption(value: 39, label: 'Premier League'),
-  FilterOption(value: 140, label: 'La Liga'),
-  FilterOption(value: 78, label: 'Bundesliga'),
-  FilterOption(value: 2, label: 'UCL'),
-  FilterOption(value: 135, label: 'Serie A'),
-  FilterOption(value: 61, label: 'Ligue 1'),
+  FilterOption(value: 39, label: AppStrings.leaguePremierLeague),
+  FilterOption(value: 140, label: AppStrings.leagueLaLiga),
+  FilterOption(value: 78, label: AppStrings.leagueBundesliga),
+  FilterOption(value: 2, label: AppStrings.leagueUcl),
+  FilterOption(value: 135, label: AppStrings.leagueSerieA),
+  FilterOption(value: 61, label: AppStrings.leagueLigue1),
 ];
 
 const Set<int> _allowedLeagueIds = <int>{39, 140, 78, 2, 135, 61};
 
 const List<FilterOption<String>> _countryOptions = <FilterOption<String>>[
-  FilterOption(value: 'England', label: 'England'),
-  FilterOption(value: 'Spain', label: 'Spain'),
-  FilterOption(value: 'Germany', label: 'Germany'),
-  FilterOption(value: 'France', label: 'France'),
-  FilterOption(value: 'Italy', label: 'Italy'),
+  FilterOption(
+    value: AppStrings.countryEngland,
+    label: AppStrings.countryEngland,
+  ),
+  FilterOption(value: AppStrings.countrySpain, label: AppStrings.countrySpain),
+  FilterOption(
+    value: AppStrings.countryGermany,
+    label: AppStrings.countryGermany,
+  ),
+  FilterOption(
+    value: AppStrings.countryFrance,
+    label: AppStrings.countryFrance,
+  ),
+  FilterOption(value: AppStrings.countryItaly, label: AppStrings.countryItaly),
+  FilterOption(
+    value: AppStrings.countryUkraine,
+    label: AppStrings.countryUkraine,
+  ),
 ];
 
 const Set<String> _allowedCountryValues = <String>{
-  'England',
-  'Spain',
-  'Germany',
-  'France',
-  'Italy',
+  AppStrings.countryEngland,
+  AppStrings.countrySpain,
+  AppStrings.countryGermany,
+  AppStrings.countryFrance,
+  AppStrings.countryItaly,
+  AppStrings.countryUkraine,
 };
 
 class MatchSchedulePage extends StatelessWidget {
   const MatchSchedulePage({super.key});
-
   @override
   Widget build(BuildContext context) => const _MatchScheduleView();
 }
 
 class _MatchScheduleView extends StatefulWidget {
   const _MatchScheduleView();
-
   @override
   State<_MatchScheduleView> createState() => _MatchScheduleViewState();
 }
@@ -63,7 +76,6 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
   Widget build(BuildContext context) {
     final matchesProvider = context.watch<MatchesProvider>();
     final state = matchesProvider.state;
-
     final slivers = <Widget>[
       SliverPadding(
         padding: Insets.allLg,
@@ -77,7 +89,6 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
         ),
       ),
     ];
-
     if (state.isLoading) {
       slivers.add(
         const SliverFillRemaining(
@@ -125,7 +136,6 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
         ),
       );
     }
-
     return RefreshIndicator(
       onRefresh: matchesProvider.refresh,
       child: SafeArea(
@@ -140,12 +150,9 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
   ) async {
     const leagues = _leagueOptions;
     const countries = _countryOptions;
-
     final statusOptions = provider.availableStatuses.toSet();
     final statuses = statusOptions.toList()..sort((a, b) => a.compareTo(b));
-
     final filterState = provider.filters;
-
     final initial = ScheduleFilterValue(
       leagues: filterState.leagueIds.where(_allowedLeagueIds.contains).toSet(),
       countries: filterState.countries
@@ -154,7 +161,6 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
       statuses: filterState.statuses.where(statusOptions.contains).toSet(),
       favoritesOnly: filterState.favoritesOnly,
     );
-
     final result = await showScheduleFiltersSheet(
       context: context,
       initialValue: initial,
@@ -164,7 +170,6 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
           .map((status) => FilterOption<String>(value: status, label: status))
           .toList(),
     );
-
     if (result != null) {
       provider.updateFilters(
         MatchesFilters(
@@ -189,30 +194,38 @@ class _Header extends StatelessWidget {
     required this.onFilterTap,
     required this.filtersActive,
   });
-
   final MatchesState state;
   final ValueChanged<String> onDaySelected;
   final VoidCallback onFilterTap;
   final bool filtersActive;
-
   @override
   Widget build(BuildContext context) {
-    final filterLabel = filtersActive ? 'Filter (Active)' : 'Filter';
-
+    final filterLabel = filtersActive
+        ? AppStrings.matchScheduleFilterActive
+        : AppStrings.matchScheduleFilter;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const AppBarActions(
-          title: 'MATCH SCHEDULE',
+          title: AppStrings.matchScheduleTitle,
           showLeft: false,
           showRight: false,
         ),
         Gaps.hMd,
         SegmentedTabs(
           items: const [
-            SegmentedTabItem(id: 'yesterday', label: 'Yesterday'),
-            SegmentedTabItem(id: 'today', label: 'Today'),
-            SegmentedTabItem(id: 'tomorrow', label: 'Tomorrow'),
+            SegmentedTabItem(
+              id: 'yesterday',
+              label: AppStrings.matchScheduleSegmentYesterday,
+            ),
+            SegmentedTabItem(
+              id: 'today',
+              label: AppStrings.matchScheduleSegmentToday,
+            ),
+            SegmentedTabItem(
+              id: 'tomorrow',
+              label: AppStrings.matchScheduleSegmentTomorrow,
+            ),
           ],
           selectedId: state.selectedDayId,
           onChange: onDaySelected,
@@ -247,7 +260,6 @@ MatchCardConfig _buildConfig(
   final state = _mapStatus(fixture.status);
   final userPick = _mapUserPick(prediction);
   final isFavorite = provider.isFavorite(fixture.fixtureId);
-
   return MatchCardConfig(
     match: fixture,
     context: MatchCardContext.schedule,
@@ -264,7 +276,6 @@ MatchCardState _mapStatus(String status) {
   final normalized = status.toUpperCase();
   const finished = {'FT', 'AET', 'PEN'};
   const live = {'1H', '2H', 'ET', 'P', 'LIVE'};
-
   if (finished.contains(normalized)) {
     return MatchCardState.finished;
   }

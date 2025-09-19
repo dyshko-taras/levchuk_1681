@@ -25,7 +25,7 @@ abstract final class AppIcons {
   static const String actionClose = 'assets/icons/action_close.svg';
 
   // Favorites & domain
-  static const String star = 'assets/icons/star.svg';
+  static const String star = 'assets/icons/star.svg'; 
   static const String starFilled = 'assets/icons/star_filled.svg';
   static const String team = 'assets/icons/team.svg';
   static const String match = 'assets/icons/match.svg';

@@ -1,10 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_radius.dart';
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
+import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class AppBarActions extends StatelessWidget {
   const AppBarActions({
@@ -49,7 +51,7 @@ class AppBarActions extends StatelessWidget {
           if (_shouldShowLeft)
             _AppBarIconButton(
               asset: effectiveLeftIcon,
-              tooltip: 'Back',
+              tooltip: AppStrings.appBarBackTooltip,
               onPressed: onLeft,
             ),
           Gaps.wSm,
@@ -68,7 +70,7 @@ class AppBarActions extends StatelessWidget {
           if (showRight)
             _AppBarIconButton(
               asset: effectiveRightIcon,
-              tooltip: 'Action',
+              tooltip: AppStrings.appBarActionTooltip,
               onPressed: onRight,
             )
           else

@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-
-import 'package:FlutterApp/ui/theme/app_colors.dart';
 import 'package:FlutterApp/constants/app_radius.dart';
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
+import 'package:FlutterApp/constants/app_strings.dart';
+import 'package:FlutterApp/ui/theme/app_colors.dart';
 import 'package:FlutterApp/ui/widgets/buttons/primary_button.dart';
+import 'package:flutter/material.dart';
 
 class ScheduleFilterValue {
   const ScheduleFilterValue({
@@ -53,8 +53,10 @@ Future<ScheduleFilterValue?> showScheduleFiltersSheet({
   return showModalBottomSheet<ScheduleFilterValue>(
     context: context,
     useRootNavigator: true,
+    isScrollControlled: true,
     backgroundColor: AppColors.primaryBlack,
     builder: (ctx) {
+      // ВАЖЛИВО: без FractionallySizedBox — висота = мінімально необхідна
       return _ScheduleFiltersSheet(
         initialValue: initialValue,
         leagues: leagues,
@@ -83,10 +85,20 @@ class _ScheduleFiltersSheet extends StatefulWidget {
 }
 
 class _ScheduleFiltersSheetState extends State<_ScheduleFiltersSheet> {
-  late Set<int> _selectedLeagues = widget.initialValue.leagues.toSet();
-  late Set<String> _selectedCountries = widget.initialValue.countries.toSet();
-  late Set<String> _selectedStatuses = widget.initialValue.statuses.toSet();
-  late bool _favoritesOnly = widget.initialValue.favoritesOnly;
+  late Set<int> _selectedLeagues;
+  late Set<String> _selectedCountries;
+  late Set<String> _selectedStatuses;
+  late bool _favoritesOnly;
+
+  @override
+  void initState() {
+    super.initState();
+    final initial = widget.initialValue;
+    _selectedLeagues = initial.leagues.toSet();
+    _selectedCountries = initial.countries.toSet();
+    _selectedStatuses = initial.statuses.toSet();
+    _favoritesOnly = initial.favoritesOnly;
+  }
 
   void _toggleLeague(int value) {
     setState(() {
@@ -145,25 +157,36 @@ class _ScheduleFiltersSheetState extends State<_ScheduleFiltersSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final padding = EdgeInsets.fromLTRB(
+      AppSpacing.lg,
+      AppSpacing.lg,
+      AppSpacing.lg,
+      AppSpacing.lg + bottomInset,
+    );
+
     return SafeArea(
-      child: Padding(
-        padding: Insets.allLg,
+      child: SingleChildScrollView(
+        padding: padding,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min, // ключ до мінімальної висоти
           children: [
             Center(
               child: Container(
                 width: 48,
                 height: 4,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.borderGray,
                   borderRadius: AppRadius.chipRadius,
                 ),
               ),
             ),
             Gaps.hLg,
-            Text('Leagues', style: theme.textTheme.titleMedium),
+            Text(
+              AppStrings.matchScheduleFilterSectionLeagues,
+              style: theme.textTheme.titleMedium,
+            ),
             Gaps.hSm,
             _ChipsWrap<int>(
               options: widget.leagues,
@@ -171,7 +194,10 @@ class _ScheduleFiltersSheetState extends State<_ScheduleFiltersSheet> {
               onToggle: _toggleLeague,
             ),
             Gaps.hLg,
-            Text('Country', style: theme.textTheme.titleMedium),
+            Text(
+              AppStrings.matchScheduleFilterSectionCountry,
+              style: theme.textTheme.titleMedium,
+            ),
             Gaps.hSm,
             _ChipsWrap<String>(
               options: widget.countries,
@@ -180,7 +206,10 @@ class _ScheduleFiltersSheetState extends State<_ScheduleFiltersSheet> {
             ),
             if (widget.statuses.isNotEmpty) ...[
               Gaps.hLg,
-              Text('Status', style: theme.textTheme.titleMedium),
+              Text(
+                AppStrings.matchScheduleFilterSectionStatus,
+                style: theme.textTheme.titleMedium,
+              ),
               Gaps.hSm,
               _ChipsWrap<String>(
                 options: widget.statuses,
@@ -197,17 +226,12 @@ class _ScheduleFiltersSheetState extends State<_ScheduleFiltersSheet> {
             Row(
               children: [
                 Expanded(
-                  child: _ResetButton(
-                    onTap: () {
-                      _handleReset();
-                      Navigator.of(context).pop(const ScheduleFilterValue());
-                    },
-                  ),
+                  child: _ResetButton(onTap: _handleReset),
                 ),
                 Gaps.wSm,
                 Expanded(
                   child: PrimaryButton(
-                    label: 'Apply',
+                    label: AppStrings.matchScheduleFilterApply,
                     onPressed: _handleApply,
                   ),
                 ),
@@ -275,7 +299,7 @@ class _FilterChip<T> extends StatelessWidget {
         decoration: BoxDecoration(
           color: bg,
           borderRadius: AppRadius.chipRadius,
-          border: Border.all(color: borderColor, width: AppSizes.strokeThin),
+          border: Border.all(color: borderColor),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -308,15 +332,15 @@ class _FavoritesToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = AppColors.warningYellow;
-    final fg = AppColors.primaryBlack;
+    const bg = AppColors.warningYellow;
+    const fg = AppColors.primaryBlack;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: double.infinity,
         padding: Insets.vSm.add(Insets.hMd),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: bg,
           borderRadius: AppRadius.btnLg,
         ),
@@ -330,7 +354,7 @@ class _FavoritesToggle extends StatelessWidget {
             ),
             Gaps.wSm,
             Text(
-              'Show only favorites',
+              AppStrings.matchScheduleFilterShowFavorites,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: fg,
                 fontWeight: FontWeight.w600,
@@ -358,9 +382,9 @@ class _ResetButton extends StatelessWidget {
         child: InkWell(
           borderRadius: AppRadius.btnLg,
           onTap: onTap,
-          child: Center( 
+          child: Center(
             child: Text(
-              'Reset',
+              AppStrings.matchScheduleFilterReset,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: AppColors.primaryBlack,
                 fontWeight: FontWeight.w600,

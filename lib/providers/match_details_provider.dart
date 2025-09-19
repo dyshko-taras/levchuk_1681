@@ -313,6 +313,51 @@ class MatchDetailsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> applyFavoritesSelection(
+    ({bool league, bool homeTeam, bool awayTeam, bool match}) selection,
+  ) async {
+    final fixture = state.fixture;
+    if (fixture == null) {
+      return;
+    }
+
+    if (selection.league) {
+      await _ensureFavorite(FavoriteType.league, fixture.leagueId);
+    }
+    if (selection.homeTeam) {
+      await _ensureFavorite(FavoriteType.team, fixture.homeTeam.id);
+    }
+    if (selection.awayTeam) {
+      await _ensureFavorite(FavoriteType.team, fixture.awayTeam.id);
+    }
+
+    var isFavorite = state.isFavorite;
+    if (selection.match) {
+      await _ensureFavorite(FavoriteType.match, fixture.fixtureId);
+      isFavorite = true;
+    }
+
+    if (isFavorite != state.isFavorite) {
+      _state = _state.copyWith(isFavorite: isFavorite);
+      notifyListeners();
+    }
+  }
+
+  Future<void> _ensureFavorite(FavoriteType type, int refId) async {
+    final exists = await _favoritesRepository.isFavorite(type, refId);
+    if (exists) {
+      return;
+    }
+    await _favoritesRepository.addFavorite(
+      Favorite(
+        id: 0,
+        type: type,
+        refId: refId,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
   double? _oddsForPick(String pick) {
     final snapshot = _cachedOdds;
     if (snapshot == null) return null;
