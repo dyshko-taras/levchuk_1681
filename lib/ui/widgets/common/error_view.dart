@@ -1,9 +1,7 @@
 // path: lib/ui/widgets/common/error_view.dart
 // Reusable error-state widget with message and optional retry.
-import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class ErrorView extends StatelessWidget {
   const ErrorView({
@@ -25,7 +23,6 @@ class ErrorView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(AppIcons.statusError),
           Gaps.hMd,
           Text(
             'Something went wrong',

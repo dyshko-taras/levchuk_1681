@@ -1,6 +1,7 @@
-// path: lib/ui/pages/splash_page.dart
+﻿// path: lib/ui/pages/splash_page.dart
 // Splash page with minimum display time and bootstrap routing logic.
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:FlutterApp/constants/app_durations.dart';
 import 'package:FlutterApp/constants/app_routes.dart';
@@ -32,6 +33,7 @@ class _SplashPageState extends State<SplashPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _bootstrap.ensureInitialized();
+      log('splash_shown', name: 'analytics');
     });
     _timer = Timer(AppDurations.splashMin, () {
       _timerElapsed = true;
@@ -55,11 +57,12 @@ class _SplashPageState extends State<SplashPage> {
     final nextRoute = _bootstrap.isFirstRun
         ? AppRoutes.welcome
         : AppRoutes.matches;
+    log('splash_routed:$nextRoute', name: 'analytics');
     _navigated = true;
     Navigator.of(context).pushReplacementNamed(nextRoute);
   }
 
-  void _onRetry() {
+  void _restartBootstrap() {
     if (_bootstrap.isLoading) return;
     _timerElapsed = false;
     _timer?.cancel();
@@ -73,57 +76,88 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     final bootstrap = context.watch<AppBootstrapProvider>();
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       body: SafeArea(
         child: Center(
-          child: Padding(
-            padding: Insets.allLg,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  AppStrings.appTitle,
-                  style: textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-                Gaps.hSm,
-                if (bootstrap.error != null) ...[
-                  Text(
-                    AppStrings.splashError,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.error,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Gaps.hSm,
-                  Text(
-                    bootstrap.error!,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.error,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Gaps.hMd,
-                  FilledButton(
-                    onPressed: _onRetry,
-                    child: const Text(AppStrings.retry),
-                  ),
-                ] else ...[
-                  if (bootstrap.isLoading)
-                    const CircularProgressIndicator()
-                  else
-                    Text(
-                      AppStrings.loading,
-                      style: textTheme.bodyMedium,
-                    ),
-                ],
-              ],
-            ),
+          child: AnimatedSwitcher(
+            duration: AppDurations.fast,
+            child: bootstrap.error != null
+                ? _ErrorContent(
+                    message: bootstrap.error!,
+                    onRetry: _restartBootstrap,
+                  )
+                : const _BrandContent(),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _BrandContent extends StatelessWidget {
+  const _BrandContent();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context).textTheme;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(
+          width: 60,
+          height: 60,
+          child: CircularProgressIndicator(),
+        ),
+        Gaps.hLg,
+        Text(
+          AppStrings.appTitle,
+          style: theme.headlineSmall,
+          textAlign: TextAlign.center,
+        ),
+        Gaps.hSm,
+        Text(
+          AppStrings.splashTagline,
+          style: theme.titleMedium,
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+class _ErrorContent extends StatelessWidget {
+  const _ErrorContent({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: Insets.allLg,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            AppStrings.splashError,
+            style: theme.bodyMedium?.copyWith(color: colorScheme.error),
+            textAlign: TextAlign.center,
+          ),
+          Gaps.hSm,
+          Text(
+            message,
+            style: theme.bodySmall?.copyWith(color: colorScheme.error),
+            textAlign: TextAlign.center,
+          ),
+          Gaps.hMd,
+          FilledButton(
+            onPressed: onRetry,
+            child: const Text(AppStrings.retry),
+          ),
+        ],
       ),
     );
   }

@@ -22,11 +22,6 @@ class AppIcons {
   static const String actionBack = 'assets/icons/action_back.svg';
   static const String actionClose = 'assets/icons/action_close.svg';
 
-  // State / Status
-  static const String statusSuccess = 'assets/icons/status_success.svg';
-  static const String statusError = 'assets/icons/status_error.svg';
-  static const String statusPending = 'assets/icons/status_pending.svg';
-
   // Favorites & domain
   static const String star = 'assets/icons/star.svg';
   static const String starFilled = 'assets/icons/star_filled.svg';

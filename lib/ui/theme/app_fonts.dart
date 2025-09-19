@@ -11,7 +11,7 @@ final class AppFonts {
   static const String family = 'Inter';
 
   // Role sizes (dp)
-  static const double hero = 27;
+  static const double hero = 35;
   static const double title = 18;
   static const double heading = 16.5;
   static const double subheading = 15;

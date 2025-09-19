@@ -1,20 +1,18 @@
 // path: lib/data/repositories/matches_repository.dart
 // Repository that orchestrates fixtures between network (Retrofit) and local DB cache.
-import 'package:FlutterApp/data/api/football_service.dart';
+import 'package:FlutterApp/core/env.dart';
+import 'package:FlutterApp/data/api/api_client.dart';
 import 'package:FlutterApp/data/local/database/daos/matches_dao.dart';
 import 'package:FlutterApp/data/models/fixture.dart';
 import 'package:FlutterApp/utils/date_fmt.dart';
 
 class MatchesRepository {
   MatchesRepository({
-    required FootballService api,
     required MatchesDao matchesDao,
     Duration ttl = const Duration(minutes: 3),
-  }) : _api = api,
-       _matchesDao = matchesDao,
+  }) : _matchesDao = matchesDao,
        _ttl = ttl;
 
-  final FootballService _api;
   final MatchesDao _matchesDao;
   final Duration _ttl;
 
@@ -32,10 +30,12 @@ class MatchesRepository {
     if (!shouldRefresh) {
       return cached;
     }
-    final remote = await _api.getFixturesByDate(dateYmd: ymd(day));
-    await _matchesDao.replaceForDate(day, remote);
+    final fixtures = await _fetchFixtures(
+      queryParameters: <String, dynamic>{'date': ymd(day)},
+    );
+    await _matchesDao.replaceForDate(day, fixtures);
     _touch(cacheKey);
-    return remote;
+    return fixtures;
   }
 
   Future<List<Fixture>> getByLeague({
@@ -62,15 +62,17 @@ class MatchesRepository {
     if (!shouldRefresh) {
       return cached;
     }
-    final remote = await _api.getFixturesByLeague(
-      leagueId: leagueId,
-      season: season,
-      dateYmd: date == null ? null : ymd(date),
-      status: status,
+    final fixtures = await _fetchFixtures(
+      queryParameters: <String, dynamic>{
+        'league': leagueId,
+        'season': season,
+        if (date != null) 'date': ymd(date),
+        if (status != null) 'status': status,
+      },
     );
-    await _matchesDao.upsertFixtures(remote, season: season);
+    await _matchesDao.upsertFixtures(fixtures, season: season);
     _touch(cacheKey);
-    return remote;
+    return fixtures;
   }
 
   Future<List<Fixture>> getLive({bool forceRefresh = false}) async {
@@ -81,10 +83,12 @@ class MatchesRepository {
         return cached;
       }
     }
-    final remote = await _api.getLiveFixtures();
-    await _matchesDao.upsertFixtures(remote);
+    final fixtures = await _fetchFixtures(
+      queryParameters: const <String, dynamic>{'live': 'all'},
+    );
+    await _matchesDao.upsertFixtures(fixtures);
     _touch(cacheKey);
-    return remote;
+    return fixtures;
   }
 
   Future<Fixture?> getById(int id, {bool forceRefresh = false}) async {
@@ -95,12 +99,36 @@ class MatchesRepository {
         return cached;
       }
     }
-    final list = await _api.getFixtureById(id: id);
-    if (list.isNotEmpty) {
-      await _matchesDao.upsertFixtures(list);
+    final fixtures = await _fetchFixtures(
+      queryParameters: <String, dynamic>{'id': id},
+    );
+    if (fixtures.isNotEmpty) {
+      await _matchesDao.upsertFixtures(fixtures);
     }
     _touch(cacheKey);
-    return list.isEmpty ? null : list.first;
+    return fixtures.isEmpty ? null : fixtures.first;
+  }
+
+  Future<List<Fixture>> _fetchFixtures({
+    required Map<String, dynamic> queryParameters,
+  }) async {
+    final response = await ApiClient.dio.get<Map<String, dynamic>>(
+      '/fixtures',
+      queryParameters: <String, dynamic>{
+        'timezone': Env.tz,
+        ...queryParameters,
+      },
+    );
+    final data = response.data;
+    if (data == null) {
+      return const <Fixture>[];
+    }
+    final list = data['response'] as List<dynamic>? ?? const <dynamic>[];
+    return list
+        .map(
+          (dynamic json) => Fixture.fromJson(json as Map<String, dynamic>),
+        )
+        .toList();
   }
 
   bool _isExpired(Object key) {

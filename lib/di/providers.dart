@@ -93,11 +93,10 @@ class _AppProvidersState extends State<_AppProviders> {
           create: (_) => AppDatabase(_openConnection()),
           dispose: (_, db) => db.close(),
         ),
-        ProxyProvider2<FootballService, AppDatabase, MatchesRepository>(
-          update: (_, api, db, previous) =>
+        ProxyProvider<AppDatabase, MatchesRepository>(
+          update: (_, db, previous) =>
               previous ??
               MatchesRepository(
-                api: api,
                 matchesDao: db.matchesDao,
               ),
         ),

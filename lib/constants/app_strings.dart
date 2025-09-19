@@ -16,12 +16,14 @@ final class AppStrings {
 
   // Splash
   static const String splashEnter = 'Enter';
+  static const String splashTagline = 'Football in your hands';
   static const String splashError = 'Unable to initialise the app.';
 
   // Welcome
-  static const String welcomeTitle = 'Welcome!';
+  static const String welcomeTitle = 'WELCOME!';
   static const String welcomeSubtitle =
-      'Stay on top of fixtures, predictions, and insights.';
+      'Predict football outcomes, track your results, '
+      'and build your winning strategy';
   static const String welcomeGetStarted = 'Get Started';
 
   // Navigation tabs

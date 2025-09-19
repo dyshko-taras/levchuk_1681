@@ -5,12 +5,8 @@
 class AppImages {
   AppImages._();
 
-  // Backgrounds
-  static const String bgSplash = 'assets/images/bg_splash.webp';
-
   // Brand & common
-  static const String logo = 'assets/images/logo.webp';
-  static const String welcomeHero = 'assets/images/welcome_hero.webp';
+  static const String welcomeHero = 'assets/images/welcome_hero.jpg';
 
   // Empty states / placeholders
   static const String emptyMatches = 'assets/images/empty_matches.jpg';
