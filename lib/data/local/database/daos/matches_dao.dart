@@ -31,6 +31,7 @@ class MatchesDao extends DatabaseAccessor<AppDatabase> with _$MatchesDaoMixin {
         batch.insertAll(
           matchesTable,
           fixtures.map((fixture) => _toCompanion(fixture, season: season)),
+          mode: InsertMode.insertOrReplace,
         );
       });
     });

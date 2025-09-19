@@ -2,7 +2,7 @@
 /// SVG icon path accessors (single source of truth).
 /// Widgets must use AppIcons.* (no raw 'assets/...' strings).
 /// Inventory based on assets_list.md. :contentReference[oaicite:1]{index=1} :contentReference[oaicite:2]{index=2}
-class AppIcons {
+abstract final class AppIcons {
   AppIcons._();
 
   // Navigation
@@ -14,6 +14,8 @@ class AppIcons {
   // Actions
   static const String actionSearch = 'assets/icons/action_search.svg';
   static const String actionFilter = 'assets/icons/action_filter.svg';
+  static const String actionTrendingUp = 'assets/icons/action_trending_up.svg';
+  static const String actionOpenInNew = 'assets/icons/action_open_in_new.svg';
   static const String actionCalendar = 'assets/icons/action_calendar.svg';
   static const String actionRefresh = 'assets/icons/action_refresh.svg';
   static const String actionSettings = 'assets/icons/action_settings.svg';
@@ -25,7 +27,6 @@ class AppIcons {
   // Favorites & domain
   static const String star = 'assets/icons/star.svg';
   static const String starFilled = 'assets/icons/star_filled.svg';
-  static const String leagueBall = 'assets/icons/league_ball.svg';
   static const String team = 'assets/icons/team.svg';
   static const String match = 'assets/icons/match.svg';
 

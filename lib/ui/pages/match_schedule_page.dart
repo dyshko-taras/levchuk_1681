@@ -1,131 +1,101 @@
 // path: lib/ui/pages/match_schedule_page.dart
-// Rebuild per PRD: CustomScrollView with pinned day tabs, counters row, Filter button, and MatchCard list.
 import 'package:FlutterApp/constants/app_icons.dart';
-import 'package:FlutterApp/constants/app_sizes.dart';
+import 'package:FlutterApp/constants/app_routes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
+import 'package:FlutterApp/data/models/fixture.dart';
+import 'package:FlutterApp/data/models/prediction.dart';
 import 'package:FlutterApp/providers/matches_provider.dart';
+import 'package:FlutterApp/ui/widgets/common/app_bar_actions.dart';
 import 'package:FlutterApp/ui/widgets/common/empty_view.dart';
 import 'package:FlutterApp/ui/widgets/common/error_view.dart';
-import 'package:FlutterApp/ui/widgets/matches/day_segmented_tabs.dart';
-import 'package:FlutterApp/ui/widgets/matches/match_card.dart';
-import 'package:FlutterApp/ui/widgets/matches/stat_badge.dart';
+import 'package:FlutterApp/ui/widgets/common/segmented_tabs.dart';
+import 'package:FlutterApp/ui/widgets/match/match_card.dart';
+import 'package:FlutterApp/ui/widgets/match/match_card_config.dart';
+import 'package:FlutterApp/ui/widgets/match/parts/card_cta.dart';
+import 'package:FlutterApp/ui/widgets/schedule/counters_triple.dart';
+import 'package:FlutterApp/ui/widgets/schedule/filters_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+
+const List<FilterOption<int>> _leagueOptions = <FilterOption<int>>[
+  FilterOption(value: 39, label: 'Premier League'),
+  FilterOption(value: 140, label: 'La Liga'),
+  FilterOption(value: 78, label: 'Bundesliga'),
+  FilterOption(value: 2, label: 'UCL'),
+  FilterOption(value: 135, label: 'Serie A'),
+  FilterOption(value: 61, label: 'Ligue 1'),
+];
+
+const Set<int> _allowedLeagueIds = <int>{39, 140, 78, 2, 135, 61};
+
+const List<FilterOption<String>> _countryOptions = <FilterOption<String>>[
+  FilterOption(value: 'England', label: 'England'),
+  FilterOption(value: 'Spain', label: 'Spain'),
+  FilterOption(value: 'Germany', label: 'Germany'),
+  FilterOption(value: 'France', label: 'France'),
+  FilterOption(value: 'Italy', label: 'Italy'),
+];
+
+const Set<String> _allowedCountryValues = <String>{
+  'England',
+  'Spain',
+  'Germany',
+  'France',
+  'Italy',
+};
 
 class MatchSchedulePage extends StatelessWidget {
   const MatchSchedulePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const _Body();
-  }
+  Widget build(BuildContext context) => const _MatchScheduleView();
 }
 
-class _Body extends StatelessWidget {
-  const _Body();
+class _MatchScheduleView extends StatefulWidget {
+  const _MatchScheduleView();
 
   @override
+  State<_MatchScheduleView> createState() => _MatchScheduleViewState();
+}
+
+class _MatchScheduleViewState extends State<_MatchScheduleView> {
+  @override
   Widget build(BuildContext context) {
-    final vm = context.watch<MatchesProvider>();
-    final s = vm.state;
+    final matchesProvider = context.watch<MatchesProvider>();
+    final state = matchesProvider.state;
 
-    Future<void> onRefresh() => vm.refresh();
-
-    // ---- AppBar title per PRD
-    const appBar = SliverAppBar(
-      pinned: true,
-      title: Text('MATCH SCHEDULE'),
-    );
-
-    // ---- Day tabs (pinned header)
-    final dayTabs = SliverPersistentHeader(
-      pinned: true,
-      delegate: _HeaderDelegate(
-        minExtent: AppSizes.segmentedTabHeaderHeight,
-        maxExtent: AppSizes.segmentedTabHeaderHeight,
-        child: Padding(
-          padding: Insets.hMd,
-          child: DaySegmentedTabs(
-            index: s.selectedDayId == 'yesterday'
-                ? 0
-                : s.selectedDayId == 'tomorrow'
-                ? 2
-                : 1,
-            onChanged: (i) {
-              if (i == 0) vm.setRelativeDate(-1);
-              if (i == 1) vm.setRelativeDate(0);
-              if (i == 2) vm.setRelativeDate(1);
-            },
+    final slivers = <Widget>[
+      SliverPadding(
+        padding: Insets.allLg,
+        sliver: SliverToBoxAdapter(
+          child: _Header(
+            state: state,
+            onDaySelected: matchesProvider.selectDay,
+            onFilterTap: () => _openFilters(context, matchesProvider),
+            filtersActive: !state.filters.isEmpty,
           ),
         ),
       ),
-    );
-
-    // ---- Counters
-    final counters = SliverToBoxAdapter(
-      child: Padding(
-        padding: Insets.allMd,
-        child: Row(
-          children: [
-            Expanded(
-              child: StatBadge(value: s.predicted, label: 'Predicted'),
-            ),
-            Gaps.wMd,
-            Expanded(
-              child: StatBadge(value: s.upcoming, label: 'Upcoming'),
-            ),
-            Gaps.wMd,
-            Expanded(
-              child: StatBadge(value: s.completed, label: 'Completed'),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    // ---- Filter Button
-    final filterBtn = SliverToBoxAdapter(
-      child: Padding(
-        padding: Insets.hMd,
-        child: FilledButton.icon(
-          onPressed: () {
-            // Opens filter modal (added earlier in Phase 10); leave action as is.
-            // ignore: discarded_futures
-            // showMatchesFilterModal(context: context, initialDate: s.date);
-          },
-          icon: SvgPicture.asset(AppIcons.actionFilter),
-          label: const Text('Filter'),
-        ),
-      ),
-    );
-
-    // ---- Conditional content
-    final slivers = <Widget>[
-      appBar,
-      dayTabs,
-      counters,
-      filterBtn,
     ];
 
-    if (s.isLoading) {
+    if (state.isLoading) {
       slivers.add(
         const SliverFillRemaining(
           hasScrollBody: false,
           child: Center(child: CircularProgressIndicator()),
         ),
       );
-    } else if (s.error != null) {
+    } else if (state.error != null) {
       slivers.add(
         SliverFillRemaining(
           hasScrollBody: false,
           child: ErrorView(
-            message: s.error!,
-            onRetry: vm.load,
+            message: state.error!,
+            onRetry: matchesProvider.load,
           ),
         ),
       );
-    } else if (s.items.isEmpty) {
+    } else if (state.items.isEmpty) {
       slivers.add(
         const SliverFillRemaining(
           hasScrollBody: false,
@@ -134,43 +104,186 @@ class _Body extends StatelessWidget {
       );
     } else {
       slivers.add(
-        SliverList.separated(
-          itemCount: s.items.length,
-          separatorBuilder: (_, __) => Gaps.hMd,
-          itemBuilder: (context, index) => Padding(
-            padding: Insets.hMd,
-            child: MatchCard(fixture: s.items[index]),
-          ),
+        SliverList.builder(
+          itemCount: state.items.length,
+          itemBuilder: (context, index) {
+            final fixture = state.items[index];
+            final config = _buildConfig(fixture, matchesProvider);
+            return Padding(
+              padding: Insets.hLg.add(
+                const EdgeInsets.only(bottom: AppSpacing.md),
+              ),
+              child: MatchCard(
+                config: config,
+                onOpenMatch: () => _openMatch(context, fixture.fixtureId),
+                onMakePrediction: () => _openMatch(context, fixture.fixtureId),
+                onToggleFavorite: () =>
+                    matchesProvider.toggleFavorite(fixture.fixtureId),
+              ),
+            );
+          },
         ),
       );
     }
 
     return RefreshIndicator(
-      onRefresh: onRefresh,
-      child: CustomScrollView(slivers: slivers),
+      onRefresh: matchesProvider.refresh,
+      child: SafeArea(
+        child: CustomScrollView(slivers: slivers),
+      ),
+    );
+  }
+
+  Future<void> _openFilters(
+    BuildContext context,
+    MatchesProvider provider,
+  ) async {
+    const leagues = _leagueOptions;
+    const countries = _countryOptions;
+
+    final statusOptions = provider.availableStatuses.toSet();
+    final statuses = statusOptions.toList()..sort((a, b) => a.compareTo(b));
+
+    final filterState = provider.filters;
+
+    final initial = ScheduleFilterValue(
+      leagues: filterState.leagueIds.where(_allowedLeagueIds.contains).toSet(),
+      countries: filterState.countries
+          .where(_allowedCountryValues.contains)
+          .toSet(),
+      statuses: filterState.statuses.where(statusOptions.contains).toSet(),
+      favoritesOnly: filterState.favoritesOnly,
+    );
+
+    final result = await showScheduleFiltersSheet(
+      context: context,
+      initialValue: initial,
+      leagues: leagues,
+      countries: countries,
+      statuses: statuses
+          .map((status) => FilterOption<String>(value: status, label: status))
+          .toList(),
+    );
+
+    if (result != null) {
+      provider.updateFilters(
+        MatchesFilters(
+          leagueIds: result.leagues,
+          countries: result.countries,
+          statuses: result.statuses,
+          favoritesOnly: result.favoritesOnly,
+        ),
+      );
+    }
+  }
+
+  void _openMatch(BuildContext context, int fixtureId) {
+    Navigator.of(context).pushNamed(AppRoutes.matchDetails(fixtureId));
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header({
+    required this.state,
+    required this.onDaySelected,
+    required this.onFilterTap,
+    required this.filtersActive,
+  });
+
+  final MatchesState state;
+  final ValueChanged<String> onDaySelected;
+  final VoidCallback onFilterTap;
+  final bool filtersActive;
+
+  @override
+  Widget build(BuildContext context) {
+    final filterLabel = filtersActive ? 'Filter (Active)' : 'Filter';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const AppBarActions(
+          title: 'MATCH SCHEDULE',
+          showLeft: false,
+          showRight: false,
+        ),
+        Gaps.hMd,
+        SegmentedTabs(
+          items: const [
+            SegmentedTabItem(id: 'yesterday', label: 'Yesterday'),
+            SegmentedTabItem(id: 'today', label: 'Today'),
+            SegmentedTabItem(id: 'tomorrow', label: 'Tomorrow'),
+          ],
+          selectedId: state.selectedDayId,
+          onChange: onDaySelected,
+          size: SegmentedTabsSize.md,
+        ),
+        Gaps.hLg,
+        CountersTriple(
+          predicted: state.predicted,
+          upcoming: state.upcoming,
+          completed: state.completed,
+        ),
+        Gaps.hLg,
+        SizedBox(
+          width: double.infinity,
+          child: CardCTA(
+            label: filterLabel,
+            variant: CardCtaVariant.primary,
+            onPressed: onFilterTap,
+            leadingIcon: AppIcons.actionFilter,
+          ),
+        ),
+      ],
     );
   }
 }
 
-class _HeaderDelegate extends SliverPersistentHeaderDelegate {
-  _HeaderDelegate({
-    required this.child,
-    required this.minExtent,
-    required this.maxExtent,
-  });
-  final Widget child;
-  @override
-  final double minExtent;
-  @override
-  final double maxExtent;
+MatchCardConfig _buildConfig(
+  Fixture fixture,
+  MatchesProvider provider,
+) {
+  final prediction = provider.predictionForFixture(fixture.fixtureId);
+  final state = _mapStatus(fixture.status);
+  final userPick = _mapUserPick(prediction);
+  final isFavorite = provider.isFavorite(fixture.fixtureId);
 
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) => child;
+  return MatchCardConfig(
+    match: fixture,
+    context: MatchCardContext.schedule,
+    density: MatchCardDensity.regular,
+    state: state,
+    userPick: userPick,
+    isFavorite: isFavorite,
+    isExpanded: false,
+    prediction: prediction,
+  );
+}
 
-  @override
-  bool shouldRebuild(covariant _HeaderDelegate oldDelegate) => false;
+MatchCardState _mapStatus(String status) {
+  final normalized = status.toUpperCase();
+  const finished = {'FT', 'AET', 'PEN'};
+  const live = {'1H', '2H', 'ET', 'P', 'LIVE'};
+
+  if (finished.contains(normalized)) {
+    return MatchCardState.finished;
+  }
+  if (live.contains(normalized)) {
+    return MatchCardState.live;
+  }
+  return MatchCardState.upcoming;
+}
+
+MatchCardUserPick _mapUserPick(Prediction? prediction) {
+  if (prediction == null) {
+    return MatchCardUserPick.none;
+  }
+  final result = prediction.result?.toLowerCase();
+  if (result == 'correct') {
+    return MatchCardUserPick.correct;
+  }
+  if (result == 'missed') {
+    return MatchCardUserPick.missed;
+  }
+  return MatchCardUserPick.made;
 }

@@ -151,6 +151,21 @@ class MatchesProvider extends ChangeNotifier {
 
   MatchesState get state => _state;
   MatchesFilters get filters => _state.filters;
+  UnmodifiableMapView<int, String> get availableLeagues => UnmodifiableMapView(<int, String>{
+        for (final fixture in _allFixtures) fixture.leagueId: fixture.leagueName,
+      });
+
+  UnmodifiableSetView<String> get availableCountries => UnmodifiableSetView<String>(<String>{
+        for (final fixture in _allFixtures)
+          if (fixture.country != null && fixture.country!.isNotEmpty)
+            fixture.country!,
+      });
+
+  UnmodifiableSetView<String> get availableStatuses => UnmodifiableSetView<String>(<String>{
+        for (final fixture in _allFixtures) fixture.status.toUpperCase(),
+      });
+
+  UnmodifiableSetView<int> get favoriteMatchIds => UnmodifiableSetView<int>(_favoriteMatchIds);
 
   Future<void> load({DateTime? date, bool forceRefresh = false}) async {
     final targetDate = _normalizeDate(date ?? _state.selectedDate);
