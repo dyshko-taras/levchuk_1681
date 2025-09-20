@@ -109,12 +109,6 @@ class _BrandContent extends StatelessWidget {
           height: 60,
           child: CircularProgressIndicator(),
         ),
-        Gaps.hLg,
-        Text(
-          AppStrings.appTitle,
-          style: theme.headlineSmall,
-          textAlign: TextAlign.center,
-        ),
         Gaps.hSm,
         Text(
           AppStrings.splashTagline,
