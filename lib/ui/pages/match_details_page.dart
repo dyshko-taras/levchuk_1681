@@ -1,12 +1,8 @@
 // path: lib/ui/pages/match_details_page.dart
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
 import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_radius.dart';
-import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/data/models/fixture.dart';
@@ -33,9 +29,11 @@ import 'package:FlutterApp/ui/widgets/fields/notes_text_field.dart';
 import 'package:FlutterApp/ui/widgets/match/match_card.dart';
 import 'package:FlutterApp/ui/widgets/match/match_card_config.dart';
 import 'package:FlutterApp/ui/widgets/match/parts/prediction_panel.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MatchDetailsPage extends StatelessWidget {
-  const MatchDetailsPage({super.key, required this.fixtureId});
+  const MatchDetailsPage({required this.fixtureId, super.key});
 
   final int fixtureId;
 
@@ -246,7 +244,7 @@ class _MatchDetailsViewState extends State<_MatchDetailsView> {
     final odds = provider.state.odds;
     if (odds == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppStrings.oddsUnavailable)),
+        const SnackBar(content: Text(AppStrings.oddsUnavailable)),
       );
       return;
     }
@@ -318,7 +316,7 @@ class _MatchDetailsViewState extends State<_MatchDetailsView> {
     MatchDetailsState state,
   ) {
     final matchState = _mapStatus(fixture.status);
-    final userPick = _mapUserPick(state.prediction);
+    final userPick = _mapUserPick(state.prediction, fixture.status);
     return MatchCardConfig(
       match: fixture,
       context: MatchCardContext.schedule,
@@ -351,8 +349,13 @@ class _MatchDetailsViewState extends State<_MatchDetailsView> {
     return MatchCardState.upcoming;
   }
 
-  MatchCardUserPick _mapUserPick(Prediction? prediction) {
+  MatchCardUserPick _mapUserPick(Prediction? prediction, String status) {
+    final normalized = status.toUpperCase();
+    const finished = {'FT', 'AET', 'PEN'};
     if (prediction == null) {
+      if (finished.contains(normalized)) {
+        return MatchCardUserPick.finished;
+      }
       return MatchCardUserPick.none;
     }
     final result = prediction.result?.toLowerCase();
@@ -362,7 +365,7 @@ class _MatchDetailsViewState extends State<_MatchDetailsView> {
     if (result == 'missed') {
       return MatchCardUserPick.missed;
     }
-    return MatchCardUserPick.made;
+    return MatchCardUserPick.predicted;
   }
 }
 
@@ -378,17 +381,17 @@ class _InfoTab extends StatelessWidget {
       children: [
         InfoRow(
           label: AppStrings.matchDetailsInfoStadium,
-          value: _valueOrDash(null),
+          value: _valueOrDash(fixture.stadium),
         ),
         Gaps.hSm,
         InfoRow(
           label: AppStrings.matchDetailsInfoCity,
-          value: _valueOrDash(fixture.country),
+          value: _valueOrDash(fixture.city),
         ),
         Gaps.hSm,
         InfoRow(
           label: AppStrings.matchDetailsInfoReferee,
-          value: _valueOrDash(null),
+          value: _valueOrDash(fixture.referee),
         ),
       ],
     );
@@ -423,7 +426,7 @@ class _PredictionTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final panel = odds == null
-        ? _OddsUnavailable(message: AppStrings.oddsUnavailable)
+        ? const _OddsUnavailable(message: AppStrings.oddsUnavailable)
         : PredictionPanel(
             odds: odds!,
             selected: selectedPick,
@@ -433,7 +436,6 @@ class _PredictionTab extends StatelessWidget {
     final panelWidget = canEdit
         ? panel
         : IgnorePointer(
-            ignoring: true,
             child: Opacity(opacity: 0.6, child: panel),
           );
 
@@ -444,8 +446,6 @@ class _PredictionTab extends StatelessWidget {
             _formatOdds(prediction!.odds),
           )
         : null;
-    final statusText = _statusLabel();
-    final statusColor = _statusColor();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -461,7 +461,7 @@ class _PredictionTab extends StatelessWidget {
             enabled: !isSaving,
           )
         else
-          SecondaryGreenButtonLight(
+          const SecondaryGreenButtonLight(
             label: AppStrings.matchDetailsEditDisabled,
             onPressed: null,
             enabled: false,
@@ -480,14 +480,6 @@ class _PredictionTab extends StatelessWidget {
             ),
           ),
         ],
-        Gaps.hSm,
-        Text(
-          statusText,
-          style: theme.textTheme.titleSmall?.copyWith(
-            color: statusColor,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
       ],
     );
   }
@@ -507,17 +499,6 @@ class _PredictionTab extends StatelessWidget {
       return AppStrings.matchDetailsStatusLive;
     }
     return AppStrings.matchDetailsStatusUpcoming;
-  }
-
-  Color _statusColor() {
-    final label = _statusLabel();
-    if (label == AppStrings.matchDetailsStatusCorrect) {
-      return AppColors.successGreen;
-    }
-    if (label == AppStrings.matchDetailsStatusMissed) {
-      return AppColors.errorRed;
-    }
-    return AppColors.warningYellow;
   }
 
   String _formatPickLabel(String pick) {
@@ -566,7 +547,9 @@ class _NotesTab extends StatelessWidget {
           Gaps.hSm,
           Text(
             AppStrings.matchDetailsNotesSaving,
-            style: theme.textTheme.labelSmall?.copyWith(color: AppColors.textGray),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: AppColors.textGray,
+            ),
           ),
         ],
       ],
@@ -589,7 +572,6 @@ class _OddsUnavailable extends StatelessWidget {
         borderRadius: AppRadius.cardLg,
         border: Border.all(
           color: AppColors.borderGray,
-          width: AppSizes.strokeThin,
         ),
       ),
       child: Text(

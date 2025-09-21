@@ -8,7 +8,7 @@ class OddsRepository {
   OddsRepository({
     required FootballService api,
     required OddsDao oddsDao,
-    Duration ttl = const Duration(minutes: 1),
+    Duration ttl = const Duration(minutes: 60),
   }) : _api = api,
        _oddsDao = oddsDao,
        _ttl = ttl;

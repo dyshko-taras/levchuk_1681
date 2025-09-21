@@ -9,7 +9,7 @@ import 'package:FlutterApp/utils/date_fmt.dart';
 class MatchesRepository {
   MatchesRepository({
     required MatchesDao matchesDao,
-    Duration ttl = const Duration(minutes: 3),
+    Duration ttl = const Duration(minutes: 60),
   }) : _matchesDao = matchesDao,
        _ttl = ttl;
 

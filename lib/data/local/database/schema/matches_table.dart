@@ -13,6 +13,7 @@ class MatchesTable extends Table {
   IntColumn get awayTeamId => integer().named('away_team_id')();
   TextColumn get awayTeamName => text().named('away_team_name')();
   TextColumn get venue => text().named('venue').nullable()();
+  TextColumn get city => text().named('city').nullable()();
   TextColumn get referee => text().named('referee').nullable()();
   DateTimeColumn get kickoffUtc => dateTime().named('kickoff_utc')();
   TextColumn get status => text().named('status')();

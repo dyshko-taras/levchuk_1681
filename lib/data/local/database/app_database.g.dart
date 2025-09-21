@@ -115,6 +115,15 @@ class $MatchesTableTable extends MatchesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _cityMeta = const VerificationMeta('city');
+  @override
+  late final GeneratedColumn<String> city = GeneratedColumn<String>(
+    'city',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _refereeMeta = const VerificationMeta(
     'referee',
   );
@@ -222,6 +231,7 @@ class $MatchesTableTable extends MatchesTable
     awayTeamId,
     awayTeamName,
     venue,
+    city,
     referee,
     kickoffUtc,
     status,
@@ -326,6 +336,12 @@ class $MatchesTableTable extends MatchesTable
       context.handle(
         _venueMeta,
         venue.isAcceptableOrUnknown(data['venue']!, _venueMeta),
+      );
+    }
+    if (data.containsKey('city')) {
+      context.handle(
+        _cityMeta,
+        city.isAcceptableOrUnknown(data['city']!, _cityMeta),
       );
     }
     if (data.containsKey('referee')) {
@@ -437,6 +453,10 @@ class $MatchesTableTable extends MatchesTable
         DriftSqlType.string,
         data['${effectivePrefix}venue'],
       ),
+      city: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}city'],
+      ),
       referee: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}referee'],
@@ -494,6 +514,7 @@ class MatchesTableData extends DataClass
   final int awayTeamId;
   final String awayTeamName;
   final String? venue;
+  final String? city;
   final String? referee;
   final DateTime kickoffUtc;
   final String status;
@@ -514,6 +535,7 @@ class MatchesTableData extends DataClass
     required this.awayTeamId,
     required this.awayTeamName,
     this.venue,
+    this.city,
     this.referee,
     required this.kickoffUtc,
     required this.status,
@@ -542,6 +564,9 @@ class MatchesTableData extends DataClass
     map['away_team_name'] = Variable<String>(awayTeamName);
     if (!nullToAbsent || venue != null) {
       map['venue'] = Variable<String>(venue);
+    }
+    if (!nullToAbsent || city != null) {
+      map['city'] = Variable<String>(city);
     }
     if (!nullToAbsent || referee != null) {
       map['referee'] = Variable<String>(referee);
@@ -585,6 +610,7 @@ class MatchesTableData extends DataClass
       venue: venue == null && nullToAbsent
           ? const Value.absent()
           : Value(venue),
+      city: city == null && nullToAbsent ? const Value.absent() : Value(city),
       referee: referee == null && nullToAbsent
           ? const Value.absent()
           : Value(referee),
@@ -625,6 +651,7 @@ class MatchesTableData extends DataClass
       awayTeamId: serializer.fromJson<int>(json['awayTeamId']),
       awayTeamName: serializer.fromJson<String>(json['awayTeamName']),
       venue: serializer.fromJson<String?>(json['venue']),
+      city: serializer.fromJson<String?>(json['city']),
       referee: serializer.fromJson<String?>(json['referee']),
       kickoffUtc: serializer.fromJson<DateTime>(json['kickoffUtc']),
       status: serializer.fromJson<String>(json['status']),
@@ -650,6 +677,7 @@ class MatchesTableData extends DataClass
       'awayTeamId': serializer.toJson<int>(awayTeamId),
       'awayTeamName': serializer.toJson<String>(awayTeamName),
       'venue': serializer.toJson<String?>(venue),
+      'city': serializer.toJson<String?>(city),
       'referee': serializer.toJson<String?>(referee),
       'kickoffUtc': serializer.toJson<DateTime>(kickoffUtc),
       'status': serializer.toJson<String>(status),
@@ -673,6 +701,7 @@ class MatchesTableData extends DataClass
     int? awayTeamId,
     String? awayTeamName,
     Value<String?> venue = const Value.absent(),
+    Value<String?> city = const Value.absent(),
     Value<String?> referee = const Value.absent(),
     DateTime? kickoffUtc,
     String? status,
@@ -693,6 +722,7 @@ class MatchesTableData extends DataClass
     awayTeamId: awayTeamId ?? this.awayTeamId,
     awayTeamName: awayTeamName ?? this.awayTeamName,
     venue: venue.present ? venue.value : this.venue,
+    city: city.present ? city.value : this.city,
     referee: referee.present ? referee.value : this.referee,
     kickoffUtc: kickoffUtc ?? this.kickoffUtc,
     status: status ?? this.status,
@@ -725,6 +755,7 @@ class MatchesTableData extends DataClass
           ? data.awayTeamName.value
           : this.awayTeamName,
       venue: data.venue.present ? data.venue.value : this.venue,
+      city: data.city.present ? data.city.value : this.city,
       referee: data.referee.present ? data.referee.value : this.referee,
       kickoffUtc: data.kickoffUtc.present
           ? data.kickoffUtc.value
@@ -752,6 +783,7 @@ class MatchesTableData extends DataClass
           ..write('awayTeamId: $awayTeamId, ')
           ..write('awayTeamName: $awayTeamName, ')
           ..write('venue: $venue, ')
+          ..write('city: $city, ')
           ..write('referee: $referee, ')
           ..write('kickoffUtc: $kickoffUtc, ')
           ..write('status: $status, ')
@@ -777,6 +809,7 @@ class MatchesTableData extends DataClass
     awayTeamId,
     awayTeamName,
     venue,
+    city,
     referee,
     kickoffUtc,
     status,
@@ -801,6 +834,7 @@ class MatchesTableData extends DataClass
           other.awayTeamId == this.awayTeamId &&
           other.awayTeamName == this.awayTeamName &&
           other.venue == this.venue &&
+          other.city == this.city &&
           other.referee == this.referee &&
           other.kickoffUtc == this.kickoffUtc &&
           other.status == this.status &&
@@ -823,6 +857,7 @@ class MatchesTableCompanion extends UpdateCompanion<MatchesTableData> {
   final Value<int> awayTeamId;
   final Value<String> awayTeamName;
   final Value<String?> venue;
+  final Value<String?> city;
   final Value<String?> referee;
   final Value<DateTime> kickoffUtc;
   final Value<String> status;
@@ -843,6 +878,7 @@ class MatchesTableCompanion extends UpdateCompanion<MatchesTableData> {
     this.awayTeamId = const Value.absent(),
     this.awayTeamName = const Value.absent(),
     this.venue = const Value.absent(),
+    this.city = const Value.absent(),
     this.referee = const Value.absent(),
     this.kickoffUtc = const Value.absent(),
     this.status = const Value.absent(),
@@ -864,6 +900,7 @@ class MatchesTableCompanion extends UpdateCompanion<MatchesTableData> {
     required int awayTeamId,
     required String awayTeamName,
     this.venue = const Value.absent(),
+    this.city = const Value.absent(),
     this.referee = const Value.absent(),
     required DateTime kickoffUtc,
     required String status,
@@ -893,6 +930,7 @@ class MatchesTableCompanion extends UpdateCompanion<MatchesTableData> {
     Expression<int>? awayTeamId,
     Expression<String>? awayTeamName,
     Expression<String>? venue,
+    Expression<String>? city,
     Expression<String>? referee,
     Expression<DateTime>? kickoffUtc,
     Expression<String>? status,
@@ -914,6 +952,7 @@ class MatchesTableCompanion extends UpdateCompanion<MatchesTableData> {
       if (awayTeamId != null) 'away_team_id': awayTeamId,
       if (awayTeamName != null) 'away_team_name': awayTeamName,
       if (venue != null) 'venue': venue,
+      if (city != null) 'city': city,
       if (referee != null) 'referee': referee,
       if (kickoffUtc != null) 'kickoff_utc': kickoffUtc,
       if (status != null) 'status': status,
@@ -937,6 +976,7 @@ class MatchesTableCompanion extends UpdateCompanion<MatchesTableData> {
     Value<int>? awayTeamId,
     Value<String>? awayTeamName,
     Value<String?>? venue,
+    Value<String?>? city,
     Value<String?>? referee,
     Value<DateTime>? kickoffUtc,
     Value<String>? status,
@@ -958,6 +998,7 @@ class MatchesTableCompanion extends UpdateCompanion<MatchesTableData> {
       awayTeamId: awayTeamId ?? this.awayTeamId,
       awayTeamName: awayTeamName ?? this.awayTeamName,
       venue: venue ?? this.venue,
+      city: city ?? this.city,
       referee: referee ?? this.referee,
       kickoffUtc: kickoffUtc ?? this.kickoffUtc,
       status: status ?? this.status,
@@ -1003,6 +1044,9 @@ class MatchesTableCompanion extends UpdateCompanion<MatchesTableData> {
     if (venue.present) {
       map['venue'] = Variable<String>(venue.value);
     }
+    if (city.present) {
+      map['city'] = Variable<String>(city.value);
+    }
     if (referee.present) {
       map['referee'] = Variable<String>(referee.value);
     }
@@ -1046,6 +1090,7 @@ class MatchesTableCompanion extends UpdateCompanion<MatchesTableData> {
           ..write('awayTeamId: $awayTeamId, ')
           ..write('awayTeamName: $awayTeamName, ')
           ..write('venue: $venue, ')
+          ..write('city: $city, ')
           ..write('referee: $referee, ')
           ..write('kickoffUtc: $kickoffUtc, ')
           ..write('status: $status, ')
@@ -3720,6 +3765,7 @@ typedef $$MatchesTableTableCreateCompanionBuilder =
       required int awayTeamId,
       required String awayTeamName,
       Value<String?> venue,
+      Value<String?> city,
       Value<String?> referee,
       required DateTime kickoffUtc,
       required String status,
@@ -3742,6 +3788,7 @@ typedef $$MatchesTableTableUpdateCompanionBuilder =
       Value<int> awayTeamId,
       Value<String> awayTeamName,
       Value<String?> venue,
+      Value<String?> city,
       Value<String?> referee,
       Value<DateTime> kickoffUtc,
       Value<String> status,
@@ -3879,6 +3926,11 @@ class $$MatchesTableTableFilterComposer
 
   ColumnFilters<String> get venue => $composableBuilder(
     column: $table.venue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get city => $composableBuilder(
+    column: $table.city,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4062,6 +4114,11 @@ class $$MatchesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get city => $composableBuilder(
+    column: $table.city,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get referee => $composableBuilder(
     column: $table.referee,
     builder: (column) => ColumnOrderings(column),
@@ -4156,6 +4213,9 @@ class $$MatchesTableTableAnnotationComposer
 
   GeneratedColumn<String> get venue =>
       $composableBuilder(column: $table.venue, builder: (column) => column);
+
+  GeneratedColumn<String> get city =>
+      $composableBuilder(column: $table.city, builder: (column) => column);
 
   GeneratedColumn<String> get referee =>
       $composableBuilder(column: $table.referee, builder: (column) => column);
@@ -4304,6 +4364,7 @@ class $$MatchesTableTableTableManager
                 Value<int> awayTeamId = const Value.absent(),
                 Value<String> awayTeamName = const Value.absent(),
                 Value<String?> venue = const Value.absent(),
+                Value<String?> city = const Value.absent(),
                 Value<String?> referee = const Value.absent(),
                 Value<DateTime> kickoffUtc = const Value.absent(),
                 Value<String> status = const Value.absent(),
@@ -4324,6 +4385,7 @@ class $$MatchesTableTableTableManager
                 awayTeamId: awayTeamId,
                 awayTeamName: awayTeamName,
                 venue: venue,
+                city: city,
                 referee: referee,
                 kickoffUtc: kickoffUtc,
                 status: status,
@@ -4346,6 +4408,7 @@ class $$MatchesTableTableTableManager
                 required int awayTeamId,
                 required String awayTeamName,
                 Value<String?> venue = const Value.absent(),
+                Value<String?> city = const Value.absent(),
                 Value<String?> referee = const Value.absent(),
                 required DateTime kickoffUtc,
                 required String status,
@@ -4366,6 +4429,7 @@ class $$MatchesTableTableTableManager
                 awayTeamId: awayTeamId,
                 awayTeamName: awayTeamName,
                 venue: venue,
+                city: city,
                 referee: referee,
                 kickoffUtc: kickoffUtc,
                 status: status,

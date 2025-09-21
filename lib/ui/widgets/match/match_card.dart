@@ -147,10 +147,13 @@ class MatchCard extends StatelessWidget {
           );
         }
         final odds = config.odds;
+        if (odds == null) {
+          return const SizedBox.shrink();
+        }
         return SubInfo.odds(
-          home: odds?.home ?? 0,
-          draw: odds?.draw ?? 0,
-          away: odds?.away ?? 0,
+          home: odds.home,
+          draw: odds.draw,
+          away: odds.away,
         );
       case MatchCardState.finished:
         if (config.prediction != null) {
@@ -176,16 +179,15 @@ class MatchCard extends StatelessWidget {
           variant: StatusChipVariant.completedMissed,
           label: 'Completed (Missed)',
         );
-      case MatchCardUserPick.made:
-        if (config.state == MatchCardState.finished) {
-          return const StatusChip(
-            variant: StatusChipVariant.completedCorrect,
-            label: 'Completed',
-          );
-        }
+      case MatchCardUserPick.predicted:
         return const StatusChip(
           variant: StatusChipVariant.predicted,
           label: 'Prediction made',
+        );
+      case MatchCardUserPick.finished:
+        return const StatusChip(
+          variant: StatusChipVariant.completedCorrect,
+          label: 'Completed',
         );
       case MatchCardUserPick.none:
         return StatusChip(

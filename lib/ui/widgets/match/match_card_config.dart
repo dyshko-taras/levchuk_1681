@@ -8,7 +8,7 @@ enum MatchCardDensity { compact, regular, expanded }
 
 enum MatchCardState { upcoming, live, finished }
 
-enum MatchCardUserPick { none, made, correct, missed }
+enum MatchCardUserPick { none, predicted, correct, missed, finished }
 
 typedef MatchCardNote = String?;
 

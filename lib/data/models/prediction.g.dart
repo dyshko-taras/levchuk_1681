@@ -9,8 +9,8 @@ part of 'prediction.dart';
 Prediction _$PredictionFromJson(Map<String, dynamic> json) => Prediction(
   fixtureId: (_readFixtureId(json, 'fixtureId') as num).toInt(),
   pick: json['pick'] as String,
-  odds: (_readOdds(json, 'odds') as num?)?.toDouble(),
   madeAt: DateTime.parse(_readMadeAt(json, 'madeAt') as String),
+  odds: (_readOdds(json, 'odds') as num?)?.toDouble(),
   lockedAt: _readLockedAt(json, 'lockedAt') == null
       ? null
       : DateTime.parse(_readLockedAt(json, 'lockedAt') as String),
@@ -25,8 +25,8 @@ Map<String, dynamic> _$PredictionToJson(Prediction instance) =>
     <String, dynamic>{
       'fixtureId': instance.fixtureId,
       'pick': instance.pick,
-      'odds': instance.odds,
       'madeAt': instance.madeAt.toIso8601String(),
+      'odds': instance.odds,
       'lockedAt': instance.lockedAt?.toIso8601String(),
       'gradedAt': instance.gradedAt?.toIso8601String(),
       'result': instance.result,

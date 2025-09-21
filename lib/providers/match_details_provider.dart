@@ -119,19 +119,26 @@ class MatchDetailsProvider extends ChangeNotifier {
 
   bool get hasPrediction => state.prediction != null;
 
-  bool get canEditPrediction {
+bool get canEditPrediction {
     final fixture = state.fixture;
     if (fixture == null) return false;
     final status = fixture.status.toUpperCase();
-    const lockedStatuses = {'1H', '2H', 'HT', 'ET', 'FT', 'AET', 'PEN', 'LIVE'};
+
+    const lockedStatuses = {'FT', 'AET', 'PEN'};
     if (lockedStatuses.contains(status)) {
       return false;
     }
+
     final lockTime = fixture.dateUtc.toUtc().subtract(
       AppDurations.predictionLock,
     );
-    return DateTime.now().toUtc().isBefore(lockTime);
+    if (status == 'NS') {
+      return DateTime.now().toUtc().isBefore(lockTime);
+    }
+
+    return true;
   }
+
 
   Future<void> load(int fixtureId) async {
     if (_state.isLoading && _state.fixtureId == fixtureId) {
@@ -139,7 +146,6 @@ class MatchDetailsProvider extends ChangeNotifier {
     }
     _state = _state.copyWith(
       isLoading: true,
-      error: MatchDetailsState._sentinel,
       fixtureId: fixtureId,
       activeTabId: 'info',
     );

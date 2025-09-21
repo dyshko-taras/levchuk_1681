@@ -1,5 +1,4 @@
 // path: lib/data/models/fixture.dart
-// Fixture - normalized match entity per PRD fields. :contentReference[oaicite:1]{index=1}
 import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:FlutterApp/data/models/team_ref.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -20,7 +19,13 @@ class Fixture extends EquatableModel {
     this.minute,
     this.goalsHome,
     this.goalsAway,
+    this.stadium,
+    this.city,
+    this.referee,
   });
+
+  factory Fixture.fromJson(Map<String, dynamic> json) =>
+      _$FixtureFromJson(json);
 
   /// Unique fixture identifier.
   @JsonKey(readValue: _readFixtureId)
@@ -42,11 +47,11 @@ class Fixture extends EquatableModel {
   @JsonKey(readValue: _readDateUtc)
   final DateTime dateUtc;
 
-  /// Status code (NS/1H/HT/2H/FT/ET/PST). :contentReference[oaicite:2]{index=2}
+  /// Status code (NS/1H/HT/2H/FT/ET/PST).
   @JsonKey(readValue: _readStatus)
   final String status;
 
-  /// Current live minute (nullable if not live). :contentReference[oaicite:3]{index=3}
+  /// Current live minute (nullable if not live).
   @JsonKey(readValue: _readMinute)
   final int? minute;
 
@@ -66,28 +71,40 @@ class Fixture extends EquatableModel {
   @JsonKey(readValue: _readGoalsAway)
   final int? goalsAway;
 
-  /// JSON factory (generated).
-  factory Fixture.fromJson(Map<String, dynamic> json) =>
-      _$FixtureFromJson(json);
+  /// Stadium name (fixture.venue.name).
+  @JsonKey(readValue: _readStadium)
+  final String? stadium;
 
-  /// JSON encoder (generated).
+  /// City of the venue (fixture.venue.city).
+  @JsonKey(readValue: _readCity)
+  final String? city;
+
+  /// Referee (fixture.referee).
+  @JsonKey(readValue: _readReferee)
+  final String? referee;
+
   Map<String, dynamic> toJson() => _$FixtureToJson(this);
 
   @override
   List<Object?> get props => [
-        fixtureId,
-        leagueId,
-        leagueName,
-        country,
-        dateUtc,
-        status,
-        minute,
-        homeTeam,
-        awayTeam,
-        goalsHome,
-        goalsAway,
-      ];
+    fixtureId,
+    leagueId,
+    leagueName,
+    country,
+    dateUtc,
+    status,
+    minute,
+    homeTeam,
+    awayTeam,
+    goalsHome,
+    goalsAway,
+    stadium,
+    city,
+    referee,
+  ];
 }
+
+// -------------------- JSON read helpers --------------------
 
 Object? _readFixtureId(Map<dynamic, dynamic> json, String key) =>
     _asNullableInt(_readValue(json, key, const ['fixture', 'id']));
@@ -113,8 +130,8 @@ Object? _readStatus(Map<dynamic, dynamic> json, String key) =>
     _readValue(json, key, const ['fixture', 'status', 'short']);
 
 Object? _readMinute(Map<dynamic, dynamic> json, String key) => _asNullableInt(
-      _readValue(json, key, const ['fixture', 'status', 'elapsed']),
-    );
+  _readValue(json, key, const ['fixture', 'status', 'elapsed']),
+);
 
 Object? _readHomeTeam(Map<dynamic, dynamic> json, String key) =>
     _readMapValue(json, key, const ['teams', 'home']);
@@ -127,6 +144,17 @@ Object? _readGoalsHome(Map<dynamic, dynamic> json, String key) =>
 
 Object? _readGoalsAway(Map<dynamic, dynamic> json, String key) =>
     _asNullableInt(_readValue(json, key, const ['goals', 'away']));
+
+Object? _readStadium(Map<dynamic, dynamic> json, String key) =>
+    _readValue(json, key, const ['fixture', 'venue', 'name']);
+
+Object? _readCity(Map<dynamic, dynamic> json, String key) =>
+    _readValue(json, key, const ['fixture', 'venue', 'city']);
+
+Object? _readReferee(Map<dynamic, dynamic> json, String key) =>
+    _readValue(json, key, const ['fixture', 'referee']);
+
+// -------------------- Helpers --------------------
 
 Object? _readValue(
   Map<dynamic, dynamic> json,
@@ -156,7 +184,7 @@ Object? _readMapValue(
 }
 
 Object? _nestedValue(Object? node, List<String> path) {
-  Object? current = node;
+  var current = node;
   for (final segment in path) {
     if (current is Map<String, dynamic>) {
       current = current[segment];

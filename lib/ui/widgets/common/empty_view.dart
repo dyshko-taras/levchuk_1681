@@ -1,6 +1,5 @@
 // path: lib/ui/widgets/common/empty_view.dart
 // Reusable empty-state widget per Implementation Plan "Cross-Cutting: Error/Empty patterns".
-import 'package:FlutterApp/constants/app_images.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
 
@@ -9,13 +8,13 @@ class EmptyView extends StatelessWidget {
     super.key,
     this.title,
     this.subtitle,
-    this.imageConst = AppImages.emptyMatches,
+    this.imageConst,
     this.primaryAction,
   });
 
   final String? title;
   final String? subtitle;
-  final String imageConst;
+  final String? imageConst;
   final Widget? primaryAction;
 
   @override
@@ -26,7 +25,7 @@ class EmptyView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(imageConst),
+          if (imageConst != null) Image.asset(imageConst!),
           Gaps.hMd,
           if (title != null)
             Text(

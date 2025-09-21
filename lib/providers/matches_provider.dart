@@ -1,6 +1,7 @@
 // path: lib/providers/matches_provider.dart
 // Matches feature provider: handles schedule data, filters, counters, and odds access.
 import 'dart:collection';
+import 'dart:developer' show log;
 
 import 'package:FlutterApp/data/models/favorite.dart';
 import 'package:FlutterApp/data/models/fixture.dart';
@@ -151,27 +152,34 @@ class MatchesProvider extends ChangeNotifier {
 
   MatchesState get state => _state;
   MatchesFilters get filters => _state.filters;
-  UnmodifiableMapView<int, String> get availableLeagues => UnmodifiableMapView(<int, String>{
-        for (final fixture in _allFixtures) fixture.leagueId: fixture.leagueName,
-      });
+  UnmodifiableMapView<int, String> get availableLeagues => UnmodifiableMapView(
+    <int, String>{
+      for (final fixture in _allFixtures) fixture.leagueId: fixture.leagueName,
+    },
+  );
 
-  UnmodifiableSetView<String> get availableCountries => UnmodifiableSetView<String>(<String>{
+  UnmodifiableSetView<String> get availableCountries =>
+      UnmodifiableSetView<String>(<String>{
         for (final fixture in _allFixtures)
           if (fixture.country != null && fixture.country!.isNotEmpty)
             fixture.country!,
       });
 
-  UnmodifiableSetView<String> get availableStatuses => UnmodifiableSetView<String>(<String>{
+  UnmodifiableSetView<String> get availableStatuses {
+    final statuses = UnmodifiableSetView<String>(<String>{
         for (final fixture in _allFixtures) fixture.status.toUpperCase(),
       });
+    log(statuses.toString(), name: 'analytics');
+    return statuses;
+  }
 
-  UnmodifiableSetView<int> get favoriteMatchIds => UnmodifiableSetView<int>(_favoriteMatchIds);
+  UnmodifiableSetView<int> get favoriteMatchIds =>
+      UnmodifiableSetView<int>(_favoriteMatchIds);
 
   Future<void> load({DateTime? date, bool forceRefresh = false}) async {
     final targetDate = _normalizeDate(date ?? _state.selectedDate);
     _state = _state.copyWith(
       isLoading: true,
-      error: MatchesState._sentinel,
       selectedDate: targetDate,
       selectedDayId: _dayIdForDate(targetDate),
     );
@@ -317,7 +325,7 @@ class MatchesProvider extends ChangeNotifier {
   MatchesCounters _buildCounters(List<Fixture> fixtures) {
     final fixtureIds = fixtures.map((fixture) => fixture.fixtureId).toSet();
     final predicted = fixtureIds
-        .where((id) => _predictionsByFixture.containsKey(id))
+        .where(_predictionsByFixture.containsKey)
         .length;
     final completed = fixtures.where(_isFinished).length;
     final upcoming = fixtures.length - completed;

@@ -110,7 +110,10 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
       slivers.add(
         const SliverFillRemaining(
           hasScrollBody: false,
-          child: EmptyView(),
+          child: EmptyView(
+            title: AppStrings.matchScheduleEmptyTitle,
+            subtitle: AppStrings.matchScheduleEmpty,
+          ),
         ),
       );
     } else {
@@ -258,7 +261,7 @@ MatchCardConfig _buildConfig(
 ) {
   final prediction = provider.predictionForFixture(fixture.fixtureId);
   final state = _mapStatus(fixture.status);
-  final userPick = _mapUserPick(prediction);
+  final userPick = _mapUserPick(prediction, fixture.status);
   final isFavorite = provider.isFavorite(fixture.fixtureId);
   return MatchCardConfig(
     match: fixture,
@@ -285,8 +288,13 @@ MatchCardState _mapStatus(String status) {
   return MatchCardState.upcoming;
 }
 
-MatchCardUserPick _mapUserPick(Prediction? prediction) {
+MatchCardUserPick _mapUserPick(Prediction? prediction, String status) {
+  final normalized = status.toUpperCase();
+  const finished = {'FT', 'AET', 'PEN'};
   if (prediction == null) {
+    if (finished.contains(normalized)) {
+      return MatchCardUserPick.finished;
+    }
     return MatchCardUserPick.none;
   }
   final result = prediction.result?.toLowerCase();
@@ -296,5 +304,5 @@ MatchCardUserPick _mapUserPick(Prediction? prediction) {
   if (result == 'missed') {
     return MatchCardUserPick.missed;
   }
-  return MatchCardUserPick.made;
+  return MatchCardUserPick.predicted;
 }
