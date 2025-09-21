@@ -264,15 +264,10 @@ class _FootballService implements FootballService {
   }
 
   @override
-  Future<List<TeamRef>> getTeamsByLeague({
-    required int leagueId,
-    required int season,
-  }) async {
+  Future<List<TeamRef>> getTeamsById({required int teamId, int? season}) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'league': leagueId,
-      r'season': season,
-    };
+    final queryParameters = <String, dynamic>{r'id': teamId, r'season': season};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<List<TeamRef>>(
@@ -291,41 +286,6 @@ class _FootballService implements FootballService {
       _value = _result.data!
           .map((dynamic i) => TeamRef.fromJson(i as Map<String, dynamic>))
           .toList();
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<TeamStats> getTeamStatistics({
-    required int leagueId,
-    required int season,
-    required int teamId,
-  }) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'league': leagueId,
-      r'season': season,
-      r'team': teamId,
-    };
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<TeamStats>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/teams/statistics',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late TeamStats _value;
-    try {
-      _value = TeamStats.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

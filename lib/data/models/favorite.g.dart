@@ -21,7 +21,7 @@ Map<String, dynamic> _$FavoriteToJson(Favorite instance) => <String, dynamic>{
 };
 
 const _$FavoriteTypeEnumMap = {
-  FavoriteType.league: 'league',
-  FavoriteType.team: 'team',
-  FavoriteType.match: 'match',
+  FavoriteType.leagues: 'leagues',
+  FavoriteType.teams: 'teams',
+  FavoriteType.matches: 'matches',
 };

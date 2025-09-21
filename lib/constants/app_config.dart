@@ -8,7 +8,7 @@ final class AppConfig {
   /// PRD headers require: x-apisports-key, accept: application/json.
   static const String apiKey = String.fromEnvironment(
     'API_KEY',
-    defaultValue: 'a9b8c2c99b6c3659a0b139caf6b23d6b', //TODO change
+    defaultValue: 'e67e56174ddf8df1acbcdcf1fcdd20e6',
   );
 
   /// Common HTTP headers for API-Sports.

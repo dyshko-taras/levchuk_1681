@@ -34,8 +34,8 @@ class CardCTA extends StatelessWidget {
       CardCtaVariant.secondary => (AppColors.cardDark, AppColors.textWhite),
     };
 
-    return Opacity(
-      opacity: isEnabled ? 1 : 0.5,
+    return Offstage(
+      offstage: !isEnabled,
       child: SizedBox(
         height: AppSizes.ctaHeight,
         child: Material(

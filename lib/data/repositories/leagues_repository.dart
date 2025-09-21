@@ -4,14 +4,12 @@ import 'package:FlutterApp/data/api/football_service.dart';
 import 'package:FlutterApp/data/models/league.dart';
 import 'package:FlutterApp/data/models/standing_row.dart';
 import 'package:FlutterApp/data/models/team_ref.dart';
-import 'package:FlutterApp/data/models/team_stats.dart';
 
 class LeaguesRepository {
   LeaguesRepository(this._api, {Duration cacheTtl = const Duration(hours: 1)})
     : _leaguesCache = <_LeaguesKey, _Timed<List<League>>>{},
       _teamsCache = <_TeamsKey, _Timed<List<TeamRef>>>{},
       _standingsCache = <_StandingsKey, _Timed<List<StandingRow>>>{},
-      _statsCache = <_StatsKey, _Timed<TeamStats>>{},
       _ttl = cacheTtl;
 
   final FootballService _api;
@@ -20,7 +18,6 @@ class LeaguesRepository {
   final Map<_LeaguesKey, _Timed<List<League>>> _leaguesCache;
   final Map<_TeamsKey, _Timed<List<TeamRef>>> _teamsCache;
   final Map<_StandingsKey, _Timed<List<StandingRow>>> _standingsCache;
-  final Map<_StatsKey, _Timed<TeamStats>> _statsCache;
 
   Future<List<League>> getLeagues({
     String? country,
@@ -41,17 +38,17 @@ class LeaguesRepository {
     return data;
   }
 
-  Future<List<TeamRef>> getTeamsByLeague({
-    required int leagueId,
-    required int season,
+  Future<List<TeamRef>> getTeamsById({
+    required int teamId,
+    int? season,
   }) async {
-    final key = _TeamsKey(leagueId, season);
+    final key = _TeamsKey(teamId, season);
     final now = DateTime.now();
     final hit = _teamsCache[key];
     if (hit != null && now.isBefore(hit.expiry)) return hit.value;
 
-    final data = await _api.getTeamsByLeague(
-      leagueId: leagueId,
+    final data = await _api.getTeamsById(
+      teamId: teamId,
       season: season,
     );
     _teamsCache[key] = _Timed(data, now.add(_ttl));
@@ -69,25 +66,6 @@ class LeaguesRepository {
 
     final data = await _api.getStandings(leagueId: leagueId, season: season);
     _standingsCache[key] = _Timed(data, now.add(_ttl));
-    return data;
-  }
-
-  Future<TeamStats> getTeamStatistics({
-    required int leagueId,
-    required int season,
-    required int teamId,
-  }) async {
-    final key = _StatsKey(leagueId, season, teamId);
-    final now = DateTime.now();
-    final hit = _statsCache[key];
-    if (hit != null && now.isBefore(hit.expiry)) return hit.value;
-
-    final data = await _api.getTeamStatistics(
-      leagueId: leagueId,
-      season: season,
-      teamId: teamId,
-    );
-    _statsCache[key] = _Timed(data, now.add(_ttl));
     return data;
   }
 }
@@ -118,18 +96,18 @@ class _LeaguesKey {
 }
 
 class _TeamsKey {
-  const _TeamsKey(this.leagueId, this.season);
-  final int leagueId;
-  final int season;
+  const _TeamsKey(this.teamId, this.season);
+  final int teamId;
+  final int? season;
 
   @override
   bool operator ==(Object other) =>
       other is _TeamsKey &&
-      leagueId == other.leagueId &&
+      teamId == other.teamId &&
       season == other.season;
 
   @override
-  int get hashCode => Object.hash(leagueId, season);
+  int get hashCode => Object.hash(teamId, season);
 }
 
 class _StandingsKey {

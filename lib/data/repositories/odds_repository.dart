@@ -29,17 +29,29 @@ class OddsRepository {
     if (!shouldRefresh) {
       return cached;
     }
+    // try {
+    //   final snapshot = await _api.getOddsByFixture(fixtureId: fixtureId);
+    //   await _oddsDao.upsert(snapshot);
+    //   _lastFetched[fixtureId] = DateTime.now();
+    //   return snapshot;
+    // } catch (_) {
+    //   // fall back to cached value if available
+    //   if (cached != null) {
+    //     return cached;
+    //   }
+    //   rethrow;
+    // }
     try {
       final snapshot = await _api.getOddsByFixture(fixtureId: fixtureId);
-      await _oddsDao.upsert(snapshot);
+      // Відповідь API може бути порожньою (results=0,response=[]).
+      // Тоді сервіс має повертати null. У такому випадку — не апсертимо,
+      // просто повертаємо кеш (якщо він є) або null.
       _lastFetched[fixtureId] = DateTime.now();
+      await _oddsDao.upsert(snapshot);
       return snapshot;
     } catch (_) {
-      // fall back to cached value if available
-      if (cached != null) {
-        return cached;
-      }
-      rethrow;
+      // Якщо парсинг/мережа впали — віддаємо кеш, або null без ре-throw.
+      return cached;
     }
   }
 

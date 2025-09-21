@@ -47,7 +47,7 @@ class FavoritesDao extends DatabaseAccessor<AppDatabase>
     id: data.id,
     type: FavoriteType.values.firstWhere(
       (t) => t.name == data.type,
-      orElse: () => FavoriteType.match,
+      orElse: () => FavoriteType.matches,
     ),
     refId: data.refId,
     createdAt: data.createdAt,

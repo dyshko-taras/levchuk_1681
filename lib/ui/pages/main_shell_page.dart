@@ -3,6 +3,8 @@
 import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/providers/bottom_nav_provider.dart';
+import 'package:FlutterApp/providers/favorites_provider.dart';
+import 'package:FlutterApp/providers/matches_provider.dart';
 import 'package:FlutterApp/ui/pages/favorites_page.dart';
 import 'package:FlutterApp/ui/pages/match_schedule_page.dart';
 import 'package:FlutterApp/ui/pages/statistics_page.dart';
@@ -56,6 +58,17 @@ class _MainShellPageState extends State<MainShellPage> {
     });
   }
 
+  Future<void> _onTabTap(int index) async {
+    context.read<BottomNavProvider>().setIndex(index);
+
+    switch (index) {
+      case 0: // Matches
+        await context.read<MatchesProvider>().refresh();
+      case 2: // Favorites
+        await context.read<FavoritesProvider>().load();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final nav = context.watch<BottomNavProvider>();
@@ -68,7 +81,7 @@ class _MainShellPageState extends State<MainShellPage> {
         bottomNavigationBar: BottomNavBar(
           items: _items,
           currentIndex: index,
-          onTap: (value) => context.read<BottomNavProvider>().setIndex(value),
+          onTap: _onTabTap,
         ),
       ),
     );

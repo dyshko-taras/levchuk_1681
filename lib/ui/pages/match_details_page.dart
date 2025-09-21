@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_radius.dart';
+import 'package:FlutterApp/constants/app_routes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/data/models/fixture.dart';
@@ -93,7 +94,8 @@ class _MatchDetailsViewState extends State<_MatchDetailsView> {
                   rightIcon: state.isFavorite
                       ? AppIcons.starFilled
                       : AppIcons.star,
-                  onLeft: () => Navigator.of(context).maybePop(),
+                  onLeft: () =>
+                      Navigator.of(context).pushNamed(AppRoutes.matches),
                   onRight: () => _handleFavoriteTap(context, provider),
                 ),
                 Expanded(
@@ -147,19 +149,17 @@ class _MatchDetailsViewState extends State<_MatchDetailsView> {
       physics: const BouncingScrollPhysics(),
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.md,
-          ),
+          padding: Insets.hMd,
           sliver: SliverToBoxAdapter(
-            child: MatchCard(
-              config: config,
-              onMakePrediction: provider.canEditPrediction
-                  ? () => _openPredictionDialog(context, provider)
-                  : null,
-              onToggleFavorite: provider.toggleFavorite,
+            child: Padding(
+              padding: Insets.vLg,
+              child: MatchCard(
+                config: config,
+                onMakePrediction: provider.canEditPrediction
+                    ? () => _openPredictionDialog(context, provider)
+                    : null,
+                onToggleFavorite: provider.toggleFavorite,
+              ),
             ),
           ),
         ),
@@ -482,23 +482,6 @@ class _PredictionTab extends StatelessWidget {
         ],
       ],
     );
-  }
-
-  String _statusLabel() {
-    final result = prediction?.result?.toLowerCase();
-    if (matchState == MatchCardState.finished) {
-      if (result == 'correct') {
-        return AppStrings.matchDetailsStatusCorrect;
-      }
-      if (result == 'missed') {
-        return AppStrings.matchDetailsStatusMissed;
-      }
-      return AppStrings.matchDetailsStatusPending;
-    }
-    if (matchState == MatchCardState.live) {
-      return AppStrings.matchDetailsStatusLive;
-    }
-    return AppStrings.matchDetailsStatusUpcoming;
   }
 
   String _formatPickLabel(String pick) {

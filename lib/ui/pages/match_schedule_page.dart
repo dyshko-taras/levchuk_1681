@@ -77,15 +77,12 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
     final matchesProvider = context.watch<MatchesProvider>();
     final state = matchesProvider.state;
     final slivers = <Widget>[
-      SliverPadding(
-        padding: Insets.allLg,
-        sliver: SliverToBoxAdapter(
-          child: _Header(
-            state: state,
-            onDaySelected: matchesProvider.selectDay,
-            onFilterTap: () => _openFilters(context, matchesProvider),
-            filtersActive: !state.filters.isEmpty,
-          ),
+      SliverToBoxAdapter(
+        child: _Header(
+          state: state,
+          onDaySelected: matchesProvider.selectDay,
+          onFilterTap: () => _openFilters(context, matchesProvider),
+          filtersActive: !state.filters.isEmpty,
         ),
       ),
     ];
@@ -124,9 +121,7 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
             final fixture = state.items[index];
             final config = _buildConfig(fixture, matchesProvider);
             return Padding(
-              padding: Insets.hLg.add(
-                const EdgeInsets.only(bottom: AppSpacing.md),
-              ),
+              padding: Insets.vMd,
               child: MatchCard(
                 config: config,
                 onOpenMatch: () => _openMatch(context, fixture.fixtureId),
@@ -142,7 +137,10 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
     return RefreshIndicator(
       onRefresh: matchesProvider.refresh,
       child: SafeArea(
-        child: CustomScrollView(slivers: slivers),
+        child: Padding(
+          padding: Insets.hMd,
+          child: CustomScrollView(slivers: slivers),
+        ),
       ),
     );
   }

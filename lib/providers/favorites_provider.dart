@@ -3,6 +3,7 @@
 import 'package:FlutterApp/data/models/favorite.dart';
 import 'package:FlutterApp/data/models/fixture.dart';
 import 'package:FlutterApp/data/models/league.dart';
+import 'package:FlutterApp/data/models/prediction.dart';
 import 'package:FlutterApp/data/models/team_ref.dart';
 import 'package:FlutterApp/data/repositories/favorites_repository.dart';
 import 'package:FlutterApp/data/repositories/leagues_repository.dart';
@@ -51,11 +52,11 @@ class FavoritesProvider extends ChangeNotifier {
        _state = const FavoritesState(
          isLoading: false,
          error: null,
-         activeTab: FavoriteType.league,
+         activeTab: FavoriteType.leagues,
          favorites: {
-           FavoriteType.league: <Favorite>[],
-           FavoriteType.team: <Favorite>[],
-           FavoriteType.match: <Favorite>[],
+           FavoriteType.matches: <Favorite>[],
+           FavoriteType.teams: <Favorite>[],
+           FavoriteType.leagues: <Favorite>[],
          },
        );
 
@@ -72,24 +73,24 @@ class FavoritesProvider extends ChangeNotifier {
   );
 
   Future<void> load() async {
-    _state = _state.copyWith(isLoading: true, error: FavoritesState._sentinel);
+    _state = _state.copyWith(isLoading: true);
     notifyListeners();
     try {
       final leagues = await _favoritesRepository.getFavorites(
-        type: FavoriteType.league,
+        type: FavoriteType.leagues,
       );
       final teams = await _favoritesRepository.getFavorites(
-        type: FavoriteType.team,
+        type: FavoriteType.teams,
       );
       final matches = await _favoritesRepository.getFavorites(
-        type: FavoriteType.match,
+        type: FavoriteType.matches,
       );
       _state = _state.copyWith(
         isLoading: false,
         favorites: {
-          FavoriteType.league: leagues,
-          FavoriteType.team: teams,
-          FavoriteType.match: matches,
+          FavoriteType.leagues: leagues,
+          FavoriteType.teams: teams,
+          FavoriteType.matches: matches,
         },
         error: null,
       );
@@ -138,15 +139,50 @@ class FavoritesProvider extends ChangeNotifier {
     return leagues.firstWhereOrNull((league) => league.id == leagueId);
   }
 
-  Future<TeamRef?> loadTeam({
-    required int leagueId,
-    required int teamId,
-  }) async {
-    final teams = await _leaguesRepository.getTeamsByLeague(
-      leagueId: leagueId,
-      season: DateTime.now().year,
+  Future<TeamRef?> loadTeam({required int teamId}) async {
+    final teams = await _leaguesRepository.getTeamsById(
+      teamId: teamId,
     );
     return teams.firstWhereOrNull((team) => team.id == teamId);
+  }
+
+  Prediction? predictionForFixture(int fixtureId) => null;
+
+  /// Кількість сьогоднішніх матчів конкретної ліги.
+  Future<int> matchesToday(int leagueId) async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final fixtures = await _matchesRepository.getByDate(today);
+    return fixtures.where((f) => f.leagueId == leagueId).length;
+  }
+
+  /// Перший сьогоднішній fixtureId ліги (для швидкого переходу).
+  Future<int?> firstMatchIdTodayForLeague(int leagueId) async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final fixtures = await _matchesRepository.getByDate(today);
+    final m = fixtures.firstWhereOrNull((f) => f.leagueId == leagueId);
+    return m?.fixtureId;
+  }
+
+  Future<Fixture?> lastMatchForTeam(int teamId) async {
+    final d = DateTime.now();
+    for (var i = 0; i <= 7; i++) {
+      final day = DateTime(d.year, d.month, d.day).subtract(Duration(days: i));
+      final fixtures = await _matchesRepository.getByDate(day);
+      for (final f in fixtures) {
+        try {
+          final homeId = f.homeTeam.id;
+          final awayId = f.awayTeam.id;
+          if (homeId == teamId || awayId == teamId) {
+            return f;
+          }
+        } catch (_) {
+          // якщо модель без цих полів — скіпаємо
+        }
+      }
+    }
+    return null;
   }
 }
 

@@ -1,6 +1,5 @@
-// path: lib/data/models/league.dart
 // League - normalized league/competition entity (PRD models).
-// Fields per PRD: id, name, country?, season?, type?, logo?  :contentReference[oaicite:2]{index=2}
+// Fields per PRD: id, name, country?, season?, type?, logo?
 import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -23,13 +22,15 @@ class League extends EquatableModel {
   @JsonKey(readValue: _readLeagueName)
   final String name;
 
+  /// Country name, e.g. "England" / "World"
   @JsonKey(readValue: _readLeagueCountry)
   final String? country;
 
+  /// Current/selected season (may be null for /leagues listing)
   @JsonKey(readValue: _readLeagueSeason)
   final int? season;
 
-  /// League/Cup
+  /// "League" / "Cup"
   @JsonKey(readValue: _readLeagueType)
   final String? type;
 
@@ -43,14 +44,32 @@ class League extends EquatableModel {
   List<Object?> get props => [id, name, country, season, type, logo];
 }
 
+// -------------------- read helpers --------------------
+
 Object? _readLeagueId(Map<dynamic, dynamic> json, String key) =>
     _asNullableInt(_readLeagueField(json, key));
 
 Object? _readLeagueName(Map<dynamic, dynamic> json, String key) =>
     _readLeagueField(json, key);
 
-Object? _readLeagueCountry(Map<dynamic, dynamic> json, String key) =>
-    _readLeagueField(json, key);
+Object? _readLeagueCountry(Map<dynamic, dynamic> json, String key) {
+  // 1) Перевага внутрішньому league.country якщо це String
+  final directFromLeague = _readFromNestedMap(json, 'league', key);
+  if (directFromLeague is String) return directFromLeague;
+
+  // 2) Якщо на верхньому рівні country — це мапа, беремо country.name
+  final countryObj = json['country'];
+  if (countryObj is Map) {
+    final name = countryObj['name'];
+    if (name is String) return name;
+  }
+
+  // 3) Якщо чомусь поле вже є рядком на верхньому рівні
+  final direct = json[key];
+  if (direct is String) return direct;
+
+  return null;
+}
 
 Object? _readLeagueSeason(Map<dynamic, dynamic> json, String key) =>
     _asNullableInt(_readLeagueField(json, key));
@@ -61,16 +80,22 @@ Object? _readLeagueType(Map<dynamic, dynamic> json, String key) =>
 Object? _readLeagueLogo(Map<dynamic, dynamic> json, String key) =>
     _readLeagueField(json, key);
 
+/// Повертає або верхньорівневе поле, або league[key] якщо воно там.
 Object? _readLeagueField(Map<dynamic, dynamic> json, String key) {
-  if (json.containsKey(key)) {
-    return json[key];
-  }
-  final league = json['league'];
-  if (league is Map<String, dynamic>) {
-    return league[key];
-  } else if (league is Map) {
-    return league[key];
-  }
+  final direct = json[key];
+  if (direct != null) return direct;
+
+  return _readFromNestedMap(json, 'league', key);
+}
+
+Object? _readFromNestedMap(
+  Map<dynamic, dynamic> json,
+  String mapKey,
+  String key,
+) {
+  final nested = json[mapKey];
+  if (nested is Map<String, dynamic>) return nested[key];
+  if (nested is Map) return nested[key];
   return null;
 }
 

@@ -167,8 +167,8 @@ class MatchesProvider extends ChangeNotifier {
 
   UnmodifiableSetView<String> get availableStatuses {
     final statuses = UnmodifiableSetView<String>(<String>{
-        for (final fixture in _allFixtures) fixture.status.toUpperCase(),
-      });
+      for (final fixture in _allFixtures) fixture.status.toUpperCase(),
+    });
     log(statuses.toString(), name: 'analytics');
     return statuses;
   }
@@ -229,7 +229,7 @@ class MatchesProvider extends ChangeNotifier {
 
   Future<bool> toggleFavorite(int fixtureId) async {
     final toggled = await _favoritesRepository.toggleFavorite(
-      FavoriteType.match,
+      FavoriteType.matches,
       fixtureId,
     );
     if (toggled) {
@@ -280,7 +280,7 @@ class MatchesProvider extends ChangeNotifier {
       );
 
     final favorites = await _favoritesRepository.getFavorites(
-      type: FavoriteType.match,
+      type: FavoriteType.matches,
     );
     _favoriteMatchIds = favorites.map((fav) => fav.refId).toSet();
 

@@ -1,6 +1,8 @@
 // path: lib/data/models/odds_snapshot.dart
 // OddsSnapshot - odds for a fixture captured at a point in time (PRD models).
 // Fields per PRD: fixtureId, home, draw, away, ts (DateTime).
+import 'dart:developer' show log;
+
 import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 

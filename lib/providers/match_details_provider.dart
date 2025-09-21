@@ -119,7 +119,7 @@ class MatchDetailsProvider extends ChangeNotifier {
 
   bool get hasPrediction => state.prediction != null;
 
-bool get canEditPrediction {
+  bool get canEditPrediction {
     final fixture = state.fixture;
     if (fixture == null) return false;
     final status = fixture.status.toUpperCase();
@@ -138,7 +138,6 @@ bool get canEditPrediction {
 
     return true;
   }
-
 
   Future<void> load(int fixtureId) async {
     if (_state.isLoading && _state.fixtureId == fixtureId) {
@@ -161,7 +160,7 @@ bool get canEditPrediction {
       final odds = await _oddsRepository.getByFixture(fixtureId);
       final prediction = await _predictionsRepository.getByFixture(fixtureId);
       final favorite = await _favoritesRepository.isFavorite(
-        FavoriteType.match,
+        FavoriteType.matches,
         fixtureId,
       );
       final note = await _notesRepository.getNote(fixtureId);
@@ -264,7 +263,7 @@ bool get canEditPrediction {
     final fixture = state.fixture;
     if (fixture == null) return;
     final toggled = await _favoritesRepository.toggleFavorite(
-      FavoriteType.match,
+      FavoriteType.matches,
       fixture.fixtureId,
     );
     _state = _state.copyWith(isFavorite: toggled);
@@ -328,18 +327,18 @@ bool get canEditPrediction {
     }
 
     if (selection.league) {
-      await _ensureFavorite(FavoriteType.league, fixture.leagueId);
+      await _ensureFavorite(FavoriteType.leagues, fixture.leagueId);
     }
     if (selection.homeTeam) {
-      await _ensureFavorite(FavoriteType.team, fixture.homeTeam.id);
+      await _ensureFavorite(FavoriteType.teams, fixture.homeTeam.id);
     }
     if (selection.awayTeam) {
-      await _ensureFavorite(FavoriteType.team, fixture.awayTeam.id);
+      await _ensureFavorite(FavoriteType.teams, fixture.awayTeam.id);
     }
 
     var isFavorite = state.isFavorite;
     if (selection.match) {
-      await _ensureFavorite(FavoriteType.match, fixture.fixtureId);
+      await _ensureFavorite(FavoriteType.matches, fixture.fixtureId);
       isFavorite = true;
     }
 

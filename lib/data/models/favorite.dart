@@ -5,7 +5,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'favorite.g.dart';
 
-enum FavoriteType { league, team, match }
+enum FavoriteType { leagues, teams, matches }
 
 @JsonSerializable()
 class Favorite extends EquatableModel {
@@ -41,11 +41,11 @@ Object? _readType(Map<dynamic, dynamic> json, String key) {
   final normalized = value.toString().toLowerCase();
   switch (normalized) {
     case 'league':
-      return FavoriteType.league;
+      return FavoriteType.leagues;
     case 'team':
-      return FavoriteType.team;
+      return FavoriteType.teams;
     case 'match':
-      return FavoriteType.match;
+      return FavoriteType.matches;
   }
   throw ArgumentError.value(value, key, 'Unsupported favorite type');
 }

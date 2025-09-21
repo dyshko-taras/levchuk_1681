@@ -8,7 +8,6 @@ import 'package:FlutterApp/data/models/league.dart';
 import 'package:FlutterApp/data/models/odds_snapshot.dart';
 import 'package:FlutterApp/data/models/standing_row.dart';
 import 'package:FlutterApp/data/models/team_ref.dart';
-import 'package:FlutterApp/data/models/team_stats.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -76,20 +75,12 @@ abstract class FootballService {
     @Query('season') int? season,
   }); // :contentReference[oaicite:6]{index=6}
 
-  /// GET /teams?league={id}&season={YYYY}
-  @GET('/teams')
-  Future<List<TeamRef>> getTeamsByLeague({
-    @Query('league') required int leagueId,
-    @Query('season') required int season,
-  }); // :contentReference[oaicite:7]{index=7}
-
-  /// GET /teams/statistics?league={id}&season={YYYY}&team={id}
-  @GET('/teams/statistics')
-  Future<TeamStats> getTeamStatistics({
-    @Query('league') required int leagueId,
-    @Query('season') required int season,
-    @Query('team') required int teamId,
-  }); // :contentReference[oaicite:8]{index=8}
+ /// GET /teams?id={teamId}[&season={YYYY}]
+ @GET('/teams')
+ Future<List<TeamRef>> getTeamsById({
+   @Query('id') required int teamId,
+   @Query('season') int? season,
+ });
 
   /// GET /standings?league={id}&season={YYYY}
   @GET('/standings')

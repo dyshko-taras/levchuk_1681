@@ -18,8 +18,9 @@ class ApiClient {
           ),
         )
         ..interceptors.addAll([
-          if (!Env.isProd) LogInterceptor(),
           _RetryOn429Interceptor(),
+          ApiEnvelopeUnwrapInterceptor(),
+          if (!Env.isProd) LogInterceptor(),
         ]);
 
   /// Update headers (e.g., if the key changes at runtime).
@@ -77,5 +78,40 @@ class _RetryOn429Interceptor extends Interceptor {
       onReceiveProgress: req.onReceiveProgress,
       onSendProgress: req.onSendProgress,
     );
+  }
+}
+
+class ApiEnvelopeUnwrapInterceptor extends Interceptor {
+  // Endpoints where Retrofit expects a List<T>
+  static const _listEndpoints = <String>{
+    '/fixtures',
+    '/leagues',
+    '/teams',
+  };
+
+  bool _shouldUnwrapToList(String path) {
+    for (final ep in _listEndpoints) {
+      if (path.endsWith(ep)) return true;
+    }
+    return false;
+  }
+
+  @override
+  void onResponse(Response res, ResponseInterceptorHandler handler) {
+    final data = res.data;
+
+    if (_shouldUnwrapToList(res.requestOptions.path)) {
+      if (data is Map<String, dynamic>) {
+        final resp = data['response'];
+        if (resp is List) {
+          res.data = resp; // hand a List to Retrofit
+        }
+      }
+    } else {
+      // Do NOT unwrap for map-returning endpoints like /odds
+      // leave res.data as-is (Map with response, etc.)
+    }
+
+    handler.next(res);
   }
 }
