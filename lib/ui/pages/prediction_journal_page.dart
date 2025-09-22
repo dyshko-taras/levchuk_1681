@@ -1,27 +1,334 @@
 // path: lib/ui/pages/prediction_journal_page.dart
-// Placeholder prediction journal page for navigation scaffolding.
+// Prediction journal page with daily timeline and notes.
+import 'package:FlutterApp/constants/app_icons.dart';
+import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/constants/app_strings.dart';
+import 'package:FlutterApp/providers/prediction_journal_provider.dart';
+import 'package:FlutterApp/ui/theme/app_colors.dart';
+import 'package:FlutterApp/ui/widgets/common/segmented_tabs.dart';
+import 'package:FlutterApp/ui/widgets/journal/journal_notes_section.dart';
+import 'package:FlutterApp/ui/widgets/journal/journal_summary_grid.dart';
+import 'package:FlutterApp/ui/widgets/predictions/prediction_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class PredictionJournalPage extends StatelessWidget {
+class PredictionJournalPage extends StatefulWidget {
   const PredictionJournalPage({super.key});
 
   @override
+  State<PredictionJournalPage> createState() => _PredictionJournalPageState();
+}
+
+class _PredictionJournalPageState extends State<PredictionJournalPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<PredictionJournalProvider>().loadForDate(
+        DateTime.now(),
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.journalTitle)),
-      body: Center(
-        child: Padding(
-          padding: Insets.allLg,
-          child: Text(
-            AppStrings.comingSoon,
-            style: theme.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-        ),
+      body: Consumer<PredictionJournalProvider>(
+        builder: (context, provider, child) {
+          final state = provider.state;
+
+          final slivers = <Widget>[];
+
+          if (state.isLoading) {
+            slivers.add(
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.successGreen,
+                  ),
+                ),
+              ),
+            );
+          } else if (state.error != null) {
+            slivers.add(
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Error loading journal',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Gaps.hMd,
+                      ElevatedButton(
+                        onPressed: () =>
+                            provider.loadForDate(state.selectedDate),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          } else {
+            // Header with day selector tabs
+            slivers.add(
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: Insets.allMd,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title with calendar button
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              AppStrings.journalTitle,
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    color: AppColors.textWhite,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: SvgPicture.asset(
+                              AppIcons.actionCalendar,
+                              width: AppSizes.iconMd,
+                              height: AppSizes.iconMd,
+                              colorFilter: const ColorFilter.mode(
+                                AppColors.successGreen,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                            onPressed: _showDatePicker,
+                          ),
+                        ],
+                      ),
+                      Gaps.hMd,
+                      // Day selector tabs
+                      SegmentedTabs(
+                        items: _buildTabItems(state.selectedDate),
+                        selectedId: _getSelectedTabId(state.selectedDate),
+                        onChange: (id) => _onTabChange(id, provider),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+
+            // Predictions list
+            if (state.timeline.isEmpty) {
+              slivers.add(
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Padding(
+                    padding: Insets.allLg,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.sports_soccer,
+                            size: 64,
+                            color: AppColors.textGray,
+                          ),
+                          Gaps.hMd,
+                          Text(
+                            'No predictions for this day',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: AppColors.textGray,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              slivers.add(
+                SliverList.builder(
+                  itemCount: state.timeline.length,
+                  itemBuilder: (context, index) {
+                    final item = state.timeline[index];
+                    return Padding(
+                      padding: Insets.vMd,
+                      child: PredictionCard(
+                        prediction: item.prediction,
+                        fixture: item.fixture,
+                      ),
+                    );
+                  },
+                ),
+              );
+            }
+
+            // Notes section
+            slivers.add(
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: Insets.allMd,
+                  child: JournalNotesSection(
+                    events: state.events,
+                    onAddEvent: (event) => provider.addEvent(event),
+                    onRemoveEvent: (event) => provider.removeEvent(event),
+                  ),
+                ),
+              ),
+            );
+
+            // Daily summary
+            slivers.add(
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: Insets.allMd,
+                  child: JournalSummaryGrid(summary: state.summary),
+                ),
+              ),
+            );
+
+            // Bottom spacing
+            slivers.add(
+              const SliverToBoxAdapter(
+                child: SizedBox(height: AppSpacing.lg),
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => provider.loadForDate(state.selectedDate),
+            child: SafeArea(
+              child: Padding(
+                padding: Insets.hMd,
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: slivers,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
+  }
+
+  List<SegmentedTabItem> _buildTabItems(DateTime selectedDate) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final tomorrow = today.add(const Duration(days: 1));
+
+    final selected = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+    );
+
+    // If selected date is yesterday, today, or tomorrow, show those labels
+    if (selected.isAtSameMomentAs(yesterday)) {
+      return const [
+        SegmentedTabItem(id: 'yesterday', label: 'Yesterday'),
+        SegmentedTabItem(id: 'today', label: 'Today'),
+        SegmentedTabItem(id: 'tomorrow', label: 'Tomorrow'),
+      ];
+    } else if (selected.isAtSameMomentAs(today)) {
+      return const [
+        SegmentedTabItem(id: 'yesterday', label: 'Yesterday'),
+        SegmentedTabItem(id: 'today', label: 'Today'),
+        SegmentedTabItem(id: 'tomorrow', label: 'Tomorrow'),
+      ];
+    } else if (selected.isAtSameMomentAs(tomorrow)) {
+      return const [
+        SegmentedTabItem(id: 'yesterday', label: 'Yesterday'),
+        SegmentedTabItem(id: 'today', label: 'Today'),
+        SegmentedTabItem(id: 'tomorrow', label: 'Tomorrow'),
+      ];
+    } else {
+      // For custom dates, show the formatted date
+      final dateFormatter = DateFormat('MMM d');
+      final customDateLabel = dateFormatter.format(selectedDate);
+
+      return [
+        const SegmentedTabItem(id: 'yesterday', label: 'Yesterday'),
+        const SegmentedTabItem(id: 'today', label: 'Today'),
+        SegmentedTabItem(id: 'custom', label: customDateLabel),
+      ];
+    }
+  }
+
+  String _getSelectedTabId(DateTime selectedDate) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final tomorrow = today.add(const Duration(days: 1));
+
+    final selected = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+    );
+
+    if (selected.isAtSameMomentAs(yesterday)) {
+      return 'yesterday';
+    } else if (selected.isAtSameMomentAs(tomorrow)) {
+      return 'tomorrow';
+    } else if (selected.isAtSameMomentAs(today)) {
+      return 'today';
+    } else {
+      return 'custom';
+    }
+  }
+
+  void _onTabChange(String tabId, PredictionJournalProvider provider) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    switch (tabId) {
+      case 'yesterday':
+        provider.loadForDate(today.subtract(const Duration(days: 1)));
+      case 'today':
+        provider.loadForDate(today);
+      case 'tomorrow':
+        provider.loadForDate(today.add(const Duration(days: 1)));
+      case 'custom':
+        // For custom date, keep the current selected date
+        provider.loadForDate(provider.state.selectedDate);
+    }
+  }
+
+  Future<void> _showDatePicker() async {
+    final provider = context.read<PredictionJournalProvider>();
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: provider.state.selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.successGreen,
+              onPrimary: AppColors.textWhite,
+              surface: AppColors.cardDark,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (selectedDate != null) {
+      provider.loadForDate(selectedDate);
+    }
   }
 }

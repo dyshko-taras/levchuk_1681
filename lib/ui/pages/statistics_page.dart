@@ -271,9 +271,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return ((dayOfYear - date.weekday + 10) / 7).floor();
   }
 
-  void _showResetConfirmationDialog(BuildContext context) {
+  Future<void> _showResetConfirmationDialog(BuildContext context) async {
     final userProfileProvider = context.read<UserProfileProvider>();
-    showDialog<void>(
+    await showDialog<void>(
       context: context,
       builder: (context) => ResetConfirmationDialog(
         onStatsOnly: () async {
