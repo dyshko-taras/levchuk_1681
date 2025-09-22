@@ -168,6 +168,50 @@ class MatchCard extends StatelessWidget {
   }
 
   StatusChip _buildStatusChip() {
+    // For finished matches, check the actual result
+    if (config.state == MatchCardState.finished) {
+      if (config.prediction != null) {
+        final result = config.prediction!.result;
+        if (result == 'correct') {
+          return const StatusChip(
+            variant: StatusChipVariant.completedCorrect,
+            label: 'Completed (Correct)',
+          );
+        } else if (result == 'missed') {
+          return const StatusChip(
+            variant: StatusChipVariant.completedMissed,
+            label: 'Completed (Missed)',
+          );
+        } else {
+          // Prediction exists but no result yet - calculate it based on match outcome
+          final calculatedResult = _calculatePredictionResult();
+          if (calculatedResult == 'correct') {
+            return const StatusChip(
+              variant: StatusChipVariant.completedCorrect,
+              label: 'Completed (Correct)',
+            );
+          } else if (calculatedResult == 'missed') {
+            return const StatusChip(
+              variant: StatusChipVariant.completedMissed,
+              label: 'Completed (Missed)',
+            );
+          } else {
+            return const StatusChip(
+              variant: StatusChipVariant.completedCorrect,
+              label: 'Completed',
+            );
+          }
+        }
+      } else {
+        // No prediction for finished match
+        return const StatusChip(
+          variant: StatusChipVariant.completedCorrect,
+          label: 'Completed',
+        );
+      }
+    }
+
+    // For upcoming/live matches, use userPick
     switch (config.userPick) {
       case MatchCardUserPick.correct:
         return const StatusChip(
@@ -195,6 +239,25 @@ class MatchCard extends StatelessWidget {
           label: config.state == MatchCardState.live ? 'Live' : 'Upcoming',
         );
     }
+  }
+
+  String? _calculatePredictionResult() {
+    if (config.prediction == null) return null;
+
+    final match = config.match;
+    final homeGoals = match.goalsHome;
+    final awayGoals = match.goalsAway;
+
+    if (homeGoals == null || awayGoals == null) return null;
+
+    final actualWinner = homeGoals > awayGoals
+        ? 'home'
+        : homeGoals < awayGoals
+        ? 'away'
+        : 'draw';
+
+    final prediction = config.prediction!.pick.toLowerCase();
+    return prediction == actualWinner ? 'correct' : 'missed';
   }
 
   List<CardAction> _buildActions() {

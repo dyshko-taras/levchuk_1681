@@ -1,6 +1,5 @@
 // path: lib/providers/user_profile_provider.dart
 // Provides data and actions for the user profile screen.
-import 'package:FlutterApp/data/models/achievement.dart';
 import 'package:FlutterApp/data/models/fixture.dart';
 import 'package:FlutterApp/data/models/prediction.dart';
 import 'package:FlutterApp/data/models/user_profile.dart';
@@ -91,17 +90,17 @@ class UserProfileProvider extends ChangeNotifier {
        _predictionsRepository = predictionsRepository,
        _matchesRepository = matchesRepository,
        _achievementsRepository = achievementsRepository,
-       _state = UserProfileState(
+       _state = const UserProfileState(
          isLoading: false,
          error: null,
          profile: null,
-         statistics: const ProfileStatistics(
+         statistics: ProfileStatistics(
            total: 0,
            correct: 0,
            missed: 0,
            accuracyPct: 0,
          ),
-         recentPredictions: const <RecentPredictionInfo>[],
+         recentPredictions: <RecentPredictionInfo>[],
          earnedBadges: 0,
          isSaving: false,
        );
@@ -118,14 +117,13 @@ class UserProfileProvider extends ChangeNotifier {
   Future<void> load() async {
     _state = _state.copyWith(
       isLoading: true,
-      error: UserProfileState._sentinel,
     );
     notifyListeners();
     try {
       final profile = await _profileRepository.getProfile();
       final predictions = await _predictionsRepository.getAll();
       final achievements = await _achievementsRepository.getAchievements();
-      final stats = _buildStatistics(predictions);
+      final stats = await _buildStatisticsAsync(predictions);
       final recent = await _buildRecent(predictions.take(5).toList());
       final earned = achievements.where((a) => a.earnedAt != null).length;
       _state = _state.copyWith(
@@ -171,17 +169,95 @@ class UserProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  ProfileStatistics _buildStatistics(List<Prediction> predictions) {
+  Future<ProfileStatistics> _buildStatisticsAsync(
+    List<Prediction> predictions,
+  ) async {
+    // Get all predictions with their fixtures to calculate actual results
     final graded = predictions.where((p) => p.result != null).toList();
     final correct = graded.where((p) => p.result == 'correct').length;
     final missed = graded.where((p) => p.result == 'missed').length;
-    final accuracy = graded.isEmpty ? 0 : correct / graded.length * 100;
+
+    // For predictions without result, we need to calculate them
+    final ungraded = predictions.where((p) => p.result == null).toList();
+    var calculatedCorrect = 0;
+    var calculatedMissed = 0;
+
+    // Calculate results for ungraded predictions
+    for (final prediction in ungraded) {
+      final fixture = await _matchesRepository.getById(prediction.fixtureId);
+      if (fixture != null && _isFixtureFinished(fixture)) {
+        final result = _calculatePredictionResult(prediction, fixture);
+        if (result == 'correct') {
+          calculatedCorrect++;
+        } else if (result == 'missed') {
+          calculatedMissed++;
+        }
+      }
+    }
+
+    final totalCorrect = correct + calculatedCorrect;
+    final totalMissed = missed + calculatedMissed;
+    final totalGraded = totalCorrect + totalMissed;
+    final accuracy = totalGraded == 0 ? 0 : totalCorrect / totalGraded * 100;
+
     return ProfileStatistics(
       total: predictions.length,
-      correct: correct,
-      missed: missed,
+      correct: totalCorrect,
+      missed: totalMissed,
       accuracyPct: accuracy.toDouble(),
     );
+  }
+
+  Future<void> resetStatisticsOnly() async {
+    _state = _state.copyWith(isSaving: true);
+    notifyListeners();
+    try {
+      // Reset only achievements (statistics) - keep predictions
+      final achievements = await _achievementsRepository.getAchievements();
+      for (final achievement in achievements) {
+        if (achievement.earnedAt != null) {
+          await _achievementsRepository.setEarned(achievement.id, null);
+        }
+      }
+
+      // Reload data to reflect reset
+      await load();
+    } catch (e) {
+      _state = _state.copyWith(
+        isSaving: false,
+        error: e.toString(),
+      );
+    }
+    notifyListeners();
+  }
+
+  Future<void> resetAllData() async {
+    _state = _state.copyWith(isSaving: true);
+    notifyListeners();
+    try {
+      // Reset all predictions - using existing method
+      final predictions = await _predictionsRepository.getAll();
+      for (final prediction in predictions) {
+        await _predictionsRepository.deletePrediction(prediction.fixtureId);
+      }
+
+      // Reset achievements - using existing method
+      final achievements = await _achievementsRepository.getAchievements();
+      for (final achievement in achievements) {
+        if (achievement.earnedAt != null) {
+          await _achievementsRepository.setEarned(achievement.id, null);
+        }
+      }
+
+      // Reload data to reflect reset
+      await load();
+    } catch (e) {
+      _state = _state.copyWith(
+        isSaving: false,
+        error: e.toString(),
+      );
+    }
+    notifyListeners();
   }
 
   Future<List<RecentPredictionInfo>> _buildRecent(
@@ -189,10 +265,32 @@ class UserProfileProvider extends ChangeNotifier {
   ) async {
     if (predictions.isEmpty) return const <RecentPredictionInfo>[];
     predictions.sort((a, b) => b.madeAt.compareTo(a.madeAt));
-    final futures = predictions.map((prediction) async {
+    final limited = predictions.take(5);
+    final futures = limited.map((prediction) async {
       final fixture = await _matchesRepository.getById(prediction.fixtureId);
       return RecentPredictionInfo(prediction: prediction, fixture: fixture);
     });
     return Future.wait(futures);
+  }
+
+  bool _isFixtureFinished(Fixture fixture) {
+    const finishedStatuses = {'FT', 'AET', 'PEN'};
+    return finishedStatuses.contains(fixture.status.toUpperCase());
+  }
+
+  String? _calculatePredictionResult(Prediction prediction, Fixture fixture) {
+    final homeGoals = fixture.goalsHome;
+    final awayGoals = fixture.goalsAway;
+
+    if (homeGoals == null || awayGoals == null) return null;
+
+    final actualWinner = homeGoals > awayGoals
+        ? 'home'
+        : homeGoals < awayGoals
+        ? 'away'
+        : 'draw';
+
+    final predictionPick = prediction.pick.toLowerCase();
+    return predictionPick == actualWinner ? 'correct' : 'missed';
   }
 }
