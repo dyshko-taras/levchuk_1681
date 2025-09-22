@@ -1,7 +1,6 @@
 // path: lib/providers/prediction_journal_provider.dart
 // Coordinates the prediction journal calendar and daily timeline.
 import 'package:FlutterApp/data/models/fixture.dart';
-import 'package:FlutterApp/data/models/journal_entry.dart';
 import 'package:FlutterApp/data/models/prediction.dart';
 import 'package:FlutterApp/data/repositories/journal_repository.dart';
 import 'package:FlutterApp/data/repositories/matches_repository.dart';
@@ -117,7 +116,6 @@ class PredictionJournalProvider extends ChangeNotifier {
     final target = _normalizeDate(date);
     _state = _state.copyWith(
       isLoading: true,
-      error: PredictionJournalState._sentinel,
       selectedDate: target,
     );
     notifyListeners();
@@ -128,7 +126,7 @@ class PredictionJournalProvider extends ChangeNotifier {
           .where((prediction) => _isSameDay(prediction.madeAt, target))
           .toList();
       final timeline = await _buildTimeline(dailyPredictions);
-      final summary = _buildSummary(dailyPredictions);
+      final summary = await _buildSummary(dailyPredictions);
       final entry = await _journalRepository.getEntry(target);
       _state = _state.copyWith(
         isLoading: false,
@@ -206,14 +204,35 @@ class PredictionJournalProvider extends ChangeNotifier {
     return list;
   }
 
-  JournalSummary _buildSummary(List<Prediction> predictions) {
+  Future<JournalSummary> _buildSummary(List<Prediction> predictions) async {
     final total = predictions.length;
-    final correct = predictions
-        .where((prediction) => prediction.result == 'correct')
-        .length;
-    final missed = predictions
-        .where((prediction) => prediction.result == 'missed')
-        .length;
+
+    // Get all predictions with their fixtures to calculate actual results
+    final graded = predictions.where((p) => p.result != null).toList();
+    final correct = graded.where((p) => p.result == 'correct').length;
+    final missed = graded.where((p) => p.result == 'missed').length;
+
+    // For predictions without result, we need to calculate them
+    final ungraded = predictions.where((p) => p.result == null).toList();
+    var calculatedCorrect = 0;
+    var calculatedMissed = 0;
+
+    // Calculate results for ungraded predictions
+    for (final prediction in ungraded) {
+      final fixture = await _matchesRepository.getById(prediction.fixtureId);
+      if (fixture != null && _isFixtureFinished(fixture)) {
+        final result = _calculatePredictionResult(prediction, fixture);
+        if (result == 'correct') {
+          calculatedCorrect++;
+        } else if (result == 'missed') {
+          calculatedMissed++;
+        }
+      }
+    }
+
+    final totalCorrect = correct + calculatedCorrect;
+    final totalMissed = missed + calculatedMissed;
+
     final oddsValues = predictions
         .map((prediction) => prediction.odds)
         .whereType<double>()
@@ -222,10 +241,11 @@ class PredictionJournalProvider extends ChangeNotifier {
         ? 0
         : oddsValues.reduce((value, element) => value + element) /
               oddsValues.length;
+
     return JournalSummary(
       total: total,
-      correct: correct,
-      missed: missed,
+      correct: totalCorrect,
+      missed: totalMissed,
       averageOdds: averageOdds.toDouble(),
     );
   }
@@ -240,4 +260,25 @@ class PredictionJournalProvider extends ChangeNotifier {
   }
 
   static DateTime _today() => _normalizeDate(DateTime.now());
+
+  bool _isFixtureFinished(Fixture fixture) {
+    const finishedStatuses = {'FT', 'AET', 'PEN'};
+    return finishedStatuses.contains(fixture.status.toUpperCase());
+  }
+
+  String? _calculatePredictionResult(Prediction prediction, Fixture fixture) {
+    final homeGoals = fixture.goalsHome;
+    final awayGoals = fixture.goalsAway;
+
+    if (homeGoals == null || awayGoals == null) return null;
+
+    final actualWinner = homeGoals > awayGoals
+        ? 'home'
+        : homeGoals < awayGoals
+        ? 'away'
+        : 'draw';
+
+    final predictionPick = prediction.pick.toLowerCase();
+    return predictionPick == actualWinner ? 'correct' : 'missed';
+  }
 }

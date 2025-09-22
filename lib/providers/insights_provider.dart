@@ -1,6 +1,8 @@
 // path: lib/providers/insights_provider.dart
 // Derives personal insights from prediction history.
+import 'package:FlutterApp/data/models/fixture.dart';
 import 'package:FlutterApp/data/models/prediction.dart';
+import 'package:FlutterApp/data/repositories/matches_repository.dart';
 import 'package:FlutterApp/data/repositories/predictions_repository.dart';
 import 'package:flutter/foundation.dart';
 
@@ -60,19 +62,24 @@ class InsightsState {
 }
 
 class InsightsProvider extends ChangeNotifier {
-  InsightsProvider(this._predictionsRepository)
-    : _state = const InsightsState(
-        isLoading: false,
-        error: null,
-        pickAccuracy: <String, double>{'home': 0, 'draw': 0, 'away': 0},
-        averageOdds: 0,
-        mostActiveDay: 'Unknown',
-        strengths: <InsightEntry>[],
-        weaknesses: <InsightEntry>[],
-        advice: <String>[],
-      );
+  InsightsProvider({
+    required PredictionsRepository predictionsRepository,
+    required MatchesRepository matchesRepository,
+  }) : _predictionsRepository = predictionsRepository,
+       _matchesRepository = matchesRepository,
+       _state = const InsightsState(
+         isLoading: false,
+         error: null,
+         pickAccuracy: <String, double>{'home': 0, 'draw': 0, 'away': 0},
+         averageOdds: 0,
+         mostActiveDay: 'Unknown',
+         strengths: <InsightEntry>[],
+         weaknesses: <InsightEntry>[],
+         advice: <String>[],
+       );
 
   final PredictionsRepository _predictionsRepository;
+  final MatchesRepository _matchesRepository;
 
   InsightsState _state;
 
@@ -81,13 +88,11 @@ class InsightsProvider extends ChangeNotifier {
   Future<void> loadAndComputeInsights() async {
     _state = _state.copyWith(
       isLoading: true,
-      error: InsightsState._sentinel,
     );
     notifyListeners();
     try {
       final predictions = await _predictionsRepository.getAll();
-      final graded = predictions.where((p) => p.result != null).toList();
-      final pickAccuracy = _calculatePickAccuracy(graded);
+      final pickAccuracy = await _calculatePickAccuracy(predictions);
       final averageOdds = _calculateAverageOdds(predictions);
       final mostActiveDay = _mostActiveDay(predictions);
       final strengths = _buildStrengths(pickAccuracy);
@@ -112,13 +117,21 @@ class InsightsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String, double> _calculatePickAccuracy(List<Prediction> predictions) {
+  Future<Map<String, double>> _calculatePickAccuracy(
+    List<Prediction> predictions,
+  ) async {
     final totals = <String, _AccuracyBucket>{
       'home': _AccuracyBucket(),
       'draw': _AccuracyBucket(),
       'away': _AccuracyBucket(),
     };
-    for (final prediction in predictions) {
+
+    // Get all predictions with their fixtures to calculate actual results
+    final graded = predictions.where((p) => p.result != null).toList();
+    final ungraded = predictions.where((p) => p.result == null).toList();
+
+    // Process graded predictions
+    for (final prediction in graded) {
       final pick = prediction.pick.toLowerCase();
       final bucket = totals[pick];
       if (bucket == null) continue;
@@ -127,6 +140,22 @@ class InsightsProvider extends ChangeNotifier {
         bucket.correct += 1;
       }
     }
+
+    // Process ungraded predictions
+    for (final prediction in ungraded) {
+      final fixture = await _matchesRepository.getById(prediction.fixtureId);
+      if (fixture != null && _isFixtureFinished(fixture)) {
+        final result = _calculatePredictionResult(prediction, fixture);
+        final pick = prediction.pick.toLowerCase();
+        final bucket = totals[pick];
+        if (bucket == null) continue;
+        bucket.total += 1;
+        if (result == 'correct') {
+          bucket.correct += 1;
+        }
+      }
+    }
+
     return totals.map(
       (key, value) => MapEntry(
         key,
@@ -244,6 +273,27 @@ class InsightsProvider extends ChangeNotifier {
       default:
         return pick;
     }
+  }
+
+  bool _isFixtureFinished(Fixture fixture) {
+    const finishedStatuses = {'FT', 'AET', 'PEN'};
+    return finishedStatuses.contains(fixture.status.toUpperCase());
+  }
+
+  String? _calculatePredictionResult(Prediction prediction, Fixture fixture) {
+    final homeGoals = fixture.goalsHome;
+    final awayGoals = fixture.goalsAway;
+
+    if (homeGoals == null || awayGoals == null) return null;
+
+    final actualWinner = homeGoals > awayGoals
+        ? 'home'
+        : homeGoals < awayGoals
+        ? 'away'
+        : 'draw';
+
+    final predictionPick = prediction.pick.toLowerCase();
+    return predictionPick == actualWinner ? 'correct' : 'missed';
   }
 }
 

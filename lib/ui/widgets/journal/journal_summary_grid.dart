@@ -74,7 +74,7 @@ class _SummaryCard extends StatelessWidget {
     final theme = Theme.of(context).textTheme;
 
     return Container(
-      padding: Insets.allMd,
+      padding: Insets.allSm,
       decoration: BoxDecoration(
         color: AppColors.cardDark,
         borderRadius: BorderRadius.circular(AppRadius.lg),

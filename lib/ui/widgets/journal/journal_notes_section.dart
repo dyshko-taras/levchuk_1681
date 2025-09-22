@@ -1,5 +1,8 @@
 // path: lib/ui/widgets/journal/journal_notes_section.dart
 // Notes section component for prediction journal.
+// FIXES: remove Expanded inside scrollable (caused unbounded height error),
+// use vertical layout with proper paddings and full-width buttons.
+
 import 'package:FlutterApp/constants/app_radius.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
@@ -44,50 +47,35 @@ class _JournalNotesSectionState extends State<JournalNotesSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (!hasNotes) ...[
-          // Add note section
-          Row(
-            children: [
-              Expanded(
-                child: NotesTextField(
-                  value: _noteController.text,
-                  onChanged: (value) => _noteController.text = value,
-                  onSubmit: () {
-                    final text = _noteController.text.trim();
-                    if (text.isNotEmpty) {
-                      widget.onAddEvent(text);
-                      _noteController.clear();
-                    }
-                  },
-                  hintText: 'Add your notes for this day...',
-                  maxLines: 4,
-                ),
-              ),
-              Gaps.wSm,
-              PrimaryButton(
-                label: 'Add Note',
-                onPressed: () {
-                  final text = _noteController.text.trim();
-                  if (text.isNotEmpty) {
-                    widget.onAddEvent(text);
-                    _noteController.clear();
-                  }
-                },
-              ),
-            ],
+          // Add note section (vertical, no Expanded to avoid unbounded height)
+          NotesTextField(
+            value: _noteController.text,
+            onChanged: (value) => _noteController.text = value,
+            onSubmit: _submitAdd,
+            hintText: 'Add your notes for this day...',
+            maxLines: 4,
+          ),
+          Gaps.hMd,
+          SizedBox(
+            width: double.infinity,
+            child: PrimaryButton(
+              label: 'Add Note',
+              onPressed: _submitAdd,
+            ),
           ),
         ] else ...[
           // Display notes section
           Container(
             padding: Insets.allMd,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.cardDark,
-              borderRadius: BorderRadius.circular(AppRadius.lg),
+              borderRadius: AppRadius.cardLg,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.events.first,
+                  widget.events.last,
                   style: theme.bodyMedium?.copyWith(
                     color: AppColors.textWhite,
                   ),
@@ -99,7 +87,7 @@ class _JournalNotesSectionState extends State<JournalNotesSection> {
                       child: DangerRedButton(
                         label: 'Delete Note',
                         onPressed: () {
-                          widget.onRemoveEvent(widget.events.first);
+                          widget.onRemoveEvent(widget.events.last);
                         },
                       ),
                     ),
@@ -110,7 +98,7 @@ class _JournalNotesSectionState extends State<JournalNotesSection> {
                         onPressed: () {
                           setState(() {
                             _isEditing = true;
-                            _noteController.text = widget.events.first;
+                            _noteController.text = widget.events.last;
                           });
                         },
                       ),
@@ -122,50 +110,56 @@ class _JournalNotesSectionState extends State<JournalNotesSection> {
           ),
         ],
 
+        // Edit form (vertical, no Expanded)
         if (_isEditing) ...[
           Gaps.hMd,
+          NotesTextField(
+            value: _noteController.text,
+            onChanged: (value) => _noteController.text = value,
+            onSubmit: _submitEdit,
+            hintText: 'Edit your notes...',
+            maxLines: 4,
+          ),
+          Gaps.hSm,
           Row(
             children: [
               Expanded(
-                child: NotesTextField(
-                  value: _noteController.text,
-                  onChanged: (value) => _noteController.text = value,
-                  onSubmit: () {
-                    final text = _noteController.text.trim();
-                    if (text.isNotEmpty) {
-                      // Remove old note and add new one
-                      widget.onRemoveEvent(widget.events.first);
-                      widget.onAddEvent(text);
-                      setState(() {
-                        _isEditing = false;
-                      });
-                      _noteController.clear();
-                    }
-                  },
-                  hintText: 'Edit your notes...',
-                  maxLines: 4,
+                child: PrimaryButton(
+                  label: 'Save',
+                  onPressed: _submitEdit,
                 ),
               ),
               Gaps.wSm,
-              PrimaryButton(
-                label: 'Save',
-                onPressed: () {
-                  final text = _noteController.text.trim();
-                  if (text.isNotEmpty) {
-                    // Remove old note and add new one
-                    widget.onRemoveEvent(widget.events.first);
-                    widget.onAddEvent(text);
-                    setState(() {
-                      _isEditing = false;
-                    });
+              Expanded(
+                child: SecondaryGreenButtonLight(
+                  label: 'Cancel',
+                  onPressed: () {
+                    setState(() => _isEditing = false);
                     _noteController.clear();
-                  }
-                },
+                  },
+                ),
               ),
             ],
           ),
         ],
       ],
     );
+  }
+
+  void _submitAdd() {
+    final text = _noteController.text.trim();
+    if (text.isEmpty) return;
+    widget.onAddEvent(text);
+    _noteController.clear();
+  }
+
+  void _submitEdit() {
+    final text = _noteController.text.trim();
+    if (text.isEmpty) return;
+    // Replace all existing notes with new one
+    widget.events.forEach(widget.onRemoveEvent);
+    widget.onAddEvent(text);
+    setState(() => _isEditing = false);
+    _noteController.clear();
   }
 }

@@ -125,32 +125,27 @@ class _PredictionJournalPageState extends State<PredictionJournalPage> {
               ),
             );
 
-            // Predictions list
+            // Predictions list (compact empty state)
             if (state.timeline.isEmpty) {
               slivers.add(
-                SliverFillRemaining(
-                  hasScrollBody: false,
+                SliverToBoxAdapter(
                   child: Padding(
-                    padding: Insets.allLg,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.sports_soccer,
-                            size: 64,
-                            color: AppColors.textGray,
-                          ),
-                          Gaps.hMd,
-                          Text(
-                            'No predictions for this day',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  color: AppColors.textGray,
-                                ),
-                          ),
-                        ],
-                      ),
+                    padding: Insets.vMd,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.sports_soccer,
+                          size: AppSizes.imageLg,
+                          color: AppColors.textGray,
+                        ),
+                        Gaps.wSm,
+                        Text(
+                          'No predictions for this day',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.textGray),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -296,13 +291,17 @@ class _PredictionJournalPageState extends State<PredictionJournalPage> {
     switch (tabId) {
       case 'yesterday':
         provider.loadForDate(today.subtract(const Duration(days: 1)));
+        return;
       case 'today':
         provider.loadForDate(today);
+        return;
       case 'tomorrow':
         provider.loadForDate(today.add(const Duration(days: 1)));
+        return;
       case 'custom':
         // For custom date, keep the current selected date
         provider.loadForDate(provider.state.selectedDate);
+        return;
     }
   }
 
