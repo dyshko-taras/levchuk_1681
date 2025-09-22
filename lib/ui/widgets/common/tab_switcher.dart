@@ -1,8 +1,7 @@
 // path: lib/ui/widgets/common/tab_switcher.dart
 // Animated tab content swapper used by Match Details tabs.
-import 'package:flutter/material.dart';
-
 import 'package:FlutterApp/constants/app_durations.dart';
+import 'package:flutter/material.dart';
 
 class TabSwitcher extends StatelessWidget {
   const TabSwitcher({
@@ -36,7 +35,7 @@ class TabSwitcher extends StatelessWidget {
         alignment: alignment,
         children: <Widget>[
           ...previousChildren,
-          if (currentChild != null) currentChild,
+          ?currentChild,
         ],
       ),
       transitionBuilder: builder,

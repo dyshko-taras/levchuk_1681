@@ -198,7 +198,8 @@ class _AppProvidersState extends State<_AppProviders> {
         ),
         ChangeNotifierProvider<InsightsProvider>(
           create: (context) => InsightsProvider(
-            context.read<PredictionsRepository>(),
+            predictionsRepository: context.read<PredictionsRepository>(),
+            matchesRepository: context.read<MatchesRepository>(),
           ),
         ),
         ChangeNotifierProvider<PredictionJournalProvider>(

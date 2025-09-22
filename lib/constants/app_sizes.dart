@@ -40,10 +40,13 @@ abstract final class AppSizes {
   static const double listItemHeight = 56;
   static const double teamBadge = 40;
 
+  //Image
+  static const double imageLg = 80;
+
   // Avatars / badges
   static const double avatarSm = 24;
   static const double avatarMd = 32;
-  static const double avatarLg = 48;
+  static const double avatarLg = 100;
 
   // Stroke widths
   static const double strokeThin = 1;

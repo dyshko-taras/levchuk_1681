@@ -38,7 +38,7 @@ class AppBarActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final effectiveLeftIcon = leftIcon ?? AppIcons.actionBack;
-    final effectiveRightIcon = rightIcon ?? AppIcons.actionSearch;
+    final effectiveRightIcon = rightIcon ?? AppIcons.actionBack;
 
     return Container(
       height: AppSizes.appBarHeight,

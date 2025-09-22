@@ -9,20 +9,18 @@ class AppImages {
   static const String welcomeHero = 'assets/images/welcome_hero.jpg';
 
   // Empty states / placeholders
-  static const String emptyMatches = 'assets/images/empty_matches.jpg';
   static const String emptyFavoritesStar =
       'assets/images/empty_favorites_star.webp';
   static const String emptyPredictions = 'assets/images/empty_predictions.webp';
-  static const String emptyStats = 'assets/images/empty_stats.webp';
-  static const String emptyJournal = 'assets/images/empty_journal.webp';
 
   // Profile avatars
-  static const String avatar01 = 'assets/images/avatars/avatar_01.png';
-  static const String avatar02 = 'assets/images/avatars/avatar_02.png';
-  static const String avatar03 = 'assets/images/avatars/avatar_03.png';
-  static const String avatar04 = 'assets/images/avatars/avatar_04.png';
-  static const String avatar05 = 'assets/images/avatars/avatar_05.png';
-  static const String avatar06 = 'assets/images/avatars/avatar_06.png';
+  static String avatar(int index) => 'assets/images/avatar_$index.webp';
+  static const String avatar01 = 'assets/images/avatar_1.webp';
+  static const String avatar02 = 'assets/images/avatar_2.webp';
+  static const String avatar03 = 'assets/images/avatar_3.webp';
+  static const String avatar04 = 'assets/images/avatar_4.webp';
+  static const String avatar05 = 'assets/images/avatar_5.webp';
+  static const String avatar06 = 'assets/images/avatar_6.webp';
 
   /// Helper list requested by PRD for avatar picker bindings.
   /// Usage example (PRD binding sketch): `profileAvatars6` as a data source. :contentReference[oaicite:4]{index=4}

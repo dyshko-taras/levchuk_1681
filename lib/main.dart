@@ -1,6 +1,18 @@
-// path: lib/main.dart
-// Minimal entrypoint that runs the App widget.
 import 'package:FlutterApp/app.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-void main() => runApp(const App());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  runApp(
+    DevicePreview(
+      enabled: true,
+      builder: (context) => const App(), // Wrap your app
+    ),
+  );
+}

@@ -43,13 +43,13 @@ class AchievementsRepository {
       final previous = existing[definition.code];
       final earnedAt = earned
           ? previous?.earnedAt ?? DateTime.now()
-          : previous?.earnedAt;
+          : null; // Always reset to null if not earned
       updates.add(
         Achievement(
           id: definition.code,
           title: definition.title,
           description: definition.description,
-          earnedAt: earned ? earnedAt : null,
+          earnedAt: earnedAt,
         ),
       );
     }
@@ -69,7 +69,6 @@ class AchievementsRepository {
           id: def.code,
           title: def.title,
           description: def.description,
-          earnedAt: null,
         ),
       ),
     );
@@ -173,8 +172,11 @@ class _AchievementContext {
     for (final prediction in gradedPredictions) {
       if (prediction.result == 'missed') {
         lossStreak += 1;
-      } else if (prediction.result == 'correct' && lossStreak >= 5) {
-        return true;
+      } else if (prediction.result == 'correct') {
+        if (lossStreak >= 5) {
+          return true;
+        }
+        lossStreak = 0;
       } else {
         lossStreak = 0;
       }
@@ -185,7 +187,10 @@ class _AchievementContext {
   bool hasBalancedMind() {
     final counts = <String, int>{'home': 0, 'draw': 0, 'away': 0};
     for (final prediction in wins) {
-      counts[prediction.pick] = (counts[prediction.pick] ?? 0) + 1;
+      final pick = prediction.pick.toLowerCase();
+      if (counts.containsKey(pick)) {
+        counts[pick] = counts[pick]! + 1;
+      }
     }
     return counts.values.every((value) => value >= 2);
   }
@@ -194,8 +199,7 @@ class _AchievementContext {
       wins.where((prediction) => (prediction.odds ?? 0) > 3).length >= 3;
 
   bool get hasSilentSniper =>
-      wins.where((prediction) => prediction.openedDetails == false).length >=
-      10;
+      wins.where((prediction) => !prediction.openedDetails).length >= 10;
 
   bool get hasSharpInstincts {
     for (final prediction in wins) {
@@ -203,7 +207,7 @@ class _AchievementContext {
       if (fixture == null) continue;
       final kickoff = fixture.dateUtc.toUtc();
       final delta = kickoff.difference(prediction.madeAt.toUtc()).inMinutes;
-      if (delta >= 0 && delta <= 10) {
+      if (delta <= 0 && delta >= -10) {
         return true;
       }
     }

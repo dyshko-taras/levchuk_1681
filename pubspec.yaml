@@ -21,7 +21,7 @@ dependencies:
   intl: ^0.20.2
   device_preview: ^1.3.1
   equatable: ^2.0.7
-  json_annotation: ^4.9.0 
+  json_annotation: ^4.9.0
   dio: 5.9.0
   retrofit: 4.7.2
 #  privacy_plugin:

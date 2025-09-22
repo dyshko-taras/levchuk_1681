@@ -30,7 +30,7 @@ class CounterCard extends StatelessWidget {
     };
 
     final card = Container(
-      padding: Insets.allMd,
+      padding: Insets.allSm,
       decoration: const BoxDecoration(
         color: AppColors.cardDark,
         borderRadius: AppRadius.cardLg,
