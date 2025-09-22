@@ -1,5 +1,3 @@
-import 'dart:developer' show log;
-
 import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_radius.dart';
 import 'package:FlutterApp/constants/app_sizes.dart';

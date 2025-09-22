@@ -95,6 +95,7 @@ class MatchCard extends StatelessWidget {
           Center(child: centerBlock),
           subInfo,
           statusChip,
+          expandedContent,
           if (showActions) ...[
             Gaps.hSm,
             ActionsRow(actions: actions),
@@ -114,7 +115,6 @@ class MatchCard extends StatelessWidget {
                 ),
               ),
             ),
-          expandedContent,
         ],
       ),
     );

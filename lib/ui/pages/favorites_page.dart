@@ -161,7 +161,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     onViewMatches: () async {
                       await Navigator.pushNamed(
                         context,
-                        AppRoutes.matches, //TODO
+                        AppRoutes.matches,
                       );
                     },
                     onToggleFavorite: () => provider.toggleFavorite(

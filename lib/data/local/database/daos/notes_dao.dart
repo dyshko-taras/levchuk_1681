@@ -9,15 +9,21 @@ part 'notes_dao.g.dart';
 
 @DriftAccessor(tables: [NotesTable])
 class NotesDao extends DatabaseAccessor<AppDatabase> with _$NotesDaoMixin {
-  NotesDao(AppDatabase db) : super(db);
+  NotesDao(super.db);
 
   Future<void> upsert(Note note) async {
-    await into(notesTable).insertOnConflictUpdate(
+    await into(notesTable).insert(
       NotesTableCompanion(
-        id: note.id == 0 ? const Value.absent() : Value(note.id),
         fixtureId: Value(note.fixtureId),
         noteText: Value(note.text),
         updatedAt: Value(note.updatedAt),
+      ),
+      onConflict: DoUpdate(
+        (old) => NotesTableCompanion(
+          noteText: Value(note.text),
+          updatedAt: Value(note.updatedAt),
+        ),
+        target: <Column>[notesTable.fixtureId],
       ),
     );
   }

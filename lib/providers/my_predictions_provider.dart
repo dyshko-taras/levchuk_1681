@@ -85,13 +85,12 @@ class MyPredictionsProvider extends ChangeNotifier {
   Future<void> load() async {
     _state = _state.copyWith(
       isLoading: true,
-      error: MyPredictionsState._sentinel,
     );
     notifyListeners();
     try {
       final predictions = await _predictionsRepository.getAll();
       final favorites = await _favoritesRepository.getFavorites(
-        type: FavoriteType.match,
+        type: FavoriteType.matches,
       );
       final favoriteIds = favorites.map((favorite) => favorite.refId).toSet();
 
@@ -126,7 +125,7 @@ class MyPredictionsProvider extends ChangeNotifier {
 
   Future<void> toggleFavorite(int fixtureId) async {
     final toggled = await _favoritesRepository.toggleFavorite(
-      FavoriteType.match,
+      FavoriteType.matches,
       fixtureId,
     );
     final updated = _state.items

@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-
 import 'package:FlutterApp/constants/app_radius.dart';
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
+import 'package:flutter/material.dart';
 
 class SecondaryGreenButtonLight extends StatelessWidget {
   const SecondaryGreenButtonLight({
@@ -19,7 +18,7 @@ class SecondaryGreenButtonLight extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isEnabled = enabled && onPressed != null;
-    final fg = AppColors.successGreen;
+    const fg = AppColors.successGreen;
 
     return Opacity(
       opacity: isEnabled ? 1 : 0.5,
@@ -29,7 +28,7 @@ class SecondaryGreenButtonLight extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.cardDark,
             borderRadius: AppRadius.btnLg,
-            border: Border.all(color: fg, width: AppSizes.strokeThin),
+            border: Border.all(color: fg),
           ),
           child: InkWell(
             borderRadius: AppRadius.btnLg,

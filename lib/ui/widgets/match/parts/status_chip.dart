@@ -9,7 +9,7 @@ enum StatusChipVariant {
   predicted,
   completedCorrect,
   completedMissed,
-  completed
+  completed,
 }
 
 class StatusChip extends StatelessWidget {
@@ -28,7 +28,7 @@ class StatusChip extends StatelessWidget {
       StatusChipVariant.upcoming => (
         AppColors.cardDark,
         AppColors.warningYellow,
-        Icons.notifications_none,
+        Icons.rocket_launch,
       ),
       StatusChipVariant.predicted => (
         AppColors.cardDark,

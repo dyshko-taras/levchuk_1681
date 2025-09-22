@@ -1,4 +1,6 @@
 import 'package:FlutterApp/constants/app_icons.dart';
+import 'package:FlutterApp/constants/app_images.dart';
+import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
@@ -23,14 +25,10 @@ class FavoritesEmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(
-            AppIcons.starFilled,
-            width: 80,
-            height: 80,
-            colorFilter: const ColorFilter.mode(
-              AppColors.textGray,
-              BlendMode.srcIn,
-            ),
+          Image.asset(
+            AppImages.emptyFavoritesStar,
+            width: AppSizes.imageLg,
+            height: AppSizes.imageLg,
           ),
           Gaps.hMd,
           Text(
