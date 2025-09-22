@@ -66,7 +66,7 @@ class _AppProvidersState extends State<_AppProviders> {
           );
         }
         if (snapshot.hasError) {
-          return Directionality(
+          return const Directionality(
             textDirection: TextDirection.ltr,
             child: Center(
               child: Text('Failed to initialise preferences'),
@@ -166,6 +166,7 @@ class _AppProvidersState extends State<_AppProviders> {
           create: (context) => StatisticsProvider(
             predictionsRepository: context.read<PredictionsRepository>(),
             matchesRepository: context.read<MatchesRepository>(),
+            achievementsRepository: context.read<AchievementsRepository>(),
           ),
         ),
         ChangeNotifierProvider<FavoritesProvider>(

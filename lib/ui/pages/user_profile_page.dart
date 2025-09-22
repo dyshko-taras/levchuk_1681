@@ -80,11 +80,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
         final wins = stats.correct; // використовуємо кількість вірних як 'Wins'
         final perfectDays =
             provider.state.earnedBadges; // тимчасово: бейджі як "Perfect Days"
-        final avgOdds = _avgOdds(provider.state.recentPredictions);
-        final predsPerWeek = _predictionsPerWeek(
-          total: stats.total,
-          recent: provider.state.recentPredictions,
-        );
 
         return SafeArea(
           child: Padding(
@@ -126,8 +121,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         accuracy: stats.accuracyPct,
                         correct: stats.correct,
                         missed: stats.missed,
-                        avgOdds: avgOdds,
-                        predictionsPerWeek: predsPerWeek,
+                        avgOdds: stats.averageOdds,
+                        predictionsPerWeek: stats.averagePerWeek,
                       ),
                       Gaps.hLg,
 
@@ -215,42 +210,4 @@ class _UserProfilePageState extends State<UserProfilePage> {
       ),
     );
   }
-}
-
-// ---- helpers to derive missing values on the fly ---------------------------
-
-double _avgOdds(List<RecentPredictionInfo> items) {
-  final odds = items
-      .map((e) => e.prediction.odds)
-      .where((v) => v != null)
-      .cast<double>()
-      .toList();
-  if (odds.isEmpty) return 0;
-  final sum = odds.fold<double>(0, (a, b) => a + b);
-  return sum / odds.length;
-}
-
-/// Estimate predictions/week.
-/// If we have at least 2 recent predictions, use their time span to estimate a rate,
-/// otherwise fall back to a simple heuristic based on total over 4 weeks.
-double _predictionsPerWeek({
-  required int total,
-  required List<RecentPredictionInfo> recent,
-}) {
-  if (recent.length >= 2) {
-    recent.sort((a, b) => a.prediction.madeAt.compareTo(b.prediction.madeAt));
-    final first = recent.first.prediction.madeAt;
-    final last = recent.last.prediction.madeAt;
-    final days = last.difference(first).inDays.abs().clamp(1, 365);
-    final weeks = days / 7.0;
-    final rateRecent = recent.length / weeks;
-    // scale to overall total loosely if recent span < 2 weeks
-    if (weeks < 2 && total > recent.length) {
-      return (rateRecent + (total / 8.0)) / 2.0;
-    }
-    return rateRecent;
-  }
-  // fallback heuristic: spread total across ~8 weeks if we don't have timestamps
-  if (total == 0) return 0;
-  return total / 8.0;
 }

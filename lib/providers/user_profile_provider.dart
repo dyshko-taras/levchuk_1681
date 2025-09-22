@@ -27,12 +27,16 @@ class ProfileStatistics {
     required this.correct,
     required this.missed,
     required this.accuracyPct,
+    required this.averageOdds,
+    required this.averagePerWeek,
   });
 
   final int total;
   final int correct;
   final int missed;
   final double accuracyPct;
+  final double averageOdds;
+  final double averagePerWeek;
 }
 
 @immutable
@@ -99,6 +103,8 @@ class UserProfileProvider extends ChangeNotifier {
            correct: 0,
            missed: 0,
            accuracyPct: 0,
+           averageOdds: 0,
+           averagePerWeek: 0,
          ),
          recentPredictions: <RecentPredictionInfo>[],
          earnedBadges: 0,
@@ -200,12 +206,36 @@ class UserProfileProvider extends ChangeNotifier {
     final totalGraded = totalCorrect + totalMissed;
     final accuracy = totalGraded == 0 ? 0 : totalCorrect / totalGraded * 100;
 
+    // Calculate average odds
+    final oddsValues = predictions
+        .map((p) => p.odds)
+        .whereType<double>()
+        .toList(growable: false);
+    final averageOdds = oddsValues.isEmpty
+        ? 0
+        : oddsValues.reduce((a, b) => a + b) / oddsValues.length;
+
+    // Calculate average per week
+    final averagePerWeek = _averagePerWeek(predictions);
+
     return ProfileStatistics(
       total: predictions.length,
       correct: totalCorrect,
       missed: totalMissed,
       accuracyPct: accuracy.toDouble(),
+      averageOdds: averageOdds.toDouble(),
+      averagePerWeek: averagePerWeek,
     );
+  }
+
+  double _averagePerWeek(List<Prediction> predictions) {
+    if (predictions.isEmpty) return 0;
+    final sorted = List<Prediction>.from(predictions)
+      ..sort((a, b) => a.madeAt.compareTo(b.madeAt));
+    final first = sorted.first.madeAt;
+    final last = sorted.last.madeAt;
+    final weeks = (last.difference(first).inDays.abs() / 7).ceil() + 1;
+    return predictions.length / (weeks > 0 ? weeks : 1);
   }
 
   Future<void> resetStatisticsOnly() async {
