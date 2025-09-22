@@ -23,7 +23,6 @@ class AppImages {
   static const String avatar06 = 'assets/images/avatar_6.webp';
 
   /// Helper list requested by PRD for avatar picker bindings.
-  /// Usage example (PRD binding sketch): `profileAvatars6` as a data source. :contentReference[oaicite:4]{index=4}
   static const List<String> profileAvatars6 = <String>[
     avatar01,
     avatar02,

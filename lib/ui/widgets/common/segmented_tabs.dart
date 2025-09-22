@@ -1,3 +1,4 @@
+// path: lib/ui/widgets/common/segmented_tabs.dart
 import 'package:FlutterApp/constants/app_radius.dart';
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
@@ -159,30 +160,43 @@ class _SegmentButton extends StatelessWidget {
           child: Container(
             height: height,
             padding: Insets.hMd,
-            decoration: ShapeDecoration(
-              color: bg,
-              shape: const StadiumBorder(),
+            decoration: const ShapeDecoration(
+              color: Colors.transparent, // filled by bg below
+              shape: StadiumBorder(),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (item.icon != null) ...[
-                  Icon(item.icon, size: AppSizes.iconSm, color: fg),
-                  Gaps.wSm,
-                ],
-                Text(
-                  item.label,
-                  style: textStyle?.copyWith(
-                    color: fg,
-                    fontWeight: FontWeight.w600,
+            child: DecoratedBox(
+              decoration: ShapeDecoration(
+                color: bg,
+                shape: const StadiumBorder(),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (item.icon != null) ...[
+                    Icon(item.icon, size: AppSizes.iconSm, color: fg),
+                    Gaps.wSm,
+                  ],
+                  // ↓↓↓ Prevent text overflow in tight tabs
+                  Flexible(
+                    child: Text(
+                      item.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      textAlign: TextAlign.center,
+                      style: textStyle?.copyWith(
+                        color: fg,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-                if (showBadge) ...[
-                  Gaps.wSm,
-                  _Badge(value: item.badge!, colors: colors),
+                  if (showBadge) ...[
+                    Gaps.wSm,
+                    _Badge(value: item.badge!, colors: colors),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
@@ -210,6 +224,8 @@ class _Badge extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         value.toString(),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
           color: AppColors.textWhite,
           fontWeight: FontWeight.w600,

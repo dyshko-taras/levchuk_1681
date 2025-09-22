@@ -183,7 +183,6 @@ class MatchCard extends StatelessWidget {
             label: 'Completed (Missed)',
           );
         } else {
-          // Prediction exists but no result yet - calculate it based on match outcome
           final calculatedResult = _calculatePredictionResult();
           if (calculatedResult == 'correct') {
             return const StatusChip(

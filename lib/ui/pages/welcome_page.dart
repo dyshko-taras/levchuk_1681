@@ -22,9 +22,9 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      context.read<WelcomeProvider>().readFirstRunFlag();
+      await context.read<WelcomeProvider>().readFirstRunFlag();
     });
   }
 

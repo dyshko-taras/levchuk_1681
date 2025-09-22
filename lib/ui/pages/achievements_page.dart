@@ -1,6 +1,7 @@
 // path: lib/ui/pages/achievements_page.dart
 // Achievements page showing earned/locked achievements with progress summary.
 import 'package:FlutterApp/constants/app_icons.dart';
+import 'package:FlutterApp/constants/app_routes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/providers/achievements_provider.dart';
@@ -23,8 +24,8 @@ class _AchievementsPageState extends State<AchievementsPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AchievementsProvider>().load();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<AchievementsProvider>().load();
     });
   }
 
@@ -72,114 +73,118 @@ class _AchievementsPageState extends State<AchievementsPage> {
             );
           } else {
             // Header
-            slivers..add(
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: Insets.allMd,
-                  child: AppBarActions(
-                    title: AppStrings.achievementsTitle,
-                    showRight: false,
+            slivers
+              ..add(
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: Insets.allMd,
+                    child: AppBarActions(
+                      title: AppStrings.achievementsTitle,
+                      showRight: false,
+                      leftIcon: AppIcons.actionBack,
+                      onLeft: () =>
+                          Navigator.of(context).pushNamed(AppRoutes.stats),
+                    ),
                   ),
                 ),
-              ),
-            )
-
-            // Content
-            ..add(
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: Insets.hMd,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Summary section title
-                      Text(
-                        'Summary section',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppColors.textWhite,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Gaps.hMd,
-
-                      // Summary cards
-                      Column(
-                        children: [
-                          // Total badges earned
-                          AchievementSummaryCard(
-                            icon: AppIcons.badgeGoldSummary,
-                            value: state.earnedCount.toString(),
-                            label: 'Total badges earned',
-                            subtitle: '',
-                          ),
-                          Gaps.hSm,
-                          // Next milestone
-                          AchievementSummaryCard(
-                            icon: AppIcons.milestoneTargetSummary,
-                            value: _getNextMilestoneValue(state),
-                            label: _getNextMilestoneLabel(state),
-                            subtitle: 'Next milestone',
-                          ),
-                        ],
-                      ),
-
-                      Gaps.hLg,
-
-                      // Achievements list title
-                      Text(
-                        'Achievements list',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppColors.textWhite,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Gaps.hMd,
-
-                      // Achievements grid
-                      if (state.achievements.isEmpty)
-                        const EmptyView(
-                          title: 'No achievements available',
-                          subtitle:
-                              'Achievements will appear here as you progress.',
-                        )
-                      else
-                        GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: AppSpacing.md,
-                                mainAxisSpacing: AppSpacing.md,
-                                childAspectRatio: 0.85,
+              )
+              // Content
+              ..add(
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: Insets.hMd,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Summary section title
+                        Text(
+                          'Summary section',
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                color: AppColors.textWhite,
+                                fontWeight: FontWeight.w600,
                               ),
-                          itemCount: state.achievements.length,
-                          itemBuilder: (context, index) {
-                            final achievement = state.achievements[index];
-                            final isEarned = achievement.earnedAt != null;
-
-                            return AchievementTile(
-                              title: achievement.title,
-                              subtitle: provider.getSubtitleForAchievement(
-                                achievement,
-                              ),
-                              isEarned: isEarned,
-                              onTap: () => provider.onTileTap(achievement),
-                            );
-                          },
                         ),
-                    ],
+                        Gaps.hMd,
+
+                        // Summary cards
+                        Column(
+                          children: [
+                            // Total badges earned
+                            AchievementSummaryCard(
+                              icon: AppIcons.badgeGoldSummary,
+                              value: state.earnedCount.toString(),
+                              label: 'Total badges earned',
+                              subtitle: '',
+                            ),
+                            Gaps.hSm,
+                            // Next milestone
+                            AchievementSummaryCard(
+                              icon: AppIcons.milestoneTargetSummary,
+                              value: _getNextMilestoneValue(state),
+                              label: _getNextMilestoneLabel(state),
+                              subtitle: 'Next milestone',
+                            ),
+                          ],
+                        ),
+
+                        Gaps.hLg,
+
+                        // Achievements list title
+                        Text(
+                          'Achievements list',
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                color: AppColors.textWhite,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        Gaps.hMd,
+
+                        // Achievements grid
+                        if (state.achievements.isEmpty)
+                          const EmptyView(
+                            title: 'No achievements available',
+                            subtitle:
+                                'Achievements will appear here as you progress.',
+                          )
+                        else
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: AppSpacing.md,
+                                  mainAxisSpacing: AppSpacing.md,
+                                  childAspectRatio: 0.85,
+                                ),
+                            itemCount: state.achievements.length,
+                            itemBuilder: (context, index) {
+                              final achievement = state.achievements[index];
+                              final isEarned = achievement.earnedAt != null;
+
+                              return AchievementTile(
+                                title: achievement.title,
+                                subtitle: provider.getSubtitleForAchievement(
+                                  achievement,
+                                ),
+                                isEarned: isEarned,
+                                onTap: () => provider.onTileTap(achievement),
+                              );
+                            },
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            )
-
-            // Bottom spacing
-            ..add(
-              const SliverToBoxAdapter(
-                child: SizedBox(height: AppSpacing.lg),
-              ),
-            );
+              )
+              // Bottom spacing
+              ..add(
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: AppSpacing.lg),
+                ),
+              );
           }
 
           return SafeArea(

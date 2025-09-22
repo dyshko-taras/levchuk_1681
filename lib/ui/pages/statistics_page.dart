@@ -30,8 +30,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<StatisticsProvider>().load();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<StatisticsProvider>().load();
     });
   }
 

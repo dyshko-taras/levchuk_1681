@@ -2,7 +2,6 @@
 // Individual achievement tile component for the achievements grid.
 import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_radius.dart';
-import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +27,7 @@ class AchievementTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: Insets.allMd,
+        padding: Insets.allSm,
         decoration: BoxDecoration(
           color: AppColors.cardDark,
           borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -40,10 +39,10 @@ class AchievementTile extends StatelessWidget {
               // Achievement icon
               Image.asset(
                 isEarned ? AppIcons.badgeGold : AppIcons.badgeSilver,
-                width: AppSizes.imageLg,
-                height: AppSizes.imageLg,
+                width: 70,
+                height: 70,
               ),
-              Gaps.hMd,
+              Gaps.hXs,
               // Title
               Text(
                 title,
@@ -55,7 +54,7 @@ class AchievementTile extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              Gaps.hSm,
+              Gaps.hXs,
               // Subtitle
               Text(
                 subtitle,

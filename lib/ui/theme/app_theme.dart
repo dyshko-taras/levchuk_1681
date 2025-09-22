@@ -1,8 +1,8 @@
 // path: lib/ui/theme/app_theme.dart
 import 'package:FlutterApp/constants/app_radius.dart';
+import 'package:FlutterApp/ui/theme/app_colors.dart';
+import 'package:FlutterApp/ui/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
-import 'app_fonts.dart';
 
 /// Centralized Material 3 dark theme built from tokens.
 @immutable
@@ -12,13 +12,9 @@ final class AppTheme {
   static ThemeData dark() {
     const scheme = ColorScheme.dark(
       primary: AppColors.successGreen,
-      onPrimary: AppColors.primaryBlack,
       secondary: AppColors.accentBlue,
-      onSecondary: AppColors.primaryBlack,
       error: AppColors.errorRed,
-      onError: AppColors.primaryBlack,
       surface: AppColors.primaryBlack,
-      onSurface: AppColors.textWhite,
       outline: AppColors.borderGray,
       surfaceContainerHighest: AppColors.cardDark,
     );
@@ -28,7 +24,6 @@ final class AppTheme {
       brightness: Brightness.dark,
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.primaryBlack,
-      dialogBackgroundColor: AppColors.cardDark,
       cardTheme: const CardThemeData(
         color: AppColors.cardDark,
         surfaceTintColor: Colors.transparent,
@@ -44,16 +39,16 @@ final class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: ButtonStyle(
-          minimumSize: MaterialStateProperty.all<Size>(const Size(64, 44)),
-          backgroundColor: MaterialStateProperty.resolveWith<Color>(
-            (states) => states.contains(MaterialState.disabled)
+          minimumSize: WidgetStateProperty.all<Size>(const Size(64, 44)),
+          backgroundColor: WidgetStateProperty.resolveWith<Color>(
+            (states) => states.contains(WidgetState.disabled)
                 ? AppColors.borderGray
                 : AppColors.successGreen,
           ),
-          foregroundColor: MaterialStateProperty.all<Color>(
+          foregroundColor: WidgetStateProperty.all<Color>(
             AppColors.primaryBlack,
           ),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             const RoundedRectangleBorder(borderRadius: AppRadius.btnLg),
           ),
         ),
@@ -93,6 +88,7 @@ final class AppTheme {
         unselectedLabelColor: AppColors.textGray,
         indicatorColor: AppColors.successGreen,
       ),
+      dialogTheme: const DialogThemeData(backgroundColor: AppColors.cardDark),
     );
   }
 }

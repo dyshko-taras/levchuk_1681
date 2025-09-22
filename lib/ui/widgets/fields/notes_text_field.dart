@@ -57,8 +57,8 @@ class _NotesTextFieldState extends State<NotesTextField> {
 
   @override
   void dispose() {
-    _controller.removeListener(_handleControllerChanged);
-    _controller.dispose();
+    _controller..removeListener(_handleControllerChanged)
+    ..dispose();
     _focusNode.dispose();
     super.dispose();
   }

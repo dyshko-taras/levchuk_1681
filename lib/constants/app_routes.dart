@@ -1,6 +1,5 @@
 // path: lib/constants/app_routes.dart
 // Centralized route names, generators, and helpers for navigation.
-import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/ui/pages/achievements_page.dart';
 import 'package:FlutterApp/ui/pages/insights_page.dart';
 import 'package:FlutterApp/ui/pages/main_shell_page.dart';
@@ -37,7 +36,7 @@ final class AppRoutes {
         splash: (_) => const SplashPage(),
         welcome: (_) => const WelcomePage(),
         shell: (_) => const MainShellPage(),
-        matches: (_) => const MainShellPage(initialIndex: 0),
+        matches: (_) => const MainShellPage(),
         stats: (_) => const MainShellPage(initialIndex: 1),
         favorites: (_) => const MainShellPage(initialIndex: 2),
         profile: (_) => const MainShellPage(initialIndex: 3),
@@ -70,7 +69,7 @@ final class AppRoutes {
     }
 
     return _buildRoute(
-      const NotFoundPage(message: AppStrings.notFoundTitle),
+      const NotFoundPage(),
       settings,
     );
   }

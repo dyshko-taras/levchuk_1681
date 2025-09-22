@@ -15,8 +15,8 @@ class BottomNavProvider extends ChangeNotifier {
   void setIndex(int index) {
     if (index == _currentIndex) return;
     _currentIndex = index;
-    _history.remove(index);
-    _history.add(index);
+    _history..remove(index)
+    ..add(index);
     notifyListeners();
   }
 

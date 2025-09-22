@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({
@@ -25,7 +24,6 @@ class BottomNavBar extends StatelessWidget {
         border: Border(
           top: BorderSide(
             color: AppColors.borderGray,
-            width: AppSizes.strokeThin,
           ),
         ),
       ),

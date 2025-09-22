@@ -1,5 +1,4 @@
 // path: lib/providers/matches_provider.dart
-// Matches feature provider: handles schedule data, filters, counters, and odds access.
 import 'dart:collection';
 import 'dart:developer' show log;
 

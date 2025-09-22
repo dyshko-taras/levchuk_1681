@@ -16,9 +16,15 @@ abstract final class AppRadius {
 
   static const BorderRadius cardLg = BorderRadius.all(Radius.circular(lg));
   static const BorderRadius btnLg = BorderRadius.all(Radius.circular(sm));
-  static const BorderRadius segmented = BorderRadius.all(Radius.circular(segment));
-  static const BorderRadius chipRadius = BorderRadius.all(Radius.circular(chip));
-  static const BorderRadius noteRadius = BorderRadius.all(Radius.circular(note));
+  static const BorderRadius segmented = BorderRadius.all(
+    Radius.circular(segment),
+  );
+  static const BorderRadius chipRadius = BorderRadius.all(
+    Radius.circular(chip),
+  );
+  static const BorderRadius noteRadius = BorderRadius.all(
+    Radius.circular(note),
+  );
 
   static BorderRadius circular(double radius) =>
       BorderRadius.all(Radius.circular(radius));

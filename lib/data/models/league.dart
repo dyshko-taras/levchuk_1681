@@ -16,6 +16,8 @@ class League extends EquatableModel {
     this.logo,
   });
 
+  factory League.fromJson(Map<String, dynamic> json) => _$LeagueFromJson(json);
+
   @JsonKey(readValue: _readLeagueId)
   final int id;
 
@@ -36,8 +38,6 @@ class League extends EquatableModel {
 
   @JsonKey(readValue: _readLeagueLogo)
   final String? logo;
-
-  factory League.fromJson(Map<String, dynamic> json) => _$LeagueFromJson(json);
   Map<String, dynamic> toJson() => _$LeagueToJson(this);
 
   @override
@@ -53,18 +53,15 @@ Object? _readLeagueName(Map<dynamic, dynamic> json, String key) =>
     _readLeagueField(json, key);
 
 Object? _readLeagueCountry(Map<dynamic, dynamic> json, String key) {
-  // 1) Перевага внутрішньому league.country якщо це String
   final directFromLeague = _readFromNestedMap(json, 'league', key);
   if (directFromLeague is String) return directFromLeague;
 
-  // 2) Якщо на верхньому рівні country — це мапа, беремо country.name
   final countryObj = json['country'];
   if (countryObj is Map) {
     final name = countryObj['name'];
     if (name is String) return name;
   }
 
-  // 3) Якщо чомусь поле вже є рядком на верхньому рівні
   final direct = json[key];
   if (direct is String) return direct;
 
@@ -80,7 +77,6 @@ Object? _readLeagueType(Map<dynamic, dynamic> json, String key) =>
 Object? _readLeagueLogo(Map<dynamic, dynamic> json, String key) =>
     _readLeagueField(json, key);
 
-/// Повертає або верхньорівневе поле, або league[key] якщо воно там.
 Object? _readLeagueField(Map<dynamic, dynamic> json, String key) {
   final direct = json[key];
   if (direct != null) return direct;

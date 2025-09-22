@@ -1,5 +1,4 @@
 // path: lib/data/repositories/matches_repository.dart
-// Repository that orchestrates fixtures between network (Retrofit) and local DB cache.
 
 import 'package:FlutterApp/data/api/football_service.dart';
 import 'package:FlutterApp/data/local/database/daos/matches_dao.dart';
@@ -35,7 +34,6 @@ class MatchesRepository {
       return cached;
     }
 
-    // Retrofit + interceptor: отримуємо вже List<Fixture>
     final fixtures = await _service.getFixturesByDate(dateYmd: ymd(day));
 
     await _matchesDao.replaceForDate(day, fixtures);

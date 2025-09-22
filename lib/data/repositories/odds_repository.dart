@@ -43,14 +43,10 @@ class OddsRepository {
     // }
     try {
       final snapshot = await _api.getOddsByFixture(fixtureId: fixtureId);
-      // Відповідь API може бути порожньою (results=0,response=[]).
-      // Тоді сервіс має повертати null. У такому випадку — не апсертимо,
-      // просто повертаємо кеш (якщо він є) або null.
       _lastFetched[fixtureId] = DateTime.now();
       await _oddsDao.upsert(snapshot);
       return snapshot;
     } catch (_) {
-      // Якщо парсинг/мережа впали — віддаємо кеш, або null без ре-throw.
       return cached;
     }
   }

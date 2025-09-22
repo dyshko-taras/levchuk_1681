@@ -148,7 +148,6 @@ class FavoritesProvider extends ChangeNotifier {
 
   Prediction? predictionForFixture(int fixtureId) => null;
 
-  /// Кількість сьогоднішніх матчів конкретної ліги.
   Future<int> matchesToday(int leagueId) async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -156,7 +155,6 @@ class FavoritesProvider extends ChangeNotifier {
     return fixtures.where((f) => f.leagueId == leagueId).length;
   }
 
-  /// Перший сьогоднішній fixtureId ліги (для швидкого переходу).
   Future<int?> firstMatchIdTodayForLeague(int leagueId) async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -178,7 +176,6 @@ class FavoritesProvider extends ChangeNotifier {
             return f;
           }
         } catch (_) {
-          // якщо модель без цих полів — скіпаємо
         }
       }
     }

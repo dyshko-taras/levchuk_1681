@@ -31,7 +31,6 @@ abstract final class Gaps {
 }
 
 /// Ready EdgeInsets constants for common paddings/margins.
-/// Usage: Insets.allMd, Insets.hLg, Insets.vSm, Insets.symmetric(h:..., v:...) etc.
 abstract final class Insets {
   // All
   static const EdgeInsets allXs = EdgeInsets.all(AppSpacing.xs);

@@ -14,6 +14,10 @@ class TeamRef extends EquatableModel {
     this.logo,
   });
 
+  /// JSON factory (generated).
+  factory TeamRef.fromJson(Map<String, dynamic> json) =>
+      _$TeamRefFromJson(json);
+
   /// Team ID.
   @JsonKey(readValue: _readTeamId)
   final int id;
@@ -25,10 +29,6 @@ class TeamRef extends EquatableModel {
   /// Optional logo URL (may be null for some leagues/levels).
   @JsonKey(readValue: _readTeamLogo)
   final String? logo;
-
-  /// JSON factory (generated).
-  factory TeamRef.fromJson(Map<String, dynamic> json) =>
-      _$TeamRefFromJson(json);
 
   /// JSON encoder (generated).
   Map<String, dynamic> toJson() => _$TeamRefToJson(this);

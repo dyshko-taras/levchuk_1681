@@ -16,6 +16,9 @@ class Favorite extends EquatableModel {
     required this.createdAt,
   });
 
+  factory Favorite.fromJson(Map<String, dynamic> json) =>
+      _$FavoriteFromJson(json);
+
   final int id;
 
   @JsonKey(readValue: _readType)
@@ -26,9 +29,6 @@ class Favorite extends EquatableModel {
 
   @JsonKey(readValue: _readCreatedAt)
   final DateTime createdAt;
-
-  factory Favorite.fromJson(Map<String, dynamic> json) =>
-      _$FavoriteFromJson(json);
   Map<String, dynamic> toJson() => _$FavoriteToJson(this);
 
   @override

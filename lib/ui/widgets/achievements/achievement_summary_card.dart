@@ -1,5 +1,4 @@
 // path: lib/ui/widgets/achievements/achievement_summary_card.dart
-// Summary card component for achievements screen showing total badges and next milestone.
 import 'package:FlutterApp/constants/app_radius.dart';
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';

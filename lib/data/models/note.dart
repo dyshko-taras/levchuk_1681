@@ -14,6 +14,8 @@ class Note extends EquatableModel {
     required this.updatedAt,
   });
 
+  factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
+
   final int id;
 
   @JsonKey(readValue: _readFixtureId)
@@ -23,8 +25,6 @@ class Note extends EquatableModel {
 
   @JsonKey(readValue: _readUpdatedAt)
   final DateTime updatedAt;
-
-  factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
   Map<String, dynamic> toJson() => _$NoteToJson(this);
 
   @override

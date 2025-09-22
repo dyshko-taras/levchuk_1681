@@ -183,8 +183,8 @@ class _MatchScheduleViewState extends State<_MatchScheduleView> {
     }
   }
 
-  void _openMatch(BuildContext context, int fixtureId) {
-    Navigator.of(context).pushNamed(AppRoutes.matchDetails(fixtureId));
+  Future<void> _openMatch(BuildContext context, int fixtureId) async {
+    await Navigator.of(context).pushNamed(AppRoutes.matchDetails(fixtureId));
   }
 }
 

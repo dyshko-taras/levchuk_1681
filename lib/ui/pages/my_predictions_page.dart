@@ -1,5 +1,4 @@
 // path: lib/ui/pages/my_predictions_page.dart
-// My predictions page with paddings & scroll like MatchSchedulePage, using MatchCard + note.
 
 import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_routes.dart';
@@ -29,8 +28,8 @@ class _MyPredictionsPageState extends State<MyPredictionsPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MyPredictionsProvider>().load();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<MyPredictionsProvider>().load();
     });
   }
 

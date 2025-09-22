@@ -1,5 +1,4 @@
 // path: lib/di/providers.dart
-// Provider graph: injects repositories and ChangeNotifiers per implementation plan.
 import 'dart:io';
 
 import 'package:FlutterApp/data/api/football_service.dart';

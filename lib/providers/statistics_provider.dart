@@ -407,13 +407,11 @@ class StatisticsProvider extends ChangeNotifier {
 
   int _calculateWins(List<dynamic> achievements) {
     // Count achievements related to wins (correct predictions)
-    // This is a simplified calculation - in real app you'd have specific achievement types
     return achievements.where((a) => a.earnedAt != null).length;
   }
 
   int _calculatePerfectDays(List<dynamic> achievements) {
     // Count achievements related to perfect days
-    // This is a simplified calculation - in real app you'd have specific achievement types
     return achievements.where((a) => a.earnedAt != null).length ~/ 3;
   }
 }

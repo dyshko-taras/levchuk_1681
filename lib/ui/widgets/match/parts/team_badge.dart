@@ -47,7 +47,7 @@ class TeamBadge extends StatelessWidget {
           width: AppSizes.teamBadge,
           height: AppSizes.teamBadge,
           fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => placeholder,
+          errorBuilder: (_, _, _) => placeholder,
           loadingBuilder: (context, child, progress) {
             if (progress == null) return child;
             return placeholder;

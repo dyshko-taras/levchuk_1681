@@ -102,9 +102,7 @@ class _TeamsKey {
 
   @override
   bool operator ==(Object other) =>
-      other is _TeamsKey &&
-      teamId == other.teamId &&
-      season == other.season;
+      other is _TeamsKey && teamId == other.teamId && season == other.season;
 
   @override
   int get hashCode => Object.hash(teamId, season);

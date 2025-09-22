@@ -20,7 +20,6 @@ class NotFoundPage extends StatelessWidget {
             padding: Insets.allLg,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   message,
@@ -29,8 +28,8 @@ class NotFoundPage extends StatelessWidget {
                 ),
                 Gaps.hMd,
                 FilledButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
+                  onPressed: () async {
+                    await Navigator.of(context).pushNamedAndRemoveUntil(
                       AppRoutes.matches,
                       (route) => false,
                     );

@@ -1,8 +1,6 @@
 // path: lib/data/models/odds_snapshot.dart
 // OddsSnapshot - odds for a fixture captured at a point in time (PRD models).
 // Fields per PRD: fixtureId, home, draw, away, ts (DateTime).
-import 'dart:developer' show log;
-
 import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -21,7 +19,6 @@ class OddsSnapshot extends EquatableModel {
   factory OddsSnapshot.fromJson(Map<String, dynamic> json) =>
       _$OddsSnapshotFromJson(json);
 
-  /// Supports both a flattened shape and the API envelope at: response[0].fixture.id
   @JsonKey(readValue: _readFixtureId)
   final int fixtureId;
 
@@ -99,7 +96,6 @@ Object? _extractOdd(
   Map<dynamic, dynamic> root,
   List<String> labels, // e.g. ['home','1'] or ['draw','x'] or ['away','2']
 ) {
-  // If odds provided in a flattened shape like: { 'odds': {'home': '3.5', ...} }
   final odds = root['odds'];
   if (odds is Map) {
     for (final l in labels) {

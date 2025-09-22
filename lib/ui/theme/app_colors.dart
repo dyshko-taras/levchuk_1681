@@ -2,9 +2,6 @@
 import 'package:flutter/material.dart';
 
 /// Design System palette & role colors (dark theme).
-/// Source: visual_style.md — Primary Black, Success Green, Warning Yellow, Error Red,
-/// Card Dark, Border Gray, Text White, Text Gray, Accent Blue, Accent Orange.
-/// :contentReference[oaicite:6]{index=6} :contentReference[oaicite:7]{index=7}
 class AppColors {
   AppColors._();
 
@@ -26,7 +23,6 @@ class AppColors {
   static const Color onSurface = textWhite;
   static const Color onSurfaceMuted = textGray;
 
-  /// Button text on primary green is black per DS. :contentReference[oaicite:8]{index=8}
   static const Color onPrimary = primaryBlack;
 
   /// Build a dark ColorScheme binding DS tokens.

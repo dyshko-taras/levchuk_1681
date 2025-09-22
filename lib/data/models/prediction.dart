@@ -1,5 +1,4 @@
 // path: lib/data/models/prediction.dart
-// Prediction - local model for user picks and grading per PRD. :contentReference[oaicite:2]{index=2}
 import 'package:FlutterApp/data/models/base_equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -18,6 +17,9 @@ class Prediction extends EquatableModel {
     this.openedDetails = false,
   });
 
+  factory Prediction.fromJson(Map<String, dynamic> json) =>
+      _$PredictionFromJson(json);
+
   @JsonKey(readValue: _readFixtureId)
   final int fixtureId;
 
@@ -29,7 +31,6 @@ class Prediction extends EquatableModel {
   @JsonKey(readValue: _readOdds)
   final double? odds;
 
-  /// When edits are locked (nullable until locked). :contentReference[oaicite:3]{index=3}
   @JsonKey(readValue: _readLockedAt)
   final DateTime? lockedAt;
 
@@ -37,28 +38,24 @@ class Prediction extends EquatableModel {
   @JsonKey(readValue: _readGradedAt)
   final DateTime? gradedAt;
 
-  /// Result after grading ("correct" | "missed" | null). :contentReference[oaicite:4]{index=4}
   final String? result;
 
   /// Whether the user opened match details before submitting.
   @JsonKey(readValue: _readOpenedDetails)
   final bool openedDetails;
-
-  factory Prediction.fromJson(Map<String, dynamic> json) =>
-      _$PredictionFromJson(json);
   Map<String, dynamic> toJson() => _$PredictionToJson(this);
 
   @override
   List<Object?> get props => [
-        fixtureId,
-        pick,
-        madeAt,
-        odds,
-        lockedAt,
-        gradedAt,
-        result,
-        openedDetails,
-      ];
+    fixtureId,
+    pick,
+    madeAt,
+    odds,
+    lockedAt,
+    gradedAt,
+    result,
+    openedDetails,
+  ];
 }
 
 Object? _readFixtureId(Map<dynamic, dynamic> json, String key) {

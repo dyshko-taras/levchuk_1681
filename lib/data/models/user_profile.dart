@@ -16,6 +16,9 @@ class UserProfile extends EquatableModel {
     this.updatedAt,
   });
 
+  factory UserProfile.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileFromJson(json);
+
   @JsonKey(readValue: _readId)
   final int id;
 
@@ -33,20 +36,17 @@ class UserProfile extends EquatableModel {
 
   @JsonKey(readValue: _readUpdatedAt)
   final DateTime? updatedAt;
-
-  factory UserProfile.fromJson(Map<String, dynamic> json) =>
-      _$UserProfileFromJson(json);
   Map<String, dynamic> toJson() => _$UserProfileToJson(this);
 
   @override
   List<Object?> get props => [
-        id,
-        username,
-        avatarId,
-        _mapProp(metricsCache),
-        _mapProp(resetMarkers),
-        updatedAt,
-      ];
+    id,
+    username,
+    avatarId,
+    _mapProp(metricsCache),
+    _mapProp(resetMarkers),
+    updatedAt,
+  ];
 }
 
 Object? _readId(Map<dynamic, dynamic> json, String key) {

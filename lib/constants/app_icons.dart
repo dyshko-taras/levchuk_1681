@@ -1,7 +1,6 @@
 // path: lib/constants/app_icons.dart
 /// SVG icon path accessors (single source of truth).
 /// Widgets must use AppIcons.* (no raw 'assets/...' strings).
-/// Inventory based on assets_list.md. :contentReference[oaicite:1]{index=1} :contentReference[oaicite:2]{index=2}
 abstract final class AppIcons {
   AppIcons._();
 

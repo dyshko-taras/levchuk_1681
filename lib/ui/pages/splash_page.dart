@@ -30,14 +30,14 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
     _bootstrap = context.read<AppBootstrapProvider>()
       ..addListener(_maybeNavigate);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      _bootstrap.ensureInitialized();
+      await _bootstrap.ensureInitialized();
       log('splash_shown', name: 'analytics');
     });
-    _timer = Timer(AppDurations.splashMin, () {
+    _timer = Timer(AppDurations.splashMin, () async {
       _timerElapsed = true;
-      _maybeNavigate();
+      await _maybeNavigate();
     });
   }
 
@@ -48,7 +48,7 @@ class _SplashPageState extends State<SplashPage> {
     super.dispose();
   }
 
-  void _maybeNavigate() {
+  Future<void> _maybeNavigate() async {
     if (!mounted || _navigated) return;
     if (!_timerElapsed) return;
     if (!_bootstrap.isInitialized || _bootstrap.error != null) {
@@ -59,18 +59,18 @@ class _SplashPageState extends State<SplashPage> {
         : AppRoutes.matches;
     log('splash_routed:$nextRoute', name: 'analytics');
     _navigated = true;
-    Navigator.of(context).pushReplacementNamed(nextRoute);
+    await Navigator.of(context).pushReplacementNamed(nextRoute);
   }
 
-  void _restartBootstrap() {
+  Future<void> _restartBootstrap() async {
     if (_bootstrap.isLoading) return;
     _timerElapsed = false;
     _timer?.cancel();
-    _timer = Timer(AppDurations.splashMin, () {
+    _timer = Timer(AppDurations.splashMin, () async {
       _timerElapsed = true;
-      _maybeNavigate();
+      await _maybeNavigate();
     });
-    _bootstrap.reload();
+    await _bootstrap.reload();
   }
 
   @override

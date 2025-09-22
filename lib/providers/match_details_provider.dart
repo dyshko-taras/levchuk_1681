@@ -1,5 +1,4 @@
 // path: lib/providers/match_details_provider.dart
-// Manages match detail screen state: fixture, odds, prediction, notes, favorites.
 import 'package:FlutterApp/constants/app_durations.dart';
 import 'package:FlutterApp/data/models/favorite.dart';
 import 'package:FlutterApp/data/models/fixture.dart';

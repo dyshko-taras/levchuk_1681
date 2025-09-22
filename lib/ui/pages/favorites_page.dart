@@ -204,9 +204,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     logoAssetConst: team.logo,
                     action: TeamCardAction(
                       label: AppStrings.favoritesOpenMatch,
-                      onPressed: () {
+                      onPressed: () async {
                         if (mSnap.hasData && mSnap.data != null) {
-                          Navigator.of(context).pushNamed(
+                          await Navigator.of(context).pushNamed(
                             AppRoutes.matchDetails(mSnap.data!.fixtureId),
                           );
                         }

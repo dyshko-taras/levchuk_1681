@@ -12,16 +12,15 @@ class JournalEntry extends EquatableModel {
     required this.events,
   });
 
-  /// The day this journal entry belongs to (UTC or app-default timezone handling at repo level).
+  factory JournalEntry.fromJson(Map<String, dynamic> json) =>
+      _$JournalEntryFromJson(json);
+
   @JsonKey(readValue: _readDate)
   final DateTime date;
 
   /// Short notes/events of the day.
   @JsonKey(readValue: _readEvents)
   final List<String> events;
-
-  factory JournalEntry.fromJson(Map<String, dynamic> json) =>
-      _$JournalEntryFromJson(json);
   Map<String, dynamic> toJson() => _$JournalEntryToJson(this);
 
   @override

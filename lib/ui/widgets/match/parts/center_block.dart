@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
+import 'package:flutter/material.dart';
 
 class CenterBlock extends StatelessWidget {
   const CenterBlock.kickoff({
@@ -35,7 +34,6 @@ class CenterBlock extends StatelessWidget {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(_primaryText, style: titleStyle, textAlign: TextAlign.center),
         if (_secondaryText case final text? when text.isNotEmpty) ...[

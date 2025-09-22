@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
+import 'package:flutter/material.dart';
 
 class FavoriteStar extends StatelessWidget {
   const FavoriteStar({

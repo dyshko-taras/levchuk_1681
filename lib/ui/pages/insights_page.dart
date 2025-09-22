@@ -1,5 +1,7 @@
 // path: lib/ui/pages/insights_page.dart
 // Insights page showing personal trends, strengths/weaknesses, and actionable advice.
+import 'package:FlutterApp/constants/app_icons.dart';
+import 'package:FlutterApp/constants/app_routes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/providers/insights_provider.dart';
@@ -23,8 +25,8 @@ class _InsightsPageState extends State<InsightsPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<InsightsProvider>().loadAndComputeInsights();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<InsightsProvider>().loadAndComputeInsights();
     });
   }
 
@@ -74,12 +76,15 @@ class _InsightsPageState extends State<InsightsPage> {
             // Header
             slivers
               ..add(
-                const SliverToBoxAdapter(
+                SliverToBoxAdapter(
                   child: Padding(
                     padding: Insets.allMd,
                     child: AppBarActions(
                       title: AppStrings.insightsTitle,
                       showRight: false,
+                      leftIcon: AppIcons.actionBack,
+                      onLeft: () =>
+                          Navigator.pushNamed(context, AppRoutes.profile),
                     ),
                   ),
                 ),
@@ -200,9 +205,9 @@ class _InsightsPageState extends State<InsightsPage> {
                           child: TranslucentTintedButton(
                             label: 'Improve Strategy',
                             color: AppColors.successGreen,
-                            onPressed: () {
+                            onPressed: () async {
                               // Navigate to Statistics page
-                              Navigator.of(context).pushNamed('/stats');
+                              await Navigator.of(context).pushNamed('/stats');
                             },
                           ),
                         ),

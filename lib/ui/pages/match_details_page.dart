@@ -228,10 +228,10 @@ class _MatchDetailsViewState extends State<_MatchDetailsView> {
     );
   }
 
-  void _onNoteSubmitted() {
+  Future<void> _onNoteSubmitted() async {
     _noteDebounce?.cancel();
     final provider = context.read<MatchDetailsProvider>();
-    provider.saveNote(_latestNote ?? provider.state.noteText);
+    await provider.saveNote(_latestNote ?? provider.state.noteText);
   }
 
   Future<void> _openPredictionDialog(

@@ -14,15 +14,15 @@ class Insight extends EquatableModel {
     required this.computedAt,
   });
 
+  factory Insight.fromJson(Map<String, dynamic> json) =>
+      _$InsightFromJson(json);
+
   final String id;
   final String title;
   final String value;
 
   @JsonKey(readValue: _readComputedAt)
   final DateTime computedAt;
-
-  factory Insight.fromJson(Map<String, dynamic> json) =>
-      _$InsightFromJson(json);
   Map<String, dynamic> toJson() => _$InsightToJson(this);
 
   @override

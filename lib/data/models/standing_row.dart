@@ -21,6 +21,9 @@ class StandingRow extends EquatableModel {
     this.form,
   });
 
+  factory StandingRow.fromJson(Map<String, dynamic> json) =>
+      _$StandingRowFromJson(json);
+
   @JsonKey(readValue: _readTeam)
   final TeamRef team;
 
@@ -42,16 +45,21 @@ class StandingRow extends EquatableModel {
   @JsonKey(readValue: _readPoints)
   final int points;
 
-  /// Recent form string like "WWDLD". :contentReference[oaicite:5]{index=5}
   @JsonKey(readValue: _readForm)
   final String? form;
-
-  factory StandingRow.fromJson(Map<String, dynamic> json) =>
-      _$StandingRowFromJson(json);
   Map<String, dynamic> toJson() => _$StandingRowToJson(this);
 
   @override
-  List<Object?> get props => [team, rank, played, win, draw, lose, points, form];
+  List<Object?> get props => [
+    team,
+    rank,
+    played,
+    win,
+    draw,
+    lose,
+    points,
+    form,
+  ];
 }
 
 Object? _readTeam(Map<dynamic, dynamic> json, String key) =>
@@ -117,7 +125,7 @@ Object? _readMapValue(
 }
 
 Object? _nestedValue(Object? node, List<String> path) {
-  Object? current = node;
+  var current = node;
   for (final segment in path) {
     if (current is Map<String, dynamic>) {
       current = current[segment];

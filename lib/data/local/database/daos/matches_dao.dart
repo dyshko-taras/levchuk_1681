@@ -1,5 +1,4 @@
 // path: lib/data/local/database/daos/matches_dao.dart
-// DAO bridging fixtures with the local Drift cache (Implementation Plan section 4).
 import 'package:FlutterApp/data/local/database/app_database.dart';
 import 'package:FlutterApp/data/local/database/schema/matches_table.dart';
 import 'package:FlutterApp/data/models/fixture.dart';

@@ -1,17 +1,18 @@
 // path: lib/ui/pages/prediction_journal_page.dart
 // Prediction journal page with daily timeline and notes.
 import 'package:FlutterApp/constants/app_icons.dart';
+import 'package:FlutterApp/constants/app_routes.dart';
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/providers/prediction_journal_provider.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
+import 'package:FlutterApp/ui/widgets/common/app_bar_actions.dart';
 import 'package:FlutterApp/ui/widgets/common/segmented_tabs.dart';
 import 'package:FlutterApp/ui/widgets/journal/journal_notes_section.dart';
 import 'package:FlutterApp/ui/widgets/journal/journal_summary_grid.dart';
 import 'package:FlutterApp/ui/widgets/predictions/prediction_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -77,53 +78,40 @@ class _PredictionJournalPageState extends State<PredictionJournalPage> {
               ),
             );
           } else {
-            // Header with day selector tabs
-            slivers.add(
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: Insets.allMd,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Title with calendar button
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              AppStrings.journalTitle,
-                              style: Theme.of(context).textTheme.headlineSmall
-                                  ?.copyWith(
-                                    color: AppColors.textWhite,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                          ),
-                          IconButton(
-                            icon: SvgPicture.asset(
-                              AppIcons.actionCalendar,
-                              width: AppSizes.iconMd,
-                              height: AppSizes.iconMd,
-                              colorFilter: const ColorFilter.mode(
-                                AppColors.successGreen,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                            onPressed: _showDatePicker,
-                          ),
-                        ],
-                      ),
-                      Gaps.hMd,
-                      // Day selector tabs
-                      SegmentedTabs(
-                        items: _buildTabItems(state.selectedDate),
-                        selectedId: _getSelectedTabId(state.selectedDate),
-                        onChange: (id) => _onTabChange(id, provider),
-                      ),
-                    ],
+            slivers
+              ..add(
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: Insets.allMd,
+                    child: AppBarActions(
+                      title: AppStrings.journalTitle,
+                      leftIcon: AppIcons.actionBack,
+                      rightIcon: AppIcons.actionCalendar,
+                      onRight: _showDatePicker,
+                      onLeft: () =>
+                          Navigator.of(context).pushNamed(AppRoutes.profile),
+                    ),
                   ),
                 ),
-              ),
-            );
+              )
+              // Header with day selector tabs
+              ..add(
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: Insets.allMd,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SegmentedTabs(
+                          items: _buildTabItems(state.selectedDate),
+                          selectedId: _getSelectedTabId(state.selectedDate),
+                          onChange: (id) => _onTabChange(id, provider),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
 
             // Predictions list (compact empty state)
             if (state.timeline.isEmpty) {
@@ -169,35 +157,34 @@ class _PredictionJournalPageState extends State<PredictionJournalPage> {
             }
 
             // Notes section
-            slivers.add(
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: Insets.allMd,
-                  child: JournalNotesSection(
-                    events: state.events,
-                    onAddEvent: (event) => provider.addEvent(event),
-                    onRemoveEvent: (event) => provider.removeEvent(event),
+            slivers
+              ..add(
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: Insets.allMd,
+                    child: JournalNotesSection(
+                      events: state.events,
+                      onAddEvent: (event) => provider.addEvent(event),
+                      onRemoveEvent: (event) => provider.removeEvent(event),
+                    ),
                   ),
                 ),
-              ),
-            );
-
-            // Daily summary
-            slivers.add(
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: Insets.allMd,
-                  child: JournalSummaryGrid(summary: state.summary),
+              )
+              // Daily summary
+              ..add(
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: Insets.allMd,
+                    child: JournalSummaryGrid(summary: state.summary),
+                  ),
                 ),
-              ),
-            );
-
-            // Bottom spacing
-            slivers.add(
-              const SliverToBoxAdapter(
-                child: SizedBox(height: AppSpacing.lg),
-              ),
-            );
+              )
+              // Bottom spacing
+              ..add(
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: AppSpacing.lg),
+                ),
+              );
           }
 
           return RefreshIndicator(
@@ -284,23 +271,26 @@ class _PredictionJournalPageState extends State<PredictionJournalPage> {
     }
   }
 
-  void _onTabChange(String tabId, PredictionJournalProvider provider) {
+  Future<void> _onTabChange(
+    String tabId,
+    PredictionJournalProvider provider,
+  ) async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
     switch (tabId) {
       case 'yesterday':
-        provider.loadForDate(today.subtract(const Duration(days: 1)));
+        await provider.loadForDate(today.subtract(const Duration(days: 1)));
         return;
       case 'today':
-        provider.loadForDate(today);
+        await provider.loadForDate(today);
         return;
       case 'tomorrow':
-        provider.loadForDate(today.add(const Duration(days: 1)));
+        await provider.loadForDate(today.add(const Duration(days: 1)));
         return;
       case 'custom':
         // For custom date, keep the current selected date
-        provider.loadForDate(provider.state.selectedDate);
+        await provider.loadForDate(provider.state.selectedDate);
         return;
     }
   }
@@ -327,7 +317,7 @@ class _PredictionJournalPageState extends State<PredictionJournalPage> {
     );
 
     if (selectedDate != null) {
-      provider.loadForDate(selectedDate);
+      await provider.loadForDate(selectedDate);
     }
   }
 }

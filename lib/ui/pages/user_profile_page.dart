@@ -28,8 +28,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserProfileProvider>().load();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<UserProfileProvider>().load();
     });
   }
 
@@ -77,9 +77,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
         // ---- Derived/missing data ----
         final stats = provider.state.statistics;
-        final wins = stats.correct; // використовуємо кількість вірних як 'Wins'
-        final perfectDays =
-            provider.state.earnedBadges; // тимчасово: бейджі як "Perfect Days"
+        final wins = stats.correct;
+        final perfectDays = provider.state.earnedBadges;
 
         return SafeArea(
           child: Padding(
@@ -115,7 +114,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       ),
                       Gaps.hLg,
 
-                      // Detailed stats (4 колонки + 2 широкі)
                       DetailedStats(
                         total: stats.total,
                         accuracy: stats.accuracyPct,
@@ -173,17 +171,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
-  void _showAvatarModal(UserProfileProvider provider) {
+  Future<void> _showAvatarModal(UserProfileProvider provider) async {
     final profile = provider.state.profile;
     if (profile == null) return;
 
-    showDialog<void>(
+    await showDialog<void>(
       context: context,
       builder: (context) => AvatarModal(
         currentAvatarId: profile.avatarId,
         currentName: profile.username.isNotEmpty ? profile.username : '',
-        onSave: (name, avatarId) {
-          provider.updateProfile(
+        onSave: (name, avatarId) async {
+          await provider.updateProfile(
             username: name.isNotEmpty ? name : null,
             avatarId: avatarId,
           );
@@ -194,8 +192,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
-  void _showResetConfirmationDialog(UserProfileProvider provider) {
-    showDialog<void>(
+  Future<void> _showResetConfirmationDialog(
+    UserProfileProvider provider,
+  ) async {
+    await showDialog<void>(
       context: context,
       builder: (context) => ResetConfirmationDialog(
         onStatsOnly: () async {

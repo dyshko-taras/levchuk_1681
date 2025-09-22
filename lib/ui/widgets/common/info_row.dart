@@ -1,11 +1,8 @@
 // path: lib/ui/widgets/common/info_row.dart
-// Single-line information display for key-value pairs on Match Details screen.
-import 'package:flutter/material.dart';
-
 import 'package:FlutterApp/constants/app_radius.dart';
-import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
+import 'package:flutter/material.dart';
 
 class InfoRow extends StatelessWidget {
   const InfoRow({
@@ -42,10 +39,7 @@ class InfoRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.cardDark,
           borderRadius: AppRadius.cardLg,
-          border: Border.all(
-            color: AppColors.borderGray,
-            width: AppSizes.strokeThin,
-          ),
+          border: Border.all(color: AppColors.borderGray),
         ),
         child: Row(
           children: [
@@ -53,16 +47,29 @@ class InfoRow extends StatelessWidget {
               leading!,
               Gaps.wSm,
             ],
+            // Label — take remaining space, ellipsize if long
             Expanded(
               child: Text(
                 label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: labelStyle,
               ),
             ),
-            Text(
-              value,
-              style: valueStyle,
-              textAlign: TextAlign.right,
+            Gaps.wSm,
+            // Value — keep in bounds, right-aligned, ellipsize if long
+            Flexible(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  textAlign: TextAlign.right,
+                  style: valueStyle,
+                ),
+              ),
             ),
           ],
         ),

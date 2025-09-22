@@ -1,4 +1,3 @@
-import 'package:FlutterApp/constants/app_icons.dart';
 import 'package:FlutterApp/constants/app_images.dart';
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
@@ -6,7 +5,6 @@ import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
 import 'package:FlutterApp/ui/widgets/buttons/primary_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class FavoritesEmptyState extends StatelessWidget {
   const FavoritesEmptyState({

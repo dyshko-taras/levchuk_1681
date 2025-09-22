@@ -95,17 +95,14 @@ class StatsLineChart extends StatelessWidget {
                       reservedSize: 40,
                     ),
                   ),
-                  topTitles: const AxisTitles(
-                    
-                  ),
-                  rightTitles: const AxisTitles(
-                    
-                  ),
+                  topTitles: const AxisTitles(),
+                  rightTitles: const AxisTitles(),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        if (value.toInt() >= 0 && value.toInt() < xLabels.length) {
+                        if (value.toInt() >= 0 &&
+                            value.toInt() < xLabels.length) {
                           return Text(
                             xLabels[value.toInt()],
                             style: theme.labelSmall?.copyWith(
@@ -142,8 +139,9 @@ class StatsLineChart extends StatelessWidget {
                         return LineTooltipItem(
                           '${touchedSpot.y.toInt()}%',
                           theme.labelSmall?.copyWith(
-                            color: AppColors.textWhite,
-                          ) ?? const TextStyle(),
+                                color: AppColors.textWhite,
+                              ) ??
+                              const TextStyle(),
                         );
                       }).toList();
                     },

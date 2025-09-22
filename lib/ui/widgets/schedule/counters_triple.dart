@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-
 import 'package:FlutterApp/constants/app_spacing.dart';
 import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/ui/widgets/common/counter_card.dart';
+import 'package:flutter/material.dart';
 
 /// Three counters row (Predicted / Upcoming / Completed) used on Match Schedule.
 class CountersTriple extends StatelessWidget {
@@ -49,7 +48,6 @@ class CountersTriple extends StatelessWidget {
           child: CounterCard(
             label: AppStrings.matchScheduleCountersCompleted,
             value: completed,
-            accent: CounterAccent.green,
             onTap: onTapCompleted,
           ),
         ),

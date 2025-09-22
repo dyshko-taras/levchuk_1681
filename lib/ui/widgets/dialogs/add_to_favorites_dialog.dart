@@ -1,7 +1,5 @@
 // path: lib/ui/widgets/dialogs/add_to_favorites_dialog.dart
 // Modal dialog allowing users to choose which entities to favorite.
-import 'package:flutter/material.dart';
-
 import 'package:FlutterApp/constants/app_radius.dart';
 import 'package:FlutterApp/constants/app_sizes.dart';
 import 'package:FlutterApp/constants/app_spacing.dart';
@@ -9,6 +7,7 @@ import 'package:FlutterApp/constants/app_strings.dart';
 import 'package:FlutterApp/ui/theme/app_colors.dart';
 import 'package:FlutterApp/ui/widgets/buttons/primary_button.dart';
 import 'package:FlutterApp/ui/widgets/buttons/secondary_green_button_light.dart';
+import 'package:flutter/material.dart';
 
 typedef AddToFavoritesSelection = ({
   bool league,
@@ -110,7 +109,7 @@ class _AddToFavoritesDialogState extends State<AddToFavoritesDialog> {
 
     return Dialog(
       backgroundColor: AppColors.primaryBlack,
-      shape: RoundedRectangleBorder(borderRadius: AppRadius.cardLg),
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.cardLg),
       insetPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -198,7 +197,6 @@ class _FavoriteToggle extends StatelessWidget {
             borderRadius: AppRadius.cardLg,
             border: Border.all(
               color: borderColor,
-              width: AppSizes.strokeThin,
             ),
           ),
           child: Row(
@@ -229,7 +227,7 @@ class _SelectionIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = AppSizes.iconMd;
+    const size = AppSizes.iconMd;
     final baseColor = selected ? AppColors.warningYellow : AppColors.borderGray;
 
     return SizedBox(
@@ -239,11 +237,11 @@ class _SelectionIndicator extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: selected ? baseColor : Colors.transparent,
-          border: Border.all(color: baseColor, width: AppSizes.strokeThin),
+          border: Border.all(color: baseColor),
         ),
         child: Center(
           child: selected
-              ? CustomPaint(
+              ? const CustomPaint(
                   size: Size.square(size * 0.5),
                   painter: _CheckPainter(color: AppColors.primaryBlack),
                 )
